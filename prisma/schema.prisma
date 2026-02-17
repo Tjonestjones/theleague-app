@@ -1,14 +1,505 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  clerkId       String   @unique
+  email         String   @unique
+  firstName     String?
+  lastName      String?
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  ownedLeagues  League[] @relation("LeagueOwner")
+  memberships   Member[]
+  invitesSent   Invite[] @relation("InviteSender")
+  invitesReceived Invite[] @relation("InviteRecipient")
+
+  @@map("users")
+}
+
+// ============================================
+// LEAGUE MANAGEMENT
+// ============================================
+
+model League {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique // for public URLs
+  description   String?
+  logoUrl       String?
+  sport         Sport    @default(NFL)
+  
+  // Settings
+  visibility    Visibility @default(PRIVATE)
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  trialEndsAt   DateTime?
+  
+  // Ownership
+  ownerId       String
+  owner         User     @relation("LeagueOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  seasons       Season[]
+  members       Member[]
+  invites       Invite[]
+  finances      Finance[]
+
+  @@index([ownerId])
+  @@index([slug])
+  @@map("leagues")
+}
+
+enum Sport {
+  NFL
+  NBA
+  MLB
+  NHL
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+// ============================================
+// LEAGUE MEMBERS
+// ============================================
+
+model Member {
+  id            String   @id @default(cuid())
+  
+  leagueId      String
+  league        League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  
+  userId        String?  // null if invited but not registered
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  email         String   // stored for invited-but-not-registered users
+  displayName   String
+  role          MemberRole @default(MEMBER)
+  
+  joinedAt      DateTime @default(now())
+  
+  // Relations
+  teams         Team[]
+
+  @@unique([leagueId, email])
+  @@index([leagueId])
+  @@index([userId])
+  @@map("members")
+}
+
+enum MemberRole {
+  COMMISSIONER
+  CO_COMMISSIONER
+  MEMBER
+}
+
+model Invite {
+  id            String   @id @default(cuid())
+  
+  leagueId      String
+  league        League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  
+  senderId      String
+  sender        User     @relation("InviteSender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  recipientId   String?
+  recipient     User?    @relation("InviteRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  
+  email         String
+  token         String   @unique
+  status        InviteStatus @default(PENDING)
+  
+  expiresAt     DateTime
+  acceptedAt    DateTime?
+  
+  createdAt     DateTime @default(now())
+
+  @@index([leagueId])
+  @@index([email])
+  @@index([token])
+  @@map("invites")
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELED
+}
+
+// ============================================
+// SEASONS & TEAMS
+// ============================================
+
+model Season {
+  id            String   @id @default(cuid())
+  
+  leagueId      String
+  league        League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  
+  year          Int
+  platformId    String?  // External platform league ID (Sleeper, ESPN, etc.)
+  platform      Platform?
+  
+  // Settings
+  startDate     DateTime?
+  endDate       DateTime?
+  numTeams      Int
+  playoffStartWeek Int?
+  
+  // Sync
+  lastSyncedAt  DateTime?
+  syncStatus    SyncStatus @default(PENDING)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  teams         Team[]
+  weeks         Week[]
+  transactions  Transaction[]
+  draft         Draft?
+
+  @@unique([leagueId, year])
+  @@index([leagueId])
+  @@map("seasons")
+}
+
+enum Platform {
+  SLEEPER
+  ESPN
+  YAHOO
+  FLEAFLICKER
+  MANUAL
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCING
+  COMPLETED
+  FAILED
+}
+
+model Team {
+  id            String   @id @default(cuid())
+  
+  seasonId      String
+  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  
+  memberId      String
+  member        Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  name          String
+  abbreviation  String?
+  logoUrl       String?
+  
+  // Platform-specific
+  platformTeamId String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  homeMatchups  Matchup[] @relation("HomeTeam")
+  awayMatchups  Matchup[] @relation("AwayTeam")
+  rosters       Roster[]
+  draftPicks    DraftPick[]
+
+  @@unique([seasonId, memberId])
+  @@index([seasonId])
+  @@index([memberId])
+  @@map("teams")
+}
+
+// ============================================
+// MATCHUPS & SCORING
+// ============================================
+
+model Week {
+  id            String   @id @default(cuid())
+  
+  seasonId      String
+  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  
+  weekNumber    Int
+  startDate     DateTime?
+  endDate       DateTime?
+  isPlayoff     Boolean  @default(false)
+  
+  createdAt     DateTime @default(now())
+
+  // Relations
+  matchups      Matchup[]
+
+  @@unique([seasonId, weekNumber])
+  @@index([seasonId])
+  @@map("weeks")
+}
+
+model Matchup {
+  id            String   @id @default(cuid())
+  
+  weekId        String
+  week          Week     @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  
+  homeTeamId    String
+  homeTeam      Team     @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  
+  awayTeamId    String
+  awayTeam      Team     @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  
+  homeScore     Float?
+  awayScore     Float?
+  
+  status        MatchupStatus @default(SCHEDULED)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([weekId, homeTeamId])
+  @@unique([weekId, awayTeamId])
+  @@index([weekId])
+  @@map("matchups")
+}
+
+enum MatchupStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ============================================
+// ROSTERS & PLAYERS
+// ============================================
+
+model Player {
+  id            String   @id @default(cuid())
+  
+  // Canonical info
+  name          String
+  position      String
+  team          String?  // NFL team
+  
+  // Platform IDs (for normalization)
+  sleeperId     String?  @unique
+  espnId        Int?     @unique
+  yahooId       String?  @unique
+  fleaflickerId Int?     @unique
+  nflId         String?  @unique
+  
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  rosterSpots   RosterSpot[]
+  draftPicks    DraftPick[]
+
+  @@index([name])
+  @@index([sleeperId])
+  @@map("players")
+}
+
+model Roster {
+  id            String   @id @default(cuid())
+  
+  teamId        String
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  weekNumber    Int?     // null = season-long roster
+  
+  createdAt     DateTime @default(now())
+
+  // Relations
+  spots         RosterSpot[]
+
+  @@index([teamId])
+  @@map("rosters")
+}
+
+model RosterSpot {
+  id            String   @id @default(cuid())
+  
+  rosterId      String
+  roster        Roster   @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  
+  playerId      String
+  player        Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  position      String   // QB, RB, WR, etc.
+  isStarter     Boolean  @default(false)
+  
+  points        Float?   // week-specific points
+
+  @@index([rosterId])
+  @@index([playerId])
+  @@map("roster_spots")
+}
+
+// ============================================
+// DRAFT
+// ============================================
+
+model Draft {
+  id            String   @id @default(cuid())
+  
+  seasonId      String   @unique
+  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  
+  type          DraftType @default(SNAKE)
+  startedAt     DateTime?
+  completedAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+
+  // Relations
+  picks         DraftPick[]
+
+  @@map("drafts")
+}
+
+enum DraftType {
+  SNAKE
+  LINEAR
+  AUCTION
+}
+
+model DraftPick {
+  id            String   @id @default(cuid())
+  
+  draftId       String
+  draft         Draft    @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  
+  teamId        String
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  playerId      String
+  player        Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  round         Int
+  pick          Int
+  overallPick   Int
+  
+  createdAt     DateTime @default(now())
+
+  @@unique([draftId, overallPick])
+  @@index([draftId])
+  @@index([teamId])
+  @@map("draft_picks")
+}
+
+// ============================================
+// TRANSACTIONS
+// ============================================
+
+model Transaction {
+  id            String   @id @default(cuid())
+  
+  seasonId      String
+  season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  
+  type          TransactionType
+  status        TransactionStatus @default(COMPLETED)
+  
+  weekNumber    Int?
+  
+  // Trade-specific (JSON for flexibility)
+  tradeDetails  Json?
+  
+  // Add/Drop-specific
+  addedPlayer   String?
+  droppedPlayer String?
+  teamId        String?
+  
+  processedAt   DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([seasonId])
+  @@index([weekNumber])
+  @@map("transactions")
+}
+
+enum TransactionType {
+  TRADE
+  ADD
+  DROP
+  WAIVER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  VETOED
+  CANCELED
+}
+
+// ============================================
+// FINANCES
+// ============================================
+
+model Finance {
+  id            String   @id @default(cuid())
+  
+  leagueId      String
+  league        League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  
+  year          Int
+  memberId      String?  // null = league-wide entry
+  
+  type          FinanceType
+  amount        Float
+  description   String?
+  
+  dueDate       DateTime?
+  paidAt        DateTime?
+  status        PaymentStatus @default(UNPAID)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([leagueId])
+  @@map("finances")
+}
+
+enum FinanceType {
+  DUES
+  PAYOUT
+  FINE
+  OTHER
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  WAIVED
 }
