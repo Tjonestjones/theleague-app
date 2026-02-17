@@ -2,7 +2,7 @@
 
 **The Ultimate Fantasy Football League Management Platform**
 
-TheLegue is a next-generation fantasy football league management platform that preserves your league's complete history, provides advanced analytics, and offers powerful commissioner tools — all in one beautiful, modern web application.
+TheLeague is a next-generation fantasy football league management platform that preserves your league's complete history, provides advanced analytics, and offers powerful commissioner tools — all in one beautiful, modern web application.
 
 ## Vision
 

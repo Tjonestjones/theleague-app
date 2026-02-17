@@ -1,4 +1,4 @@
-fastapi==0.109.0
-uvicorn==0.27.0
+fastapi==0.88.0
+uvicorn==0.20.0
 espn-api==0.28.0
-pydantic==2.5.3
+pydantic==1.10.13

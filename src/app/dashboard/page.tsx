@@ -1,203 +1,111 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { db } from '@/lib/db'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { prisma } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function DashboardPage() {
-  const clerkUser = await currentUser()
-  
-  if (!clerkUser) {
-    redirect('/sign-in')
-  }
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
 
-  // Get or create user in database
-  let user = await db.user.findUnique({
-    where: { clerkId: clerkUser.id },
+  const leagues = await prisma.league.findMany({
+    where: {
+      members: { some: { userId: user.id } },
+    },
     include: {
-      ownedLeagues: {
-        include: {
-          members: true,
-          seasons: {
-            orderBy: { year: 'desc' },
-            take: 1,
-          },
-        },
-      },
-      memberships: {
-        include: {
-          league: {
-            include: {
-              seasons: {
-                orderBy: { year: 'desc' },
-                take: 1,
-              },
-            },
-          },
-        },
+      _count: { select: { members: true, seasons: true } },
+      members: {
+        where: { userId: user.id },
+        select: { role: true },
       },
     },
-  })
-
-  if (!user) {
-    // Create user on first login
-    user = await db.user.create({
-      data: {
-        clerkId: clerkUser.id,
-        email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
-        firstName: clerkUser.firstName,
-        lastName: clerkUser.lastName,
-        imageUrl: clerkUser.imageUrl,
-      },
-      include: {
-        ownedLeagues: {
-          include: {
-            members: true,
-            seasons: {
-              orderBy: { year: 'desc' },
-              take: 1,
-            },
-          },
-        },
-        memberships: {
-          include: {
-            league: {
-              include: {
-                seasons: {
-                  orderBy: { year: 'desc' },
-                  take: 1,
-                },
-              },
-            },
-          },
-        },
-      },
-    })
-  }
-
-  const ownedLeagues = user.ownedLeagues
-  const memberLeagues = user.memberships.map((m) => m.league)
-  const allLeagues = [...ownedLeagues, ...memberLeagues]
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Welcome */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">
-            Welcome back, {user.firstName || 'Commissioner'}!
+            Welcome back{user.firstName ? `, ${user.firstName}` : ""}! 🏈
           </h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage your fantasy football leagues in one place.
+          <p className="text-gray-500 mt-1">
+            {leagues.length === 0
+              ? "Create your first league to get started."
+              : `You're in ${leagues.length} league${leagues.length === 1 ? "" : "s"}.`}
           </p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/leagues/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Create League
+        <Link href="/dashboard/leagues/create">
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+            + Create League
+          </button>
+        </Link>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="border rounded-lg p-4">
+          <p className="text-sm text-gray-500">Total Leagues</p>
+          <p className="text-2xl font-bold">{leagues.length}</p>
+        </div>
+        <div className="border rounded-lg p-4">
+          <p className="text-sm text-gray-500">Leagues I Own</p>
+          <p className="text-2xl font-bold">
+            {leagues.filter((l) => l.members[0]?.role === "COMMISSIONER").length}
+          </p>
+        </div>
+        <div className="border rounded-lg p-4">
+          <p className="text-sm text-gray-500">Total Seasons</p>
+          <p className="text-2xl font-bold">
+            {leagues.reduce((sum, l) => sum + l._count.seasons, 0)}
+          </p>
+        </div>
+      </div>
+
+      {/* League Cards */}
+      {leagues.length === 0 ? (
+        <div className="border-2 border-dashed rounded-lg p-12 text-center">
+          <h2 className="text-xl font-semibold mb-2">No leagues yet</h2>
+          <p className="text-gray-500 mb-4">
+            Create a league and start importing your fantasy football history.
+          </p>
+          <Link href="/dashboard/leagues/create">
+            <button className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">
+              Create Your First League
+            </button>
           </Link>
-        </Button>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          title="Total Leagues"
-          value={allLeagues.length}
-          description="Leagues you own or are a member of"
-        />
-        <StatCard
-          title="Owned Leagues"
-          value={ownedLeagues.length}
-          description="Leagues where you're the commissioner"
-        />
-        <StatCard
-          title="Active Seasons"
-          value={
-            allLeagues.filter((l) => l.seasons.length > 0 && l.seasons[0].year === new Date().getFullYear()).length
-          }
-          description={`Leagues active in ${new Date().getFullYear()}`}
-        />
-      </div>
-
-      {/* Leagues List */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Your Leagues</h2>
-        
-        {allLeagues.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-12 text-center">
-            <h3 className="mb-2 text-lg font-semibold">No leagues yet</h3>
-            <p className="mb-4 text-muted-foreground">
-              Create your first league to start preserving your fantasy football
-              history.
-            </p>
-            <Button asChild>
-              <Link href="/dashboard/leagues/new">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Your First League
+        </div>
+      ) : (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">My Leagues</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {leagues.map((league) => (
+              <Link key={league.id} href={`/dashboard/leagues/${league.id}`}>
+                <div className="border rounded-lg p-5 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-lg">{league.name}</h3>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      league.members[0]?.role === "COMMISSIONER"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-700"
+                    }`}>
+                      {league.members[0]?.role?.replace("_", " ") ?? "MEMBER"}
+                    </span>
+                  </div>
+                  {league.description && (
+                    <p className="text-sm text-gray-500 mb-3">{league.description}</p>
+                  )}
+                  <div className="flex gap-4 text-sm text-gray-500">
+                    <span>{league._count.members} member{league._count.members !== 1 ? "s" : ""}</span>
+                    <span>{league._count.seasons} season{league._count.seasons !== 1 ? "s" : ""}</span>
+                    <span>{league.sport}</span>
+                  </div>
+                </div>
               </Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {allLeagues.map((league) => (
-              <LeagueCard key={league.id} league={league} />
             ))}
           </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function StatCard({
-  title,
-  value,
-  description,
-}: {
-  title: string
-  value: number
-  description: string
-}) {
-  return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-      <p className="mt-2 text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-    </div>
-  )
-}
-
-function LeagueCard({ league }: { league: any }) {
-  const currentYear = new Date().getFullYear()
-  const latestSeason = league.seasons?.[0]
-  const isActive = latestSeason?.year === currentYear
-
-  return (
-    <Link
-      href={`/dashboard/leagues/${league.id}`}
-      className="rounded-lg border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h3 className="font-semibold">{league.name}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {league.members?.length || 0} members
-            {latestSeason && ` • ${latestSeason.year}`}
-          </p>
         </div>
-        {isActive && (
-          <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-            Active
-          </span>
-        )}
-      </div>
-      <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="capitalize">{league.sport.toLowerCase()}</span>
-        <span>•</span>
-        <span>{league.visibility.toLowerCase()}</span>
-      </div>
-    </Link>
-  )
+      )}
+    </div>
+  );
 }

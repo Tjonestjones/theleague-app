@@ -8,7 +8,7 @@ export default function HomePage() {
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="text-2xl font-bold">
-            TheLegue 🏈
+            TheLeague 🏈
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/sign-in" className="text-sm font-medium hover:underline">
@@ -95,7 +95,7 @@ export default function HomePage() {
               Ready to Build Your Legacy?
             </h2>
             <p className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
-              Join commissioners who trust TheLegue to preserve their
+              Join commissioners who trust TheLeague to preserve their
               league history forever.
             </p>
             <Button asChild size="lg">
@@ -108,7 +108,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2026 TheLegue. Created by Thomas Jones.</p>
+          <p>© 2026 TheLeague. Created by Thomas Jones.</p>
           <p className="mt-2">
             Not affiliated with NFL, ESPN, Yahoo, Sleeper, or Fleaflicker.
           </p>

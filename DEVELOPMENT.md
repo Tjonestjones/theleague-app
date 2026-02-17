@@ -1,4 +1,4 @@
-# Development Guide - TheLegue
+# Development Guide - TheLeague
 
 ## Prerequisites
 
