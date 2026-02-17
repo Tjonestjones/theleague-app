@@ -1,0 +1,163 @@
+{
+  "league": {
+    "id": 6911200,
+    "name": "Stab league \ud83e\udd24\ud83e\udd24\ud83e\udd24",
+    "year": 2024,
+    "size": 10,
+    "current_week": 17
+  },
+  "teams": [
+    {
+      "rank": 1,
+      "team_id": 8,
+      "name": "Sonic and Knuckles",
+      "owner": "William Turner",
+      "wins": 9,
+      "losses": 5,
+      "ties": 0,
+      "points_for": 1819.72,
+      "points_against": 1628.7
+    },
+    {
+      "rank": 2,
+      "team_id": 10,
+      "name": "Chef cho",
+      "owner": "Charlie Miller",
+      "wins": 8,
+      "losses": 6,
+      "ties": 0,
+      "points_for": 1762.72,
+      "points_against": 1640.66
+    },
+    {
+      "rank": 3,
+      "team_id": 6,
+      "name": "The Avengers",
+      "owner": "Maxwell Majors",
+      "wins": 8,
+      "losses": 6,
+      "ties": 0,
+      "points_for": 1728.96,
+      "points_against": 1695.74
+    },
+    {
+      "rank": 4,
+      "team_id": 12,
+      "name": "The Standard ",
+      "owner": "Evan Song",
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1735.46,
+      "points_against": 1620.3
+    },
+    {
+      "rank": 5,
+      "team_id": 3,
+      "name": "Chuba",
+      "owner": "Christopher Laing jr",
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1672.9,
+      "points_against": 1840.78
+    },
+    {
+      "rank": 6,
+      "team_id": 13,
+      "name": "Saquon Tees Nuts",
+      "owner": "Aaron Argo",
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1668.64,
+      "points_against": 1745.38
+    },
+    {
+      "rank": 7,
+      "team_id": 9,
+      "name": "Half Chubb",
+      "owner": "Artie Humphreys",
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1639.9,
+      "points_against": 1738.86
+    },
+    {
+      "rank": 8,
+      "team_id": 11,
+      "name": "My Ball Zach Ertz",
+      "owner": "Nolan Bruton",
+      "wins": 7,
+      "losses": 7,
+      "ties": 0,
+      "points_for": 1577.3,
+      "points_against": 1541.32
+    },
+    {
+      "rank": 9,
+      "team_id": 1,
+      "name": "Hock and Balls",
+      "owner": "Thomas Jones",
+      "wins": 6,
+      "losses": 8,
+      "ties": 0,
+      "points_for": 1787.1,
+      "points_against": 1774.76
+    },
+    {
+      "rank": 10,
+      "team_id": 2,
+      "name": "BBL Drizzy",
+      "owner": "Nigel McLaughlin",
+      "wins": 4,
+      "losses": 10,
+      "ties": 0,
+      "points_for": 1668.26,
+      "points_against": 1834.46
+    }
+  ],
+  "week_1_matchups": [
+    {
+      "home_team_id": 8,
+      "home_team": "Sonic and Knuckles",
+      "home_score": 126.88,
+      "away_team_id": 6,
+      "away_team": "The Avengers",
+      "away_score": 104.72
+    },
+    {
+      "home_team_id": 11,
+      "home_team": "My Ball Zach Ertz",
+      "home_score": 111.68,
+      "away_team_id": 9,
+      "away_team": "Half Chubb",
+      "away_score": 55.84
+    },
+    {
+      "home_team_id": 1,
+      "home_team": "Hock and Balls",
+      "home_score": 140.86,
+      "away_team_id": 10,
+      "away_team": "Chef cho",
+      "away_score": 122.16
+    },
+    {
+      "home_team_id": 3,
+      "home_team": "Chuba",
+      "home_score": 131.48,
+      "away_team_id": 12,
+      "away_team": "The Standard ",
+      "away_score": 118.66
+    },
+    {
+      "home_team_id": 13,
+      "home_team": "Saquon Tees Nuts",
+      "home_score": 119.92,
+      "away_team_id": 2,
+      "away_team": "BBL Drizzy",
+      "away_score": 105.02
+    }
+  ]
+}
