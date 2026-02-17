@@ -6,7 +6,7 @@ TheLegue is a next-generation fantasy football league management platform that p
 
 ## 🎯 Vision
 
-Better than LeagueLegacy. Forever.
+Preserve the complete history of the Fantasy leagues we love.
 
 ## ✨ Core Features
 
