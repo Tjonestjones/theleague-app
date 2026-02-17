@@ -1,14 +1,14 @@
-# TheLegue 🏈
+# TheLeague 🏈
 
 **The Ultimate Fantasy Football League Management Platform**
 
 TheLegue is a next-generation fantasy football league management platform that preserves your league's complete history, provides advanced analytics, and offers powerful commissioner tools — all in one beautiful, modern web application.
 
-## 🎯 Vision
+## Vision
 
 Preserve the complete history of the Fantasy leagues we love.
 
-## ✨ Core Features
+## Core Features
 
 - **Permanent History Archive** — Import and preserve every season, even if the original platform deletes it
 - **Multi-Platform Import** — Sleeper, ESPN, Yahoo, Fleaflicker support
@@ -18,7 +18,7 @@ Preserve the complete history of the Fantasy leagues we love.
 - **Commissioner Tools** — Member management, finances tracking, scheduling, rule enforcement
 - **Automatic Weekly Syncs** — Stay up-to-date with live in-season data
 
-## 🚀 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Next.js 15** (App Router, React Server Components)
@@ -89,21 +89,21 @@ Preserve the complete history of the Fantasy leagues we love.
 - [ ] AI-powered features (recap summaries, trash talk generator)
 - [ ] Multi-sport support (NBA, MLB, NHL)
 
-## 👨‍💻 Creator
+## Creator
 
 **Thomas Jones** ([@Tjonestjones](https://github.com/Tjonestjones))  
 *Founder & Lead Developer*
 
-## 📄 License
+## License
 
 Private repository. All rights reserved.
 
-## 🔗 Links
+## Links
 
 - **GitHub**: [github.com/Tjonestjones/theleague-app](https://github.com/Tjonestjones/theleague-app)
 - **Documentation**: See `/docs` folder
 
 ---
 
-**Status**: 🚧 In active development (Phase 0)  
+**Status**: In active development (Phase 0)  
 **Last Updated**: February 17, 2026
