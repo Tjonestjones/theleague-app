@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "TheLegue - Fantasy Football League Management",
+  title: "TheLeague - Fantasy Football League Management",
   description: "The ultimate fantasy football league management platform. Import, track, and analyze your league history forever.",
 };
 
