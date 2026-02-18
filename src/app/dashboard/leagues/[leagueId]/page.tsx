@@ -65,15 +65,22 @@ export default async function LeagueDetailPage({
             <span className="capitalize">{league.visibility.toLowerCase()}</span>
           </div>
         </div>
-        {isCommissioner && (
-          <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Link href={`/dashboard/leagues/${leagueId}/history`}>
+            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">📊 History</button>
+          </Link>
+          <Link href={`/dashboard/leagues/${leagueId}/records`}>
+            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">🏆 Records</button>
+          </Link>
+          <Link href={`/dashboard/leagues/${leagueId}/members`}>
+            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">👥 Members</button>
+          </Link>
+          {isCommissioner && (
             <Link href={`/dashboard/leagues/${leagueId}/settings`}>
-              <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">
-                ⚙️ Settings
-              </button>
+              <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">⚙️ Settings</button>
             </Link>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Seasons */}
