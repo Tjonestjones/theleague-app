@@ -30,10 +30,10 @@ export default function DashboardLayout({
             ➕ Create League
           </Link>
           <Link
-            href="/dashboard/leagues/import-espn"
+            href="/dashboard/leagues/import"
             className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-200 transition-colors"
           >
-            📥 Import ESPN
+            📥 Import Data
           </Link>
         </nav>
 

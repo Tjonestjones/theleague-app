@@ -81,9 +81,9 @@ export default async function LeagueDetailPage({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Seasons</h2>
           {isCommissioner && (
-            <Link href={`/dashboard/leagues/import-espn?leagueId=${leagueId}`}>
+            <Link href={`/dashboard/leagues/import?leagueId=${leagueId}`}>
               <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                📥 Import from ESPN
+                📥 Import Data
               </button>
             </Link>
           )}
