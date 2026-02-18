@@ -30,8 +30,8 @@ app.add_middleware(
 class ESPNAuthRequest(BaseModel):
     league_id: int
     year: int
-    espn_s2: str
-    swid: str
+    espn_s2: Optional[str] = None
+    swid: Optional[str] = None
 
 
 class LeagueInfoResponse(BaseModel):
@@ -70,17 +70,24 @@ class FullLeagueData(BaseModel):
 
 
 # Helper function to connect to ESPN
-def connect_to_espn(league_id: int, year: int, espn_s2: str, swid: str) -> League:
-    """Connect to ESPN Fantasy League with authentication"""
+def connect_to_espn(league_id: int, year: int, espn_s2: Optional[str] = None, swid: Optional[str] = None) -> League:
+    """Connect to ESPN Fantasy League, with optional authentication for private leagues"""
     try:
         logger.info(f"Connecting to ESPN league {league_id} for year {year}")
-        league = League(
-            league_id=league_id,
-            year=year,
-            espn_s2=espn_s2,
-            swid=swid
-        )
+        kwargs = {"league_id": league_id, "year": year}
+        if espn_s2 and swid:
+            kwargs["espn_s2"] = espn_s2
+            kwargs["swid"] = swid
+        league = League(**kwargs)
         return league
+    except AttributeError as e:
+        if "'NoneType' object has no attribute 'get'" in str(e):
+            logger.error(f"ESPN access denied for league {league_id} ({year}) — likely private. Cookies required.")
+            raise HTTPException(
+                status_code=403,
+                detail=f"This league appears to be private for the {year} season. Please provide your espn_s2 and SWID cookies."
+            )
+        raise HTTPException(status_code=400, detail=f"ESPN connection failed: {str(e)}")
     except Exception as e:
         logger.error(f"Failed to connect to ESPN: {str(e)}")
         raise HTTPException(status_code=400, detail=f"ESPN connection failed: {str(e)}")
@@ -141,7 +148,10 @@ def import_league_data(request: ESPNAuthRequest):
             owner_name = "Unknown"
             if team.owners and len(team.owners) > 0:
                 owner = team.owners[0]
-                owner_name = f"{owner.get('firstName', '')} {owner.get('lastName', '')}".strip()
+                if owner and isinstance(owner, dict):
+                    owner_name = f"{owner.get('firstName', '')} {owner.get('lastName', '')}".strip()
+                elif owner and isinstance(owner, str):
+                    owner_name = owner
             
             teams.append(TeamData(
                 team_id=team.team_id,
@@ -160,14 +170,17 @@ def import_league_data(request: ESPNAuthRequest):
             try:
                 week_matchups = league.box_scores(week=week)
                 for matchup in week_matchups:
+                    # Skip bye weeks or matchups with missing teams
+                    if not matchup.home_team or not matchup.away_team:
+                        continue
                     matchups.append(MatchupData(
                         week=week,
                         home_team_id=matchup.home_team.team_id,
                         home_team_name=matchup.home_team.team_name,
-                        home_score=round(matchup.home_score, 2),
+                        home_score=round(matchup.home_score or 0, 2),
                         away_team_id=matchup.away_team.team_id,
                         away_team_name=matchup.away_team.team_name,
-                        away_score=round(matchup.away_score, 2)
+                        away_score=round(matchup.away_score or 0, 2)
                     ))
             except Exception as e:
                 logger.warning(f"Failed to fetch week {week}: {str(e)}")

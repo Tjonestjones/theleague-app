@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,14 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function ImportESPNPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+      <ImportESPNContent />
+    </Suspense>
+  );
+}
+
+function ImportESPNContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const leagueId = searchParams.get("leagueId");
@@ -114,7 +122,7 @@ export default function ImportESPNPage() {
             type="text"
             value={formData.league_id}
             onChange={(e) => setFormData({ ...formData, league_id: e.target.value })}
-            placeholder="6911200"
+            placeholder="Enter your ESPN league ID"
             disabled={isLoading}
           />
           <p className="text-xs text-gray-500">
@@ -139,43 +147,53 @@ export default function ImportESPNPage() {
           </select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="espn_s2">espn_s2 Cookie *</Label>
-          <textarea
-            id="espn_s2"
-            value={formData.espn_s2}
-            onChange={(e) => setFormData({ ...formData, espn_s2: e.target.value })}
-            placeholder="AEAkOshNXKX4gkLi1laig9GETvLh0ung..."
-            rows={3}
-            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="swid">SWID Cookie *</Label>
-          <Input
-            id="swid"
-            type="text"
-            value={formData.swid}
-            onChange={(e) => setFormData({ ...formData, swid: e.target.value })}
-            placeholder="{637A7E23-74FD-4BF8-BA7E-2374FD4BF891}"
-            className="font-mono"
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Cookie Instructions */}
+        {/* Private League Cookies (optional) */}
         <details className="rounded-md border p-4">
-          <summary className="cursor-pointer font-medium">📚 How to get ESPN cookies</summary>
-          <ol className="mt-3 space-y-2 text-sm text-gray-500">
-            <li>1. Open ESPN Fantasy in an <strong>incognito/private window</strong></li>
-            <li>2. Log in to your ESPN account</li>
-            <li>3. Navigate to your league</li>
-            <li>4. Open DevTools (F12 or Cmd+Option+I)</li>
-            <li>5. Go to <strong>Application → Cookies → fantasy.espn.com</strong></li>
-            <li>6. Copy the values for <code className="rounded bg-gray-100 px-1">espn_s2</code> and <code className="rounded bg-gray-100 px-1">SWID</code></li>
-          </ol>
+          <summary className="cursor-pointer font-medium">🔒 Private league? Add ESPN cookies (optional)</summary>
+          <p className="mt-2 mb-4 text-sm text-gray-500">
+            Only needed if your league is set to private. Public leagues can import with just the League ID.
+          </p>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="espn_s2">espn_s2 Cookie</Label>
+              <Input
+                id="espn_s2"
+                type="password"
+                value={formData.espn_s2}
+                onChange={(e) => setFormData({ ...formData, espn_s2: e.target.value })}
+                placeholder="Paste your espn_s2 cookie here"
+                className="font-mono"
+                disabled={isLoading}
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="swid">SWID Cookie</Label>
+              <Input
+                id="swid"
+                type="password"
+                value={formData.swid}
+                onChange={(e) => setFormData({ ...formData, swid: e.target.value })}
+                placeholder="Paste your SWID cookie here"
+                className="font-mono"
+                disabled={isLoading}
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="rounded-md bg-gray-50 p-3">
+              <p className="text-sm font-medium mb-2">How to get ESPN cookies:</p>
+              <ol className="space-y-1 text-sm text-gray-500">
+                <li>1. Open ESPN Fantasy in an <strong>incognito/private window</strong></li>
+                <li>2. Log in to your ESPN account</li>
+                <li>3. Navigate to your league</li>
+                <li>4. Open DevTools (F12 or Cmd+Option+I)</li>
+                <li>5. Go to <strong>Application → Cookies → fantasy.espn.com</strong></li>
+                <li>6. Copy the values for <code className="rounded bg-gray-100 px-1">espn_s2</code> and <code className="rounded bg-gray-100 px-1">SWID</code></li>
+              </ol>
+            </div>
+          </div>
         </details>
 
         {/* Status Message */}
@@ -206,7 +224,7 @@ export default function ImportESPNPage() {
         <div className="flex gap-3">
           <Button
             onClick={handleValidate}
-            disabled={isLoading || !formData.league_id || !formData.espn_s2 || !formData.swid}
+            disabled={isLoading || !formData.league_id}
             variant="outline"
             className="flex-1"
           >

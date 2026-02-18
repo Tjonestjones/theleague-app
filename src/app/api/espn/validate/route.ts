@@ -9,12 +9,20 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     const { league_id, year, espn_s2, swid } = body
     
-    if (!league_id || !year || !espn_s2 || !swid) {
+    if (!league_id || !year) {
       return NextResponse.json(
-        { error: 'Missing required fields: league_id, year, espn_s2, swid' },
+        { error: 'Missing required fields: league_id, year' },
         { status: 400 }
       )
     }
+
+    // Build payload — cookies are optional (only needed for private leagues)
+    const payload: Record<string, unknown> = {
+      league_id: parseInt(league_id),
+      year: parseInt(year),
+    }
+    if (espn_s2) payload.espn_s2 = espn_s2
+    if (swid) payload.swid = swid
 
     // Call Python service
     const response = await fetch(`${ESPN_SERVICE_URL}/api/espn/validate`, {
@@ -22,12 +30,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        league_id: parseInt(league_id),
-        year: parseInt(year),
-        espn_s2,
-        swid,
-      }),
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {

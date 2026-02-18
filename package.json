@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently --kill-others \"python3 services/espn-importer/main.py\" \"next dev\"",
+    "dev:next": "next dev",
+    "espn-service": "python3 services/espn-importer/main.py",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -30,6 +32,7 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
     "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",

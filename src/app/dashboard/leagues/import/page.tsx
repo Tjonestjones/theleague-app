@@ -1,9 +1,18 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function ImportPlatformSelect() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-12">Loading...</div>}>
+      <ImportPlatformContent />
+    </Suspense>
+  );
+}
+
+function ImportPlatformContent() {
   const searchParams = useSearchParams();
   const leagueId = searchParams.get("leagueId");
 

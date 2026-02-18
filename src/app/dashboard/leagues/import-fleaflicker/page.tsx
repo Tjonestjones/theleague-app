@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,14 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function ImportFleaflickerPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+      <ImportFleaflickerContent />
+    </Suspense>
+  );
+}
+
+function ImportFleaflickerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const leagueId = searchParams.get("leagueId");

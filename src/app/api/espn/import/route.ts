@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { league_id, year, espn_s2, swid, leagueId } = body;
 
-    if (!league_id || !year || !espn_s2 || !swid) {
-      return NextResponse.json({ error: "Missing required ESPN fields" }, { status: 400 });
+    if (!league_id || !year) {
+      return NextResponse.json({ error: "Missing required ESPN fields: league_id, year" }, { status: 400 });
     }
 
     if (!leagueId) {
@@ -33,16 +33,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only commissioners can import data" }, { status: 403 });
     }
 
+    // Build payload — cookies are optional (only needed for private leagues)
+    const payload: Record<string, unknown> = {
+      league_id: parseInt(league_id),
+      year: parseInt(year),
+    };
+    if (espn_s2) payload.espn_s2 = espn_s2;
+    if (swid) payload.swid = swid;
+
     // Call Python ESPN service
     const response = await fetch(`${ESPN_SERVICE_URL}/api/espn/import`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        league_id: parseInt(league_id),
-        year: parseInt(year),
-        espn_s2,
-        swid,
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     if (espnData.teams && Array.isArray(espnData.teams)) {
       for (const espnTeam of espnData.teams) {
-        const ownerName = espnTeam.owner || espnTeam.team_name || `Team ${espnTeam.team_id}`;
+        const ownerName = espnTeam.owner_name || espnTeam.owner || espnTeam.team_name || `Team ${espnTeam.team_id}`;
         const ownerEmail = `espn-${league_id}-${espnTeam.team_id}@imported.theleague.app`;
 
         // Upsert member (by league + email combo)
