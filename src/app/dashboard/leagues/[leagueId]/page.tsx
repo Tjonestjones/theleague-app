@@ -75,6 +75,9 @@ export default async function LeagueDetailPage({
           <Link href={`/dashboard/leagues/${leagueId}/members`}>
             <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">👥 Members</button>
           </Link>
+          <Link href={`/dashboard/leagues/${leagueId}/finances`}>
+            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">💰 Finances</button>
+          </Link>
           {isCommissioner && (
             <Link href={`/dashboard/leagues/${leagueId}/settings`}>
               <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">⚙️ Settings</button>
