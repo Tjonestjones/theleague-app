@@ -63,6 +63,14 @@ export default async function LeagueDetailPage({
             <span>{league.seasons.length} seasons</span>
             <span>•</span>
             <span className="capitalize">{league.visibility.toLowerCase()}</span>
+            {league.visibility !== "PRIVATE" && (
+              <>
+                <span>•</span>
+                <a href={`/league/${league.slug}`} target="_blank" className="text-blue-600 hover:underline">
+                  Public Page ↗
+                </a>
+              </>
+            )}
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -77,6 +85,9 @@ export default async function LeagueDetailPage({
           </Link>
           <Link href={`/dashboard/leagues/${leagueId}/finances`}>
             <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">💰 Finances</button>
+          </Link>
+          <Link href={`/dashboard/leagues/${leagueId}/newsletter`}>
+            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">📰 Newsletter</button>
           </Link>
           {isCommissioner && (
             <Link href={`/dashboard/leagues/${leagueId}/settings`}>
