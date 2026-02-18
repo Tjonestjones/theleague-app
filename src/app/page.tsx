@@ -1,137 +1,186 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import Link from "next/link";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/" className="text-2xl font-bold">
-            TheLeague 🏈
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/sign-in" className="text-sm font-medium hover:underline">
-              Sign In
-            </Link>
-            <Button asChild>
-              <Link href="/sign-up">Get Started</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
-
+    <div className="min-h-screen">
       {/* Hero */}
-      <main className="flex-1">
-        <section className="container mx-auto px-4 py-24 text-center">
-          <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl">
-            Your Fantasy Football Legacy,
-            <br />
-            <span className="text-primary">Forever.</span>
-          </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
-            Import your league history from Sleeper, ESPN, Yahoo, or Fleaflicker.
-            Unlock powerful analytics, comprehensive record books, and never lose
-            a season again.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/sign-up">Start Free Trial</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="#features">Learn More</Link>
-            </Button>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            7-day free trial • $36/year after • No credit card required
-          </p>
-        </section>
+      <section className="max-w-5xl mx-auto px-6 py-24 text-center">
+        <h1 className="text-6xl font-bold tracking-tight mb-6">
+          Your League&apos;s History,{" "}
+          <span className="text-blue-600">Forever</span> 🏈
+        </h1>
+        <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-10">
+          Import your fantasy football league from ESPN, Sleeper, Yahoo, or Fleaflicker.
+          Get all-time standings, a record book, career stats, and a beautiful public league page.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <SignedOut>
+            <Link href="/sign-up">
+              <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">
+                Start Free Trial
+              </button>
+            </Link>
+            <Link href="/sign-in">
+              <button className="px-8 py-4 border rounded-lg hover:bg-gray-50 font-medium text-lg">
+                Sign In
+              </button>
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard">
+              <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">
+                Go to Dashboard
+              </button>
+            </Link>
+          </SignedIn>
+        </div>
+        <p className="text-sm text-gray-400 mt-4">7-day free trial • $36/year • No credit card required to start</p>
+      </section>
 
-        {/* Features */}
-        <section id="features" className="border-t bg-muted/50 py-24">
-          <div className="container mx-auto px-4">
-            <h2 className="mb-12 text-center text-3xl font-bold">
-              Everything You Need to Preserve Your League
-            </h2>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <FeatureCard
-                title="Multi-Platform Import"
-                description="Seamlessly import data from Sleeper, ESPN, Yahoo, and Fleaflicker. All your history in one place."
-                icon="📊"
-              />
-              <FeatureCard
-                title="Comprehensive Record Book"
-                description="50+ automated stats and records. Highest scores, win streaks, draft analysis, and more."
-                icon="📖"
-              />
-              <FeatureCard
-                title="Advanced Analytics"
-                description="Track player performance, head-to-head history, and league trends over time."
-                icon="📈"
-              />
-              <FeatureCard
-                title="League Website"
-                description="Build a custom public homepage for your league with drag-and-drop editing."
-                icon="🌐"
-              />
-              <FeatureCard
-                title="Automatic Syncs"
-                description="Stay up-to-date with weekly background syncs during the season."
-                icon="🔄"
-              />
-              <FeatureCard
-                title="Commissioner Tools"
-                description="Manage members, track finances, and keep your league organized."
-                icon="⚙️"
-              />
-            </div>
+      {/* Features */}
+      <section className="bg-gray-50 py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Everything Your League Needs</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "📥",
+                title: "One-Click Import",
+                desc: "Import from ESPN, Sleeper, Yahoo, or Fleaflicker. All your history in minutes.",
+              },
+              {
+                icon: "🏆",
+                title: "Record Book",
+                desc: "50+ automated records. Highest scores, longest streaks, biggest blowouts, and more.",
+              },
+              {
+                icon: "📊",
+                title: "All-Time Standings",
+                desc: "See who really dominates with career stats, head-to-head records, and win percentages.",
+              },
+              {
+                icon: "📈",
+                title: "Charts & Analytics",
+                desc: "Scoring trends, season comparisons, and performance visualizations for every member.",
+              },
+              {
+                icon: "🌐",
+                title: "Public League Page",
+                desc: "A beautiful, shareable league website with standings, records, and season champions.",
+              },
+              {
+                icon: "💰",
+                title: "Finances & Dues",
+                desc: "Track league dues, payouts, and fines. Generate dues for all members in one click.",
+              },
+              {
+                icon: "📰",
+                title: "Weekly Newsletters",
+                desc: "Auto-generate weekly recap newsletters with highlights, scores, and trash talk ammo.",
+              },
+              {
+                icon: "👥",
+                title: "Member Management",
+                desc: "Invite members, assign roles, and manage your league with commissioner tools.",
+              },
+              {
+                icon: "🔒",
+                title: "Your Data, Forever",
+                desc: "We store your history permanently. Even if ESPN or Sleeper deletes it, you won't lose a thing.",
+              },
+            ].map((feature) => (
+              <div key={feature.title} className="bg-white rounded-xl p-6 border hover:shadow-sm transition-shadow">
+                <span className="text-3xl">{feature.icon}</span>
+                <h3 className="font-semibold text-lg mt-3 mb-2">{feature.title}</h3>
+                <p className="text-gray-500 text-sm">{feature.desc}</p>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="py-24">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-6 text-3xl font-bold">
-              Ready to Build Your Legacy?
-            </h2>
-            <p className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
-              Join commissioners who trust TheLeague to preserve their
-              league history forever.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/sign-up">Start Your Free Trial</Link>
-            </Button>
+      {/* Platforms */}
+      <section className="py-20">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-4">Import From Anywhere</h2>
+          <p className="text-gray-500 mb-10">We support the 4 biggest fantasy football platforms.</p>
+          <div className="flex gap-8 justify-center flex-wrap">
+            {[
+              { name: "ESPN", icon: "🏈" },
+              { name: "Sleeper", icon: "😴" },
+              { name: "Yahoo", icon: "🟣" },
+              { name: "Fleaflicker", icon: "🪲" },
+            ].map((p) => (
+              <div key={p.name} className="text-center">
+                <span className="text-4xl">{p.icon}</span>
+                <p className="font-medium mt-2">{p.name}</p>
+              </div>
+            ))}
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="bg-gray-50 py-20">
+        <div className="max-w-md mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-8">Simple Pricing</h2>
+          <div className="bg-white rounded-xl p-8 border-2 border-blue-600">
+            <p className="text-sm text-blue-600 font-medium mb-2">THE LEAGUE PRO</p>
+            <p className="text-5xl font-bold mb-1">$36</p>
+            <p className="text-gray-500 mb-6">/year per league</p>
+            <ul className="text-left space-y-3 mb-8 text-sm">
+              {[
+                "7-day free trial",
+                "Unlimited seasons & history",
+                "All 4 platform imports",
+                "Full record book",
+                "Public league website",
+                "Finance tracking",
+                "Newsletter generator",
+                "Unlimited members",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span> {item}
+                </li>
+              ))}
+            </ul>
+            <SignedOut>
+              <Link href="/sign-up">
+                <button className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                  Start Free Trial
+                </button>
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/dashboard">
+                <button className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                  Go to Dashboard
+                </button>
+              </Link>
+            </SignedIn>
+            <p className="text-xs text-gray-400 mt-3">Commissioner pays for the whole league. That&apos;s it.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 text-center">
+        <h2 className="text-3xl font-bold mb-4">Ready to Preserve Your Legacy?</h2>
+        <p className="text-gray-500 mb-8">Your league deserves better than a forgotten ESPN page.</p>
+        <SignedOut>
+          <Link href="/sign-up">
+            <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">
+              Get Started Free
+            </button>
+          </Link>
+        </SignedOut>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2026 TheLeague. Created by Thomas Jones.</p>
-          <p className="mt-2">
-            Not affiliated with NFL, ESPN, Yahoo, Sleeper, or Fleaflicker.
-          </p>
-        </div>
+      <footer className="border-t py-8 text-center text-gray-400 text-sm">
+        <p>© 2026 TheLeague. Created by Thomas Jones.</p>
       </footer>
     </div>
-  )
-}
-
-function FeatureCard({
-  title,
-  description,
-  icon,
-}: {
-  title: string
-  description: string
-  icon: string
-}) {
-  return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <div className="mb-4 text-4xl">{icon}</div>
-      <h3 className="mb-2 text-xl font-semibold">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
-    </div>
-  )
+  );
 }
