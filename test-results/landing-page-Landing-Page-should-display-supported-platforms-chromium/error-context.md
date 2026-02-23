@@ -1,0 +1,121 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - button "Sign in" [ref=e3]
+    - button "Sign up" [ref=e4]
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - heading "Your League's History, Forever 🏈" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Import your fantasy football league from ESPN, Sleeper, Yahoo, or Fleaflicker. Get all-time standings, a record book, career stats, and a beautiful public league page.
+      - generic [ref=e9]:
+        - link "Start Free Trial" [ref=e10] [cursor=pointer]:
+          - /url: /sign-up
+          - button "Start Free Trial" [ref=e11]
+        - link "Sign In" [ref=e12] [cursor=pointer]:
+          - /url: /sign-in
+          - button "Sign In" [ref=e13]
+      - paragraph [ref=e14]: 7-day free trial • $36/year • No credit card required to start
+    - generic [ref=e16]:
+      - heading "Everything Your League Needs" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - text: 📥
+          - heading "One-Click Import" [level=3] [ref=e20]
+          - paragraph [ref=e21]: Import from ESPN, Sleeper, Yahoo, or Fleaflicker. All your history in minutes.
+        - generic [ref=e22]:
+          - text: 🏆
+          - heading "Record Book" [level=3] [ref=e23]
+          - paragraph [ref=e24]: 50+ automated records. Highest scores, longest streaks, biggest blowouts, and more.
+        - generic [ref=e25]:
+          - text: 📊
+          - heading "All-Time Standings" [level=3] [ref=e26]
+          - paragraph [ref=e27]: See who really dominates with career stats, head-to-head records, and win percentages.
+        - generic [ref=e28]:
+          - text: 📈
+          - heading "Charts & Analytics" [level=3] [ref=e29]
+          - paragraph [ref=e30]: Scoring trends, season comparisons, and performance visualizations for every member.
+        - generic [ref=e31]:
+          - text: 🌐
+          - heading "Public League Page" [level=3] [ref=e32]
+          - paragraph [ref=e33]: A beautiful, shareable league website with standings, records, and season champions.
+        - generic [ref=e34]:
+          - text: 💰
+          - heading "Finances & Dues" [level=3] [ref=e35]
+          - paragraph [ref=e36]: Track league dues, payouts, and fines. Generate dues for all members in one click.
+        - generic [ref=e37]:
+          - text: 📰
+          - heading "Weekly Newsletters" [level=3] [ref=e38]
+          - paragraph [ref=e39]: Auto-generate weekly recap newsletters with highlights, scores, and trash talk ammo.
+        - generic [ref=e40]:
+          - text: 👥
+          - heading "Member Management" [level=3] [ref=e41]
+          - paragraph [ref=e42]: Invite members, assign roles, and manage your league with commissioner tools.
+        - generic [ref=e43]:
+          - text: 🔒
+          - heading "Your Data, Forever" [level=3] [ref=e44]
+          - paragraph [ref=e45]: We store your history permanently. Even if ESPN or Sleeper deletes it, you won't lose a thing.
+    - generic [ref=e47]:
+      - heading "Import From Anywhere" [level=2] [ref=e48]
+      - paragraph [ref=e49]: We support the 4 biggest fantasy football platforms.
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - text: 🏈
+          - paragraph [ref=e52]: ESPN
+        - generic [ref=e53]:
+          - text: 😴
+          - paragraph [ref=e54]: Sleeper
+        - generic [ref=e55]:
+          - text: 🟣
+          - paragraph [ref=e56]: Yahoo
+        - generic [ref=e57]:
+          - text: 🪲
+          - paragraph [ref=e58]: Fleaflicker
+    - generic [ref=e60]:
+      - heading "Simple Pricing" [level=2] [ref=e61]
+      - generic [ref=e62]:
+        - paragraph [ref=e63]: THE LEAGUE PRO
+        - paragraph [ref=e64]: $36
+        - paragraph [ref=e65]: /year per league
+        - list [ref=e66]:
+          - listitem [ref=e67]:
+            - generic [ref=e68]: ✓
+            - text: 7-day free trial
+          - listitem [ref=e69]:
+            - generic [ref=e70]: ✓
+            - text: Unlimited seasons & history
+          - listitem [ref=e71]:
+            - generic [ref=e72]: ✓
+            - text: All 4 platform imports
+          - listitem [ref=e73]:
+            - generic [ref=e74]: ✓
+            - text: Full record book
+          - listitem [ref=e75]:
+            - generic [ref=e76]: ✓
+            - text: Public league website
+          - listitem [ref=e77]:
+            - generic [ref=e78]: ✓
+            - text: Finance tracking
+          - listitem [ref=e79]:
+            - generic [ref=e80]: ✓
+            - text: Newsletter generator
+          - listitem [ref=e81]:
+            - generic [ref=e82]: ✓
+            - text: Unlimited members
+        - link "Start Free Trial" [ref=e83] [cursor=pointer]:
+          - /url: /sign-up
+          - button "Start Free Trial" [ref=e84]
+        - paragraph [ref=e85]: Commissioner pays for the whole league. That's it.
+    - generic [ref=e86]:
+      - heading "Ready to Preserve Your Legacy?" [level=2] [ref=e87]
+      - paragraph [ref=e88]: Your league deserves better than a forgotten ESPN page.
+      - link "Get Started Free" [ref=e89] [cursor=pointer]:
+        - /url: /sign-up
+        - button "Get Started Free" [ref=e90]
+    - contentinfo [ref=e91]:
+      - paragraph [ref=e92]: © 2026 TheLeague. Created by Thomas Jones.
+  - button "Open Next.js Dev Tools" [ref=e98] [cursor=pointer]:
+    - img [ref=e99]
+  - alert [ref=e102]
+```

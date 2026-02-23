@@ -8,7 +8,11 @@
     "espn-service": "python3 services/espn-importer/main.py",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.4",
@@ -26,6 +30,7 @@
     "tailwind-merge": "^3.4.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@prisma/client": "^7.4.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

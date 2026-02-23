@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 
 // Simple admin panel — only accessible by the app owner
 const ADMIN_EMAILS = [
-  "thomasjones@theleague.app",
-  // Add your email here
+  "tgjtgj7777@gmail.com",
 ];
 
 export default async function AdminPage() {
