@@ -38,6 +38,57 @@ export default function HomePage() {
         <p className="text-sm text-gray-400 mt-4">7-day free trial • $36/year • No credit card required to start</p>
       </section>
 
+      {/* Screenshots / Demo Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">See TheLeague in Action</h2>
+          
+          <div className="space-y-16">
+            {/* Dashboard Preview */}
+            <div className="bg-white rounded-xl p-8 shadow-lg border">
+              <div className="mb-4">
+                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Dashboard</span>
+                <h3 className="text-2xl font-bold mt-1">Your League Command Center</h3>
+              </div>
+              <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center text-gray-400">
+                📸 Dashboard Screenshot Coming Soon
+              </div>
+              <p className="mt-4 text-gray-600">
+                View all your leagues, quick stats, and recent activity at a glance.
+              </p>
+            </div>
+
+            {/* Record Book Preview */}
+            <div className="bg-white rounded-xl p-8 shadow-lg border">
+              <div className="mb-4">
+                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Record Book</span>
+                <h3 className="text-2xl font-bold mt-1">50+ Automated Records</h3>
+              </div>
+              <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center text-gray-400">
+                📸 Record Book Screenshot Coming Soon
+              </div>
+              <p className="mt-4 text-gray-600">
+                Highest scores, longest streaks, biggest blowouts, and more—automatically tracked forever.
+              </p>
+            </div>
+
+            {/* Public League Page Preview */}
+            <div className="bg-white rounded-xl p-8 shadow-lg border">
+              <div className="mb-4">
+                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Public League Page</span>
+                <h3 className="text-2xl font-bold mt-1">Beautiful League Website</h3>
+              </div>
+              <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center text-gray-400">
+                📸 League Page Screenshot Coming Soon
+              </div>
+              <p className="mt-4 text-gray-600">
+                A shareable public page with standings, champions, and records—no login required.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="bg-gray-50 py-20">
         <div className="max-w-5xl mx-auto px-6">

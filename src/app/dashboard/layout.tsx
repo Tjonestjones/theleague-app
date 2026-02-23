@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+import { MobileNav } from "@/components/mobile-nav";
 
 export default function DashboardLayout({
   children,
@@ -8,8 +9,11 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r bg-gray-50 p-4 flex flex-col">
+      {/* Mobile Navigation */}
+      <MobileNav />
+
+      {/* Sidebar - Hidden on Mobile */}
+      <aside className="hidden md:flex w-64 border-r bg-gray-50 p-4 flex-col">
         <div className="mb-8">
           <Link href="/dashboard" className="text-xl font-bold">
             TheLeague 🏈
@@ -43,8 +47,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-8">{children}</main>
+      {/* Main Content - Add padding for mobile hamburger */}
+      <main className="flex-1 p-8 md:p-8 pt-20 md:pt-8">{children}</main>
     </div>
   );
 }

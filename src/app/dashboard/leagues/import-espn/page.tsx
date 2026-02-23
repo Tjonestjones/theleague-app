@@ -182,16 +182,27 @@ function ImportESPNContent() {
               />
             </div>
 
-            <div className="rounded-md bg-gray-50 p-3">
-              <p className="text-sm font-medium mb-2">How to get ESPN cookies:</p>
-              <ol className="space-y-1 text-sm text-gray-500">
-                <li>1. Open ESPN Fantasy in an <strong>incognito/private window</strong></li>
-                <li>2. Log in to your ESPN account</li>
-                <li>3. Navigate to your league</li>
-                <li>4. Open DevTools (F12 or Cmd+Option+I)</li>
-                <li>5. Go to <strong>Application → Cookies → fantasy.espn.com</strong></li>
-                <li>6. Copy the values for <code className="rounded bg-gray-100 px-1">espn_s2</code> and <code className="rounded bg-gray-100 px-1">SWID</code></li>
-              </ol>
+            <div className="rounded-md bg-blue-50 border border-blue-200 p-4">
+              <p className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                🔑 Quick Guide: Get Your ESPN Cookies
+              </p>
+              <div className="space-y-2 text-sm text-blue-800">
+                <p>1. Open <strong>fantasy.espn.com</strong> in a new private/incognito window</p>
+                <p>2. Log in and open your league page</p>
+                <p>3. Press <kbd className="px-2 py-1 bg-white border rounded font-mono text-xs">F12</kbd> (or <kbd className="px-2 py-1 bg-white border rounded font-mono text-xs">⌘⌥I</kbd> on Mac) to open DevTools</p>
+                <p>4. Click <strong>Application</strong> tab → <strong>Cookies</strong> → <strong>fantasy.espn.com</strong></p>
+                <p>5. Find and copy <code className="px-1.5 py-0.5 bg-white border rounded font-mono">espn_s2</code> and <code className="px-1.5 py-0.5 bg-white border rounded font-mono">SWID</code></p>
+              </div>
+              <div className="mt-3 pt-3 border-t border-blue-200">
+                <a 
+                  href="https://www.youtube.com/results?search_query=how+to+get+espn+fantasy+cookies" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline font-medium"
+                >
+                  📺 Watch video tutorial on YouTube →
+                </a>
+              </div>
             </div>
           </div>
         </details>
