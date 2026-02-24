@@ -63,8 +63,16 @@ export default async function MemberDetailPage({
         </div>
       </div>
 
+      {/* Debug Info (temporary) */}
+      <div className="bg-slate-800 rounded-lg p-4 text-xs font-mono">
+        <p>Debug: latestTeam = {latestTeam ? 'found' : 'null'}</p>
+        <p>Debug: roster = {roster ? 'found' : 'null'}</p>
+        <p>Debug: spots count = {roster?.spots?.length ?? 0}</p>
+        {roster?.spots && <p>Debug: first spot position = {roster.spots[0]?.position}</p>}
+      </div>
+
       {/* Current Roster - PREMIUM SECTION */}
-      {roster && roster.spots.length > 0 && (
+      {roster && roster.spots.length > 0 ? (
         <div>
           <div className="mb-8">
             <div className="inline-flex items-center gap-3 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-full px-6 py-3 mb-4">
@@ -132,6 +140,17 @@ export default async function MemberDetailPage({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      ) : (
+        <div className="relative group">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-700/20 to-slate-800/20 rounded-3xl blur-3xl"></div>
+          <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-slate-500/30 rounded-3xl p-16 text-center shadow-2xl">
+            <div className="text-8xl mb-6">📋</div>
+            <h3 className="text-4xl font-black mb-4 text-white">No Roster Data Yet</h3>
+            <p className="text-xl text-slate-400 font-semibold max-w-xl mx-auto">
+              Import league data to see {member.displayName}&apos;s player roster and lineup history.
+            </p>
           </div>
         </div>
       )}
