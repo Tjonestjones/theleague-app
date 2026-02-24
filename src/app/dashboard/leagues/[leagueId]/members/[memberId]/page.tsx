@@ -64,8 +64,14 @@ export default async function MemberDetailPage({
       </div>
 
       {/* Debug Info (temporary) */}
-      <div className="bg-slate-800 rounded-lg p-4 text-xs font-mono">
+      <div className="bg-slate-800 rounded-lg p-4 text-xs font-mono space-y-1">
         <p>Debug: latestTeam = {latestTeam ? 'found' : 'null'}</p>
+        {latestTeam && (
+          <>
+            <p>Debug: latestTeam.season.year = {latestTeam.season.year}</p>
+            <p>Debug: latestTeam.rosters.length = {latestTeam.rosters.length}</p>
+          </>
+        )}
         <p>Debug: roster = {roster ? 'found' : 'null'}</p>
         <p>Debug: spots count = {roster?.spots?.length ?? 0}</p>
         {roster?.spots && <p>Debug: first spot position = {roster.spots[0]?.position}</p>}
@@ -146,11 +152,16 @@ export default async function MemberDetailPage({
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-700/20 to-slate-800/20 rounded-3xl blur-3xl"></div>
           <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-slate-500/30 rounded-3xl p-16 text-center shadow-2xl">
-            <div className="text-8xl mb-6">📋</div>
-            <h3 className="text-4xl font-black mb-4 text-white">No Roster Data Yet</h3>
-            <p className="text-xl text-slate-400 font-semibold max-w-xl mx-auto">
-              Import league data to see {member.displayName}&apos;s player roster and lineup history.
+            <div className="text-9xl mb-6">📋</div>
+            <h3 className="text-5xl font-black mb-6 text-white">No Roster Data Available</h3>
+            <p className="text-2xl text-slate-400 font-semibold max-w-2xl mx-auto leading-relaxed mb-8">
+              Roster details (players, positions, lineups) will appear here once you import league data from ESPN, Sleeper, Yahoo, or Fleaflicker.
             </p>
+            <Link href={`/dashboard/leagues/${leagueId}`}>
+              <button className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-105">
+                Go to League Dashboard →
+              </button>
+            </Link>
           </div>
         </div>
       )}
