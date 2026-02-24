@@ -1,0 +1,35 @@
+THELEAGUE APP SUMMARY
+Source basis: repo code/docs in /Users/thomasjones/Documents/theleague-app only.
+
+WHAT IT IS
+TheLeague is a web application for fantasy league management and history preservation.
+It combines league imports, member/season operations, finances, and recap generation.
+
+WHO IT'S FOR
+Primary persona: fantasy league commissioners and co-commissioners.
+
+WHAT IT DOES
+- Creates and manages leagues with member roles (commissioner/co-commissioner/member).
+- Imports season data from ESPN, Sleeper, Yahoo, and Fleaflicker (validate/import routes).
+- Stores historical league entities in PostgreSQL via Prisma (seasons/teams/weeks/matchups).
+- Supports invite links and invite acceptance flows for joining leagues.
+- Provides finance tracking: dues, payouts, fines, summaries, and dues generation.
+- Generates weekly newsletter content from completed matchup results.
+- Handles paid subscriptions using Stripe checkout and webhook routes.
+
+HOW IT WORKS (REPO-EVIDENCED ARCHITECTURE)
+- Frontend/UI: Next.js App Router pages under src/app/* for dashboard and league workflows.
+- Auth: Clerk middleware and helpers in src/middleware.ts and src/lib/auth.ts gate access.
+- API: Next.js route handlers in src/app/api/* enforce auth/roles and mutate/read data.
+- Data: Prisma ORM (prisma/schema.prisma) maps app models to PostgreSQL tables.
+- Import flow: /api/espn/import calls Python FastAPI service (services/espn-importer/main.py),
+  then upserts normalized season/team/week/matchup records into Prisma.
+- Integrations: Yahoo OAuth routes and Stripe billing routes are implemented.
+- Scheduled background worker runtime: Not found in repo.
+
+HOW TO RUN (MINIMAL GETTING STARTED)
+1. npm install
+2. pip3 install -r services/espn-importer/requirements.txt
+3. cp .env.local.example .env.local and set DATABASE_URL, Clerk keys, ESPN_SERVICE_URL
+4. npx prisma generate && npx prisma migrate dev
+5. npm run dev  (starts Next.js and ESPN importer service)
