@@ -27,7 +27,7 @@ export default async function MemberDetailPage({
       include: {
         season: { select: { year: true } },
         rosters: {
-          orderBy: { week: 'desc' },
+          orderBy: { weekNumber: 'desc' },
           take: 1,
           include: {
             spots: {
