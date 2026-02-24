@@ -392,6 +392,7 @@ export default function HomePage() {
             <p className="text-sm text-slate-500 font-semibold">
               Commissioner pays once. Entire league benefits. Forever.
             </p>
+            </div>
           </div>
         </div>
       </section>
