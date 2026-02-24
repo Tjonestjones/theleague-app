@@ -32,7 +32,10 @@ export default async function MemberDetailPage({
           include: {
             spots: {
               include: { player: true },
-              orderBy: { slotOrder: 'asc' },
+              orderBy: [
+                { isStarter: 'desc' },
+                { position: 'asc' },
+              ],
             },
           },
         },
@@ -81,23 +84,23 @@ export default async function MemberDetailPage({
                   {/* Position Badge */}
                   <div className="flex items-center justify-between mb-4">
                     <span className={`px-4 py-2 rounded-full font-black text-sm uppercase tracking-wider ${
-                      spot.slotPosition === 'QB' ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-500/30' :
-                      spot.slotPosition === 'RB' ? 'bg-green-500/20 text-green-400 border-2 border-green-500/30' :
-                      spot.slotPosition === 'WR' ? 'bg-blue-500/20 text-blue-400 border-2 border-blue-500/30' :
-                      spot.slotPosition === 'TE' ? 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30' :
-                      spot.slotPosition === 'K' ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/30' :
-                      spot.slotPosition === 'DEF' ? 'bg-red-500/20 text-red-400 border-2 border-red-500/30' :
+                      spot.position === 'QB' ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-500/30' :
+                      spot.position === 'RB' ? 'bg-green-500/20 text-green-400 border-2 border-green-500/30' :
+                      spot.position === 'WR' ? 'bg-blue-500/20 text-blue-400 border-2 border-blue-500/30' :
+                      spot.position === 'TE' ? 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30' :
+                      spot.position === 'K' ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/30' :
+                      spot.position === 'DEF' ? 'bg-red-500/20 text-red-400 border-2 border-red-500/30' :
                       'bg-slate-600/20 text-slate-400 border-2 border-slate-500/30'
                     }`}>
-                      {spot.slotPosition}
+                      {spot.position}
                     </span>
                     <span className="text-4xl group-hover:scale-125 transition-transform">
-                      {spot.slotPosition === 'QB' ? '🎯' :
-                       spot.slotPosition === 'RB' ? '💨' :
-                       spot.slotPosition === 'WR' ? '⚡' :
-                       spot.slotPosition === 'TE' ? '🎪' :
-                       spot.slotPosition === 'K' ? '🦵' :
-                       spot.slotPosition === 'DEF' ? '🛡️' : '👤'}
+                      {spot.position === 'QB' ? '🎯' :
+                       spot.position === 'RB' ? '💨' :
+                       spot.position === 'WR' ? '⚡' :
+                       spot.position === 'TE' ? '🎪' :
+                       spot.position === 'K' ? '🦵' :
+                       spot.position === 'DEF' ? '🛡️' : '👤'}
                     </span>
                   </div>
 
