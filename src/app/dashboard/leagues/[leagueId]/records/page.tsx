@@ -43,36 +43,45 @@ export default async function RecordBookPage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <Link href={`/dashboard/leagues/${leagueId}`} className="text-sm text-gray-500 hover:text-gray-900">
+      {/* Header - ESPN Style */}
+      <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-l-4 border-primary p-6 rounded-lg">
+        <Link href={`/dashboard/leagues/${leagueId}`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">
           ← Back to {league.name}
         </Link>
-        <h1 className="text-3xl font-bold mt-1">🏆 Record Book</h1>
-        <p className="text-gray-500 mt-1">{records.length} records across {categories.size} categories</p>
+        <h1 className="text-4xl font-bold mt-2">🏆 Record Book</h1>
+        <p className="text-muted-foreground mt-2 text-lg">
+          <span className="font-bold text-foreground">{records.length}</span> records across <span className="font-bold text-foreground">{categories.size}</span> categories
+        </p>
       </div>
 
       {records.length === 0 ? (
-        <div className="border-2 border-dashed rounded-lg p-12 text-center">
-          <p className="text-xl font-semibold mb-2">No records yet</p>
-          <p className="text-gray-500">Import some seasons and the record book will populate automatically.</p>
+        <div className="bg-card border-2 border-dashed border-border rounded-xl p-16 text-center">
+          <span className="text-6xl mb-4 block">📊</span>
+          <p className="text-2xl font-bold mb-3">No records yet</p>
+          <p className="text-muted-foreground text-lg">Import some seasons and the record book will populate automatically.</p>
         </div>
       ) : (
         Array.from(categories.entries()).map(([category, recs]) => (
-          <div key={category}>
-            <h2 className="text-xl font-semibold mb-4">
-              {categoryIcons[category] ?? "📊"} {category}
-            </h2>
-            <div className="grid gap-3">
+          <div key={category} className="space-y-4">
+            {/* Category Header with Icon Badge */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-3xl">{categoryIcons[category] ?? "📊"}</span>
+              <h2 className="text-2xl font-bold text-foreground">{category}</h2>
+              <span className="text-sm font-semibold text-muted-foreground">({recs.length})</span>
+            </div>
+            
+            {/* Records Grid - ESPN Style Cards */}
+            <div className="grid gap-4">
               {recs.map((r, i) => (
-                <div key={i} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">{r.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{r.detail}</p>
+                <div key={i} className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-lg transition-all group">
+                  <div className="flex items-start justify-between gap-6">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{r.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{r.detail}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-600">{r.value}</p>
-                      <p className="text-sm font-medium">{r.holder}</p>
+                    <div className="text-right shrink-0">
+                      <p className="text-5xl font-bold text-primary mb-2">{r.value}</p>
+                      <p className="text-sm font-bold text-foreground bg-muted px-3 py-1 rounded-full inline-block">{r.holder}</p>
                     </div>
                   </div>
                 </div>

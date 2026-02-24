@@ -1,0 +1,54 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - button "Sign in" [ref=e3]
+    - button "Sign up" [ref=e4]
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e10]:
+        - heading "Sign in to TheLeague" [level=1] [ref=e11]
+        - paragraph [ref=e12]: Welcome back! Please sign in to continue
+      - generic [ref=e13]:
+        - button "Sign in with Google Continue with Google" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]:
+            - img "Sign in with Google" [ref=e19]
+            - generic [ref=e20]: Continue with Google
+        - paragraph [ref=e23]: or
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e29]:
+              - generic [ref=e31]: Email address
+              - textbox "Email address" [ref=e32]:
+                - /placeholder: Enter your email address
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic: Password
+                  - generic:
+                    - textbox "Password":
+                      - /placeholder: Enter your password
+                    - button "Show password":
+                      - img
+          - button "Continue" [ref=e35] [cursor=pointer]:
+            - generic [ref=e36]:
+              - text: Continue
+              - img [ref=e37]
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]: Don’t have an account?
+        - link "Sign up" [ref=e42] [cursor=pointer]:
+          - /url: http://localhost:3000/sign-up#/?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fleagues%2Fimport-sleeper
+      - generic [ref=e44]:
+        - generic [ref=e46]:
+          - paragraph [ref=e47]: Secured by
+          - link "Clerk logo" [ref=e48] [cursor=pointer]:
+            - /url: https://go.clerk.com/components
+            - img [ref=e49]
+        - paragraph [ref=e54]: Development mode
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]
+```
