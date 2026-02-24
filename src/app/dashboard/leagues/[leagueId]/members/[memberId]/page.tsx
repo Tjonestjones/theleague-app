@@ -15,58 +15,167 @@ export default async function MemberDetailPage({
 
   const { leagueId, memberId } = await params;
 
-  const [league, member] = await Promise.all([
+  const [league, member, latestTeam] = await Promise.all([
     prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } }),
     prisma.member.findUnique({ where: { id: memberId }, select: { displayName: true } }),
+    prisma.team.findFirst({
+      where: {
+        memberId,
+        season: { leagueId },
+      },
+      orderBy: { season: { year: 'desc' } },
+      include: {
+        season: { select: { year: true } },
+        rosters: {
+          orderBy: { week: 'desc' },
+          take: 1,
+          include: {
+            spots: {
+              include: { player: true },
+              orderBy: { slotOrder: 'asc' },
+            },
+          },
+        },
+      },
+    }),
   ]);
 
   if (!league || !member) return <div>Not found</div>;
 
   const stats = await getMemberCareerStats(leagueId, memberId);
+  const roster = latestTeam?.rosters[0];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <Link href={`/dashboard/leagues/${leagueId}/members`} className="text-sm text-gray-500 hover:text-gray-900">
-          ← Back to Members
-        </Link>
-        <h1 className="text-3xl font-bold mt-1">{member.displayName}</h1>
-        <p className="text-gray-500">{league.name}</p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12 space-y-12">
+      {/* Header */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-green-700/10 to-emerald-900/20 rounded-3xl blur-3xl"></div>
+        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-10 shadow-2xl">
+          <Link href={`/dashboard/leagues/${leagueId}/members`} className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold mb-6 transition-colors">
+            <span className="text-2xl">←</span>
+            <span>Back to Members</span>
+          </Link>
+          <h1 className="text-6xl md:text-7xl font-black tracking-tight mb-3">{member.displayName}</h1>
+          <p className="text-2xl text-slate-400 font-semibold">{league.name}</p>
+        </div>
       </div>
 
-      {/* Career Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Record</p>
-          <p className="text-2xl font-bold">{stats.totalWins}-{stats.totalLosses}{stats.totalTies > 0 ? `-${stats.totalTies}` : ""}</p>
+      {/* Current Roster - PREMIUM SECTION */}
+      {roster && roster.spots.length > 0 && (
+        <div>
+          <div className="mb-8">
+            <div className="inline-flex items-center gap-3 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-full px-6 py-3 mb-4">
+              <span className="text-3xl">🏈</span>
+              <span className="font-black text-emerald-400 uppercase tracking-wider">Current Roster</span>
+              <span className="text-slate-400 font-bold">• {latestTeam.season.year}</span>
+            </div>
+            <h2 className="text-5xl font-black text-white">Starting Lineup</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {roster.spots.map((spot, idx) => (
+              <div key={spot.id} className="group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-6 border-2 border-emerald-500/20 hover:border-emerald-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-emerald-500/20">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative z-10">
+                  {/* Position Badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`px-4 py-2 rounded-full font-black text-sm uppercase tracking-wider ${
+                      spot.slotPosition === 'QB' ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-500/30' :
+                      spot.slotPosition === 'RB' ? 'bg-green-500/20 text-green-400 border-2 border-green-500/30' :
+                      spot.slotPosition === 'WR' ? 'bg-blue-500/20 text-blue-400 border-2 border-blue-500/30' :
+                      spot.slotPosition === 'TE' ? 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30' :
+                      spot.slotPosition === 'K' ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/30' :
+                      spot.slotPosition === 'DEF' ? 'bg-red-500/20 text-red-400 border-2 border-red-500/30' :
+                      'bg-slate-600/20 text-slate-400 border-2 border-slate-500/30'
+                    }`}>
+                      {spot.slotPosition}
+                    </span>
+                    <span className="text-4xl group-hover:scale-125 transition-transform">
+                      {spot.slotPosition === 'QB' ? '🎯' :
+                       spot.slotPosition === 'RB' ? '💨' :
+                       spot.slotPosition === 'WR' ? '⚡' :
+                       spot.slotPosition === 'TE' ? '🎪' :
+                       spot.slotPosition === 'K' ? '🦵' :
+                       spot.slotPosition === 'DEF' ? '🛡️' : '👤'}
+                    </span>
+                  </div>
+
+                  {/* Player Name */}
+                  <h3 className="text-2xl font-black text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    {spot.player?.name || 'Empty Slot'}
+                  </h3>
+
+                  {/* Player Details */}
+                  {spot.player && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <span className="font-semibold">Position:</span>
+                        <span className="font-bold text-white">{spot.player.position}</span>
+                      </div>
+                      {spot.player.team && (
+                        <div className="flex items-center gap-2 text-slate-400">
+                          <span className="font-semibold">Team:</span>
+                          <span className="font-bold text-white">{spot.player.team}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Shine effect */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Win %</p>
-          <p className="text-2xl font-bold">{(stats.winPct * 100).toFixed(1)}%</p>
+      )}
+
+      {/* Career Stats - PREMIUM CARDS */}
+      <div>
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-3 bg-yellow-500/20 border-2 border-yellow-500/30 rounded-full px-6 py-3 mb-4">
+            <span className="text-3xl">📊</span>
+            <span className="font-black text-yellow-400 uppercase tracking-wider">Career Stats</span>
+          </div>
+          <h2 className="text-5xl font-black text-white">All-Time Performance</h2>
         </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Total Points</p>
-          <p className="text-2xl font-bold">{stats.totalPF.toFixed(0)}</p>
-        </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Avg/Game</p>
-          <p className="text-2xl font-bold">{stats.avgPF.toFixed(1)}</p>
-        </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Best Week</p>
-          <p className="text-2xl font-bold text-green-600">{stats.highestWeekScore.toFixed(1)}</p>
-        </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Worst Week</p>
-          <p className="text-2xl font-bold text-red-600">{stats.lowestWeekScore.toFixed(1)}</p>
-        </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Points Against</p>
-          <p className="text-2xl font-bold">{stats.totalPA.toFixed(0)}</p>
-        </div>
-        <div className="border rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Seasons</p>
-          <p className="text-2xl font-bold">{stats.seasons.length}</p>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="group relative bg-gradient-to-br from-emerald-900/30 to-green-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-emerald-500/20 hover:border-emerald-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-emerald-400 uppercase tracking-wider mb-3">Record</p>
+            <p className="text-5xl font-black text-white">{stats.totalWins}-{stats.totalLosses}{stats.totalTies > 0 ? `-${stats.totalTies}` : ""}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-blue-900/30 to-indigo-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-blue-500/20 hover:border-blue-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-blue-400 uppercase tracking-wider mb-3">Win %</p>
+            <p className="text-5xl font-black text-white">{(stats.winPct * 100).toFixed(1)}%</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-purple-400 uppercase tracking-wider mb-3">Total Points</p>
+            <p className="text-5xl font-black text-white">{stats.totalPF.toFixed(0)}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-cyan-900/30 to-blue-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-cyan-500/20 hover:border-cyan-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-cyan-400 uppercase tracking-wider mb-3">Avg/Game</p>
+            <p className="text-5xl font-black text-white">{stats.avgPF.toFixed(1)}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-green-900/30 to-emerald-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-green-500/20 hover:border-green-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-green-400 uppercase tracking-wider mb-3">Best Week</p>
+            <p className="text-5xl font-black text-green-400">{stats.highestWeekScore.toFixed(1)}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-red-900/30 to-orange-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-red-500/20 hover:border-red-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-red-400 uppercase tracking-wider mb-3">Worst Week</p>
+            <p className="text-5xl font-black text-red-400">{stats.lowestWeekScore.toFixed(1)}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-slate-500/20 hover:border-slate-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-slate-400 uppercase tracking-wider mb-3">Points Against</p>
+            <p className="text-5xl font-black text-white">{stats.totalPA.toFixed(0)}</p>
+          </div>
+          <div className="group relative bg-gradient-to-br from-yellow-900/30 to-amber-900/30 backdrop-blur-xl rounded-3xl p-6 text-center border-2 border-yellow-500/20 hover:border-yellow-500/50 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+            <p className="text-sm font-black text-yellow-400 uppercase tracking-wider mb-3">Seasons</p>
+            <p className="text-5xl font-black text-white">{stats.seasons.length}</p>
+          </div>
         </div>
       </div>
 
@@ -81,32 +190,34 @@ export default async function MemberDetailPage({
         }))}
       />
 
-      {/* Season Breakdown */}
+      {/* Season Breakdown - PREMIUM TABLE */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Season Breakdown</h2>
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+        <div className="mb-8">
+          <h2 className="text-5xl font-black text-white">Season Breakdown</h2>
+        </div>
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-emerald-500/20 shadow-2xl">
+          <table className="w-full">
+            <thead className="bg-slate-900/50 border-b-2 border-emerald-500/20">
               <tr>
-                <th className="text-left px-4 py-3 font-medium">Year</th>
-                <th className="text-left px-4 py-3 font-medium">Team</th>
-                <th className="text-center px-4 py-3 font-medium">W-L-T</th>
-                <th className="text-right px-4 py-3 font-medium">PF</th>
-                <th className="text-right px-4 py-3 font-medium">PA</th>
-                <th className="text-right px-4 py-3 font-medium">High</th>
-                <th className="text-right px-4 py-3 font-medium">Low</th>
+                <th className="text-left px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Year</th>
+                <th className="text-left px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Team</th>
+                <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">W-L-T</th>
+                <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">PF</th>
+                <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">PA</th>
+                <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">High</th>
+                <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Low</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
-              {stats.seasons.map((s) => (
-                <tr key={s.year} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{s.year}</td>
-                  <td className="px-4 py-3">{s.teamName}</td>
-                  <td className="text-center px-4 py-3">{s.wins}-{s.losses}{s.ties > 0 ? `-${s.ties}` : ""}</td>
-                  <td className="text-right px-4 py-3">{s.pointsFor.toFixed(1)}</td>
-                  <td className="text-right px-4 py-3">{s.pointsAgainst.toFixed(1)}</td>
-                  <td className="text-right px-4 py-3 text-green-600">{s.highWeek.toFixed(1)}</td>
-                  <td className="text-right px-4 py-3 text-red-600">{s.lowWeek.toFixed(1)}</td>
+            <tbody className="divide-y divide-slate-700/50">
+              {stats.seasons.map((s, idx) => (
+                <tr key={s.year} className="hover:bg-slate-700/30 transition-colors">
+                  <td className="px-6 py-5 font-black text-white text-lg">{s.year}</td>
+                  <td className="px-6 py-5 font-semibold text-slate-300">{s.teamName}</td>
+                  <td className="text-center px-6 py-5 font-bold text-white">{s.wins}-{s.losses}{s.ties > 0 ? `-${s.ties}` : ""}</td>
+                  <td className="text-right px-6 py-5 font-bold text-white">{s.pointsFor.toFixed(1)}</td>
+                  <td className="text-right px-6 py-5 font-bold text-slate-400">{s.pointsAgainst.toFixed(1)}</td>
+                  <td className="text-right px-6 py-5 font-black text-green-400">{s.highWeek.toFixed(1)}</td>
+                  <td className="text-right px-6 py-5 font-black text-red-400">{s.lowWeek.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>
@@ -114,34 +225,36 @@ export default async function MemberDetailPage({
         </div>
       </div>
 
-      {/* Head-to-Head */}
+      {/* Head-to-Head - PREMIUM TABLE */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Head-to-Head Records</h2>
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+        <div className="mb-8">
+          <h2 className="text-5xl font-black text-white">Head-to-Head Records</h2>
+        </div>
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-yellow-500/20 shadow-2xl">
+          <table className="w-full">
+            <thead className="bg-slate-900/50 border-b-2 border-yellow-500/20">
               <tr>
-                <th className="text-left px-4 py-3 font-medium">Opponent</th>
-                <th className="text-center px-4 py-3 font-medium">W</th>
-                <th className="text-center px-4 py-3 font-medium">L</th>
-                <th className="text-center px-4 py-3 font-medium">T</th>
-                <th className="text-right px-4 py-3 font-medium">PF</th>
-                <th className="text-right px-4 py-3 font-medium">PA</th>
+                <th className="text-left px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">Opponent</th>
+                <th className="text-center px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">W</th>
+                <th className="text-center px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">L</th>
+                <th className="text-center px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">T</th>
+                <th className="text-right px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">PF</th>
+                <th className="text-right px-6 py-5 font-black text-yellow-400 uppercase tracking-wider text-sm">PA</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-slate-700/50">
               {stats.headToHead.map((h) => (
-                <tr key={h.opponentId} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <Link href={`/dashboard/leagues/${leagueId}/members/${h.opponentId}`} className="text-blue-600 hover:underline">
+                <tr key={h.opponentId} className="hover:bg-slate-700/30 transition-colors">
+                  <td className="px-6 py-5">
+                    <Link href={`/dashboard/leagues/${leagueId}/members/${h.opponentId}`} className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
                       {h.opponentName}
                     </Link>
                   </td>
-                  <td className="text-center px-4 py-3 text-green-600 font-medium">{h.wins}</td>
-                  <td className="text-center px-4 py-3 text-red-600">{h.losses}</td>
-                  <td className="text-center px-4 py-3 text-gray-500">{h.ties}</td>
-                  <td className="text-right px-4 py-3">{h.totalPointsFor.toFixed(1)}</td>
-                  <td className="text-right px-4 py-3">{h.totalPointsAgainst.toFixed(1)}</td>
+                  <td className="text-center px-6 py-5 text-green-400 font-black text-xl">{h.wins}</td>
+                  <td className="text-center px-6 py-5 text-red-400 font-black text-xl">{h.losses}</td>
+                  <td className="text-center px-6 py-5 text-slate-400 font-bold">{h.ties}</td>
+                  <td className="text-right px-6 py-5 font-bold text-white">{h.totalPointsFor.toFixed(1)}</td>
+                  <td className="text-right px-6 py-5 font-bold text-slate-400">{h.totalPointsAgainst.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>
