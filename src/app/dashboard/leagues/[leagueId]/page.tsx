@@ -52,6 +52,7 @@ export default async function LeagueDetailPage({
   const navItems = [
     { href: `/dashboard/leagues/${leagueId}/history`, icon: "📊", label: "History", color: "emerald" },
     { href: `/dashboard/leagues/${leagueId}/records`, icon: "🏆", label: "Records", color: "yellow" },
+    { href: `/dashboard/leagues/${leagueId}/analytics`, icon: "🎯", label: "Analytics", color: "cyan" },
     { href: `/dashboard/leagues/${leagueId}/members`, icon: "👥", label: "Members", color: "blue" },
     { href: `/dashboard/leagues/${leagueId}/finances`, icon: "💰", label: "Finances", color: "green" },
     { href: `/dashboard/leagues/${leagueId}/newsletter`, icon: "📰", label: "Newsletter", color: "purple" },
@@ -60,6 +61,7 @@ export default async function LeagueDetailPage({
   const colorMap: Record<string, string> = {
     emerald: "hover:bg-emerald-500/20 hover:border-emerald-500/30 hover:text-emerald-400",
     yellow: "hover:bg-yellow-500/20 hover:border-yellow-500/30 hover:text-yellow-400",
+    cyan: "hover:bg-cyan-500/20 hover:border-cyan-500/30 hover:text-cyan-400",
     blue: "hover:bg-blue-500/20 hover:border-blue-500/30 hover:text-blue-400",
     green: "hover:bg-green-500/20 hover:border-green-500/30 hover:text-green-400",
     purple: "hover:bg-purple-500/20 hover:border-purple-500/30 hover:text-purple-400",
@@ -122,7 +124,7 @@ export default async function LeagueDetailPage({
       </div>
 
       {/* Quick Navigation */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {navItems.map((item) => (
           <Link key={item.href} href={item.href}>
             <div className={`group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl p-6 border-2 border-transparent transition-all duration-500 transform hover:scale-105 shadow-xl cursor-pointer text-center ${colorMap[item.color]}`}>
