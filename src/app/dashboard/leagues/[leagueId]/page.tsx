@@ -34,11 +34,14 @@ export default async function LeagueDetailPage({
 
   if (!league) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold">League not found</h2>
-        <Link href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block">
-          Back to Dashboard
-        </Link>
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-9xl mb-6">🔍</div>
+          <h2 className="text-4xl font-black mb-4">League Not Found</h2>
+          <Link href="/dashboard" className="text-emerald-400 hover:text-emerald-300 font-bold text-lg transition-colors">
+            ← Back to Dashboard
+          </Link>
+        </div>
       </div>
     );
   }
@@ -46,92 +49,163 @@ export default async function LeagueDetailPage({
   const currentMember = league.members.find((m) => m.userId === user.id);
   const isCommissioner = currentMember?.role === "COMMISSIONER" || currentMember?.role === "CO_COMMISSIONER";
 
+  const navItems = [
+    { href: `/dashboard/leagues/${leagueId}/history`, icon: "📊", label: "History", color: "emerald" },
+    { href: `/dashboard/leagues/${leagueId}/records`, icon: "🏆", label: "Records", color: "yellow" },
+    { href: `/dashboard/leagues/${leagueId}/members`, icon: "👥", label: "Members", color: "blue" },
+    { href: `/dashboard/leagues/${leagueId}/finances`, icon: "💰", label: "Finances", color: "green" },
+    { href: `/dashboard/leagues/${leagueId}/newsletter`, icon: "📰", label: "Newsletter", color: "purple" },
+  ];
+
+  const colorMap: Record<string, string> = {
+    emerald: "hover:bg-emerald-500/20 hover:border-emerald-500/30 hover:text-emerald-400",
+    yellow: "hover:bg-yellow-500/20 hover:border-yellow-500/30 hover:text-yellow-400",
+    blue: "hover:bg-blue-500/20 hover:border-blue-500/30 hover:text-blue-400",
+    green: "hover:bg-green-500/20 hover:border-green-500/30 hover:text-green-400",
+    purple: "hover:bg-purple-500/20 hover:border-purple-500/30 hover:text-purple-400",
+    slate: "hover:bg-slate-500/20 hover:border-slate-500/30 hover:text-slate-400",
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{league.name}</h1>
-          {league.description && (
-            <p className="text-gray-500 mt-1">{league.description}</p>
-          )}
-          <div className="flex gap-3 mt-2 text-sm text-gray-500">
-            <span>{league.sport}</span>
-            <span>•</span>
-            <span>{league.members.length} members</span>
-            <span>•</span>
-            <span>{league.seasons.length} seasons</span>
-            <span>•</span>
-            <span className="capitalize">{league.visibility.toLowerCase()}</span>
-            {league.visibility !== "PRIVATE" && (
-              <>
-                <span>•</span>
-                <a href={`/league/${league.slug}`} target="_blank" className="text-blue-600 hover:underline">
-                  Public Page ↗
-                </a>
-              </>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12 space-y-12">
+      {/* League Header */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-green-700/10 to-emerald-900/20 rounded-3xl blur-3xl"></div>
+        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-10 shadow-2xl">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold mb-6 transition-colors">
+            <span className="text-2xl">←</span>
+            <span>Back to Dashboard</span>
+          </Link>
+
+          <div className="flex items-start justify-between flex-wrap gap-6">
+            <div>
+              <h1 className="text-6xl md:text-7xl font-black tracking-tight mb-3">{league.name}</h1>
+              {league.description && (
+                <p className="text-xl text-slate-400 font-semibold mb-4">{league.description}</p>
+              )}
+              <div className="flex flex-wrap gap-4 items-center">
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-400 font-bold text-sm uppercase tracking-wider">
+                  🏈 {league.sport}
+                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/30 rounded-full text-slate-300 font-bold text-sm">
+                  👥 {league.members.length} Members
+                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/30 rounded-full text-slate-300 font-bold text-sm">
+                  📅 {league.seasons.length} Seasons
+                </span>
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm ${
+                  league.visibility === "PUBLIC"
+                    ? "bg-green-500/20 border border-green-500/30 text-green-400"
+                    : league.visibility === "UNLISTED"
+                    ? "bg-yellow-500/20 border border-yellow-500/30 text-yellow-400"
+                    : "bg-slate-700/50 border border-slate-600/30 text-slate-400"
+                }`}>
+                  {league.visibility === "PUBLIC" ? "🌐" : league.visibility === "UNLISTED" ? "🔗" : "🔒"} {league.visibility.charAt(0) + league.visibility.slice(1).toLowerCase()}
+                </span>
+                {league.visibility !== "PRIVATE" && (
+                  <a href={`/league/${league.slug}`} target="_blank" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-400 font-bold text-sm hover:bg-blue-500/30 transition-colors">
+                    Public Page ↗
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {isCommissioner && (
+              <Link href={`/dashboard/leagues/${leagueId}/settings`}>
+                <button className="px-6 py-3 bg-slate-700/50 border-2 border-slate-600/30 text-slate-300 rounded-xl hover:bg-slate-600/50 hover:border-slate-500/50 font-bold transition-all">
+                  ⚙️ Settings
+                </button>
+              </Link>
             )}
           </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Link href={`/dashboard/leagues/${leagueId}/history`}>
-            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">📊 History</button>
+      </div>
+
+      {/* Quick Navigation */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {navItems.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <div className={`group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl p-6 border-2 border-transparent transition-all duration-500 transform hover:scale-105 shadow-xl cursor-pointer text-center ${colorMap[item.color]}`}>
+              <span className="text-4xl block mb-3 group-hover:scale-125 transition-transform duration-500">{item.icon}</span>
+              <span className="font-black text-white text-lg">{item.label}</span>
+            </div>
           </Link>
-          <Link href={`/dashboard/leagues/${leagueId}/records`}>
-            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">🏆 Records</button>
-          </Link>
-          <Link href={`/dashboard/leagues/${leagueId}/members`}>
-            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">👥 Members</button>
-          </Link>
-          <Link href={`/dashboard/leagues/${leagueId}/finances`}>
-            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">💰 Finances</button>
-          </Link>
-          <Link href={`/dashboard/leagues/${leagueId}/newsletter`}>
-            <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">📰 Newsletter</button>
-          </Link>
-          {isCommissioner && (
-            <Link href={`/dashboard/leagues/${leagueId}/settings`}>
-              <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">⚙️ Settings</button>
-            </Link>
-          )}
-        </div>
+        ))}
       </div>
 
       {/* Seasons */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Seasons</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="inline-flex items-center gap-3 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-full px-6 py-3 mb-4">
+              <span className="text-3xl">📅</span>
+              <span className="font-black text-emerald-400 uppercase tracking-wider">Seasons</span>
+            </div>
+            <h2 className="text-5xl font-black text-white">Imported Data</h2>
+          </div>
           {isCommissioner && (
             <Link href={`/dashboard/leagues/import?leagueId=${leagueId}`}>
-              <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                📥 Import Data
+              <button className="group relative px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden">
+                <span className="relative z-10">📥 Import Data</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </Link>
           )}
         </div>
+
         {league.seasons.length === 0 ? (
-          <div className="border rounded-lg p-8 text-center text-gray-500">
-            <p className="text-lg mb-2">No seasons imported yet</p>
-            <p className="text-sm">Import your first season from ESPN, Sleeper, or another platform.</p>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent rounded-3xl blur-3xl"></div>
+            <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-emerald-500/30 rounded-3xl p-16 text-center shadow-2xl">
+              <div className="text-9xl mb-6 animate-bounce">📥</div>
+              <h3 className="text-4xl font-black mb-4 text-white">No Seasons Imported Yet</h3>
+              <p className="text-xl text-slate-400 font-semibold max-w-2xl mx-auto mb-8">
+                Import your first season from ESPN, Sleeper, Yahoo, or Fleaflicker to unlock your league&apos;s full history.
+              </p>
+              {isCommissioner && (
+                <Link href={`/dashboard/leagues/import?leagueId=${leagueId}`}>
+                  <button className="px-10 py-5 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-2xl font-black text-xl shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-110">
+                    Import Your First Season →
+                  </button>
+                </Link>
+              )}
+            </div>
           </div>
         ) : (
           <div className="grid gap-4">
             {league.seasons.map((season) => (
-              <div key={season.id} className="border rounded-lg p-4 flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">{season.year} Season</h3>
-                  <p className="text-sm text-gray-500">
-                    {season.platform ?? "Manual"} • {season._count.teams} teams • {season._count.weeks} weeks
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    season.syncStatus === "COMPLETED" ? "bg-green-100 text-green-700" :
-                    season.syncStatus === "SYNCING" ? "bg-yellow-100 text-yellow-700" :
-                    season.syncStatus === "FAILED" ? "bg-red-100 text-red-700" :
-                    "bg-gray-100 text-gray-700"
+              <div key={season.id} className="group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl p-6 border-2 border-emerald-500/20 hover:border-emerald-500/50 transition-all duration-500 shadow-xl hover:shadow-emerald-500/20">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="text-5xl font-black text-white group-hover:text-emerald-400 transition-colors">
+                      {season.year}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-xl text-white">{season.year} Season</h3>
+                      <div className="flex items-center gap-4 mt-1">
+                        <span className="text-slate-400 font-semibold">
+                          {season.platform ? (
+                            <span className="inline-flex items-center gap-1">
+                              {season.platform === "ESPN" ? "🏈" : season.platform === "SLEEPER" ? "😴" : season.platform === "YAHOO" ? "🟣" : "🪲"}
+                              {season.platform}
+                            </span>
+                          ) : "Manual"}
+                        </span>
+                        <span className="text-slate-600">•</span>
+                        <span className="text-slate-400 font-semibold">{season._count.teams} teams</span>
+                        <span className="text-slate-600">•</span>
+                        <span className="text-slate-400 font-semibold">{season._count.weeks} weeks</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-xs px-4 py-2 rounded-full font-black uppercase tracking-wider ${
+                    season.syncStatus === "COMPLETED" ? "bg-green-500/20 text-green-400 border-2 border-green-500/30" :
+                    season.syncStatus === "SYNCING" ? "bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30 animate-pulse" :
+                    season.syncStatus === "FAILED" ? "bg-red-500/20 text-red-400 border-2 border-red-500/30" :
+                    "bg-slate-700/50 text-slate-400 border-2 border-slate-600/30"
                   }`}>
-                    {season.syncStatus}
+                    {season.syncStatus === "COMPLETED" ? "✓ " : season.syncStatus === "SYNCING" ? "⟳ " : season.syncStatus === "FAILED" ? "✗ " : ""}{season.syncStatus}
                   </span>
                 </div>
               </div>

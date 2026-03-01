@@ -2,15 +2,15 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function ImportYahooPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white flex items-center justify-center">
+        <div className="text-6xl animate-spin">🟣</div>
+      </div>
+    }>
       <ImportYahooContent />
     </Suspense>
   );
@@ -28,7 +28,6 @@ function ImportYahooContent() {
   const [leagueInfo, setLeagueInfo] = useState<Record<string, unknown> | null>(null);
 
   const handleConnect = () => {
-    // Redirect to Yahoo OAuth
     window.location.href = "/api/yahoo/auth";
   };
 
@@ -95,114 +94,125 @@ function ImportYahooContent() {
   const isLoading = status === "validating" || status === "importing";
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-8">
-        <Link
-          href={leagueId ? `/dashboard/leagues/${leagueId}` : "/dashboard"}
-          className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-900"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Link>
-        <h1 className="text-3xl font-bold">Import from Yahoo 🟣</h1>
-        <p className="mt-2 text-gray-500">
-          Yahoo requires OAuth authentication. Connect your account first.
-        </p>
-      </div>
-
-      <div className="space-y-6 rounded-lg border bg-white p-6">
-        {/* Step 1: Connect Yahoo */}
-        <div className="space-y-3">
-          <h3 className="font-semibold">Step 1: Connect Yahoo Account</h3>
-          <Button onClick={handleConnect} variant={connected ? "outline" : "default"}>
-            {connected ? "✓ Connected — Reconnect" : "Connect Yahoo Account"}
-          </Button>
-          {!process.env.NEXT_PUBLIC_YAHOO_CLIENT_ID && !connected && (
-            <p className="text-xs text-gray-500">
-              Requires YAHOO_CLIENT_ID and YAHOO_CLIENT_SECRET in .env.local.
-              Register at <a href="https://developer.yahoo.com/apps/" className="underline" target="_blank">developer.yahoo.com</a>.
-            </p>
-          )}
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12">
+      <div className="max-w-2xl mx-auto space-y-10">
+        {/* Header */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-purple-700/10 to-purple-900/20 rounded-3xl blur-3xl"></div>
+          <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl p-10 shadow-2xl">
+            <Link href={leagueId ? `/dashboard/leagues/${leagueId}` : "/dashboard/leagues/import"} className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-bold mb-4 transition-colors">
+              <span className="text-2xl">←</span>
+              <span>{leagueId ? "Back to League" : "Back to Platforms"}</span>
+            </Link>
+            <h1 className="text-6xl md:text-7xl font-black tracking-tight mb-3">🟣 Import Yahoo</h1>
+            <p className="text-2xl text-slate-400 font-semibold">Yahoo requires OAuth authentication. Connect your account first.</p>
+            {!leagueId && (
+              <div className="mt-4 p-4 bg-yellow-500/20 border-2 border-yellow-500/30 rounded-2xl text-yellow-400 font-bold flex items-center gap-3">
+                <span className="text-xl">⚠️</span>
+                <span>No league selected. <Link href="/dashboard/leagues/create" className="underline hover:text-yellow-300">Create a league first</Link>.</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Step 2: League details */}
-        <div className="space-y-2">
-          <h3 className="font-semibold">Step 2: Enter League Details</h3>
-          <Label htmlFor="league_id">Yahoo League ID *</Label>
-          <Input
-            id="league_id"
-            value={formData.league_id}
-            onChange={(e) => setFormData({ ...formData, league_id: e.target.value })}
-            placeholder="e.g. 123456"
-            disabled={isLoading || !connected}
-          />
-          <p className="text-xs text-gray-500">
-            Found in your Yahoo Fantasy league URL: football.fantasysports.yahoo.com/f1/<strong>YOUR_ID</strong>
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="year">Season Year</Label>
-          <select
-            id="year"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={formData.year}
-            onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-            disabled={isLoading || !connected}
-          >
-            {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-        </div>
-
-        {!leagueId && (
-          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800 text-sm">
-            ⚠️ No league selected. <Link href="/dashboard/leagues/create" className="underline font-medium">Create a league first</Link>.
-          </div>
-        )}
-
-        {message && (
-          <div className={`rounded-md border p-4 ${
-            status === "error" ? "border-red-200 bg-red-50 text-red-800" :
-            "border-green-200 bg-green-50 text-green-800"
-          }`}>
-            {message}
-          </div>
-        )}
-
-        {leagueInfo && status === "success" && (
-          <div className="rounded-md border bg-gray-50 p-4">
-            <h3 className="font-semibold">League Info:</h3>
-            <ul className="mt-2 space-y-1 text-sm">
-              <li><strong>Name:</strong> {String(leagueInfo.name)}</li>
-              <li><strong>Season:</strong> {String(leagueInfo.season)}</li>
-              <li><strong>Teams:</strong> {String(leagueInfo.size)}</li>
-            </ul>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <Button
-            onClick={handleValidate}
-            disabled={isLoading || !formData.league_id || !connected}
-            variant="outline"
-            className="flex-1"
-          >
-            {status === "validating" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Validate
-          </Button>
-
-          {leagueInfo && (
-            <Button
-              onClick={handleImport}
-              disabled={isLoading || !leagueId}
-              className="flex-1"
+        {/* Form */}
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-purple-500/20 rounded-3xl p-10 shadow-2xl space-y-8">
+          {/* Step 1: Connect */}
+          <div className="space-y-4">
+            <h3 className="font-black text-xl text-purple-400">Step 1: Connect Yahoo Account</h3>
+            <button
+              onClick={handleConnect}
+              className={`h-14 px-8 rounded-xl font-black text-lg transition-all ${
+                connected
+                  ? "bg-green-500/20 border-2 border-green-500/30 text-green-400 hover:bg-green-500/30"
+                  : "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105"
+              }`}
             >
-              {status === "importing" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Import
-            </Button>
+              {connected ? "✓ Connected — Reconnect" : "Connect Yahoo Account"}
+            </button>
+            {!connected && (
+              <p className="text-sm text-slate-500 font-medium">
+                Register at <a href="https://developer.yahoo.com/apps/" className="text-purple-400 hover:text-purple-300 underline transition-colors" target="_blank">developer.yahoo.com</a>
+              </p>
+            )}
+          </div>
+
+          {/* Step 2: League Details */}
+          <div className="space-y-3">
+            <h3 className="font-black text-xl text-purple-400">Step 2: Enter League Details</h3>
+            <label className="block text-sm font-black text-slate-400 uppercase tracking-wider">Yahoo League ID *</label>
+            <input
+              value={formData.league_id}
+              onChange={(e) => setFormData({ ...formData, league_id: e.target.value })}
+              placeholder="e.g. 123456"
+              disabled={isLoading || !connected}
+              className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold placeholder-slate-600 focus:border-purple-500/50 focus:outline-none transition-colors disabled:opacity-50"
+            />
+            <p className="text-sm text-slate-500 font-medium">
+              Found in your Yahoo league URL: football.fantasysports.yahoo.com/f1/<span className="text-purple-400 font-bold">YOUR_ID</span>
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-black text-slate-400 uppercase tracking-wider">Season Year</label>
+            <select
+              className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold focus:border-purple-500/50 focus:outline-none transition-colors disabled:opacity-50"
+              value={formData.year}
+              onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+              disabled={isLoading || !connected}
+            >
+              {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+
+          {message && (
+            <div className={`p-4 rounded-2xl border-2 font-bold ${
+              status === "error" ? "border-red-500/30 bg-red-500/20 text-red-400" :
+              "border-green-500/30 bg-green-500/20 text-green-400"
+            }`}>
+              {message}
+            </div>
           )}
+
+          {leagueInfo && status === "success" && (
+            <div className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-500/30 rounded-2xl p-6">
+              <h3 className="font-black text-green-400 mb-3">League Connected!</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { label: "Name", value: String(leagueInfo.name) },
+                  { label: "Season", value: String(leagueInfo.season) },
+                  { label: "Teams", value: String(leagueInfo.size) },
+                ].map((item) => (
+                  <div key={item.label} className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider">{item.label}</p>
+                    <p className="text-lg font-black text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-4">
+            <button
+              onClick={handleValidate}
+              disabled={isLoading || !formData.league_id || !connected}
+              className="flex-1 h-14 bg-slate-700/50 border-2 border-purple-500/30 text-white rounded-xl font-black text-lg hover:bg-purple-500/20 hover:border-purple-500/50 transition-all disabled:opacity-50"
+            >
+              {status === "validating" ? <span className="flex items-center justify-center gap-2"><span className="animate-spin">⟳</span> Validating...</span> : "Validate Connection"}
+            </button>
+
+            {leagueInfo && (
+              <button
+                onClick={handleImport}
+                disabled={isLoading || !leagueId}
+                className="flex-1 h-14 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-black text-lg shadow-2xl hover:shadow-emerald-500/50 transition-all transform hover:scale-105 disabled:opacity-50"
+              >
+                {status === "importing" ? <span className="flex items-center justify-center gap-2"><span className="animate-spin">⟳</span> Importing...</span> : "Import League Data 🚀"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

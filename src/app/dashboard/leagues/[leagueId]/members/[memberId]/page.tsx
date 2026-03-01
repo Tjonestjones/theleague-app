@@ -63,20 +63,6 @@ export default async function MemberDetailPage({
         </div>
       </div>
 
-      {/* Debug Info (temporary) */}
-      <div className="bg-slate-800 rounded-lg p-4 text-xs font-mono space-y-1">
-        <p>Debug: latestTeam = {latestTeam ? 'found' : 'null'}</p>
-        {latestTeam && (
-          <>
-            <p>Debug: latestTeam.season.year = {latestTeam.season.year}</p>
-            <p>Debug: latestTeam.rosters.length = {latestTeam.rosters.length}</p>
-          </>
-        )}
-        <p>Debug: roster = {roster ? 'found' : 'null'}</p>
-        <p>Debug: spots count = {roster?.spots?.length ?? 0}</p>
-        {roster?.spots && <p>Debug: first spot position = {roster.spots[0]?.position}</p>}
-      </div>
-
       {/* Current Roster - PREMIUM SECTION */}
       {roster && roster.spots.length > 0 ? (
         <div>
