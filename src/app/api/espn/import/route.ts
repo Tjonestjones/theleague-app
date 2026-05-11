@@ -4,8 +4,48 @@ import { getCurrentUser } from "@/lib/auth";
 
 const ESPN_SERVICE_URL = process.env.ESPN_SERVICE_URL || "http://127.0.0.1:8001";
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Types mirroring the Python service response
+// ──────────────────────────────────────────────────────────────────────────────
+
+interface ESPNPlayer {
+  player_id: number;
+  name: string;
+  position: string;
+  slot_position: string;
+  pro_team: string;
+  points: number;
+  is_starter: boolean;
+}
+
+interface TeamRosterWeek {
+  team_id: number;
+  week: number;
+  players: ESPNPlayer[];
+}
+
+interface ESPNImportResponse {
+  league: { league_id: number; name: string; year: number; size: number; current_week: number };
+  teams: { team_id: number; team_name?: string; name?: string; owner_name: string }[];
+  matchups: {
+    week: number;
+    home_team_id: number;
+    home_team_name: string;
+    home_score: number;
+    away_team_id: number;
+    away_team_name: string;
+    away_score: number;
+  }[];
+  rosters: TeamRosterWeek[];
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// POST /api/espn/import
+// ──────────────────────────────────────────────────────────────────────────────
+
 export async function POST(request: NextRequest) {
   try {
+    // 1. Auth check
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,9 +55,11 @@ export async function POST(request: NextRequest) {
     const { league_id, year, espn_s2, swid, leagueId } = body;
 
     if (!league_id || !year) {
-      return NextResponse.json({ error: "Missing required ESPN fields: league_id, year" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required ESPN fields: league_id, year" },
+        { status: 400 }
+      );
     }
-
     if (!leagueId) {
       return NextResponse.json(
         { error: "Missing leagueId — create a league first, then import into it" },
@@ -25,7 +67,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify user is a commissioner of this league
+    // 2. Must be a commissioner
     const membership = await prisma.member.findFirst({
       where: { leagueId, userId: user.id },
     });
@@ -33,7 +75,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only commissioners can import data" }, { status: 403 });
     }
 
-    // Build payload — cookies are optional (only needed for private leagues)
+    // 3. Build payload for Python service
     const payload: Record<string, unknown> = {
       league_id: parseInt(league_id),
       year: parseInt(year),
@@ -41,32 +83,47 @@ export async function POST(request: NextRequest) {
     if (espn_s2) payload.espn_s2 = espn_s2;
     if (swid) payload.swid = swid;
 
-    // Call Python ESPN service
-    const response = await fetch(`${ESPN_SERVICE_URL}/api/espn/import`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    // 4. Call Python ESPN service — 3-minute hard timeout
+    let espnData: ESPNImportResponse;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 180_000);
+      const response = await fetch(`${ESPN_SERVICE_URL}/api/espn/import`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      const error = await response.json();
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: "ESPN service error" }));
+        return NextResponse.json(
+          { error: error.detail || "ESPN import failed" },
+          { status: response.status }
+        );
+      }
+      espnData = await response.json();
+    } catch (fetchErr: unknown) {
+      if (fetchErr instanceof Error && fetchErr.name === "AbortError") {
+        return NextResponse.json(
+          { error: "ESPN import timed out after 3 minutes. Try a shorter year range." },
+          { status: 504 }
+        );
+      }
       return NextResponse.json(
-        { error: error.detail || "ESPN import failed" },
-        { status: response.status }
+        { error: "Could not reach ESPN service. Is it running?" },
+        { status: 503 }
       );
     }
 
-    const espnData = await response.json();
-
-    // ========================================
+    // ──────────────────────────────────────────────────────────────────────────
     // SAVE TO DATABASE
-    // ========================================
+    // ──────────────────────────────────────────────────────────────────────────
 
-    // 1. Create or update Season
+    // 5. Upsert Season
     const season = await prisma.season.upsert({
-      where: {
-        leagueId_year: { leagueId, year: parseInt(year) },
-      },
+      where: { leagueId_year: { leagueId, year: parseInt(year) } },
       update: {
         platform: "ESPN",
         platformId: String(league_id),
@@ -83,19 +140,21 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 2. Create Members + Teams for each ESPN team
-    const teamMap: Record<number, string> = {}; // ESPN team_id → our Team id
+    // 6. Upsert Members + Teams
+    //    espnTeamId (number) → our Team.id (string)
+    const teamMap: Record<number, string> = {};
 
     if (espnData.teams && Array.isArray(espnData.teams)) {
       for (const espnTeam of espnData.teams) {
-        const ownerName = espnTeam.owner_name || espnTeam.owner || espnTeam.team_name || `Team ${espnTeam.team_id}`;
+        const ownerName =
+          espnTeam.owner_name ||
+          espnTeam.team_name ||
+          espnTeam.name ||
+          `Team ${espnTeam.team_id}`;
         const ownerEmail = `espn-${league_id}-${espnTeam.team_id}@imported.theleague.app`;
 
-        // Upsert member (by league + email combo)
         const member = await prisma.member.upsert({
-          where: {
-            leagueId_email: { leagueId, email: ownerEmail },
-          },
+          where: { leagueId_email: { leagueId, email: ownerEmail } },
           update: { displayName: ownerName },
           create: {
             leagueId,
@@ -105,19 +164,16 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Upsert team
         const team = await prisma.team.upsert({
-          where: {
-            seasonId_memberId: { seasonId: season.id, memberId: member.id },
-          },
+          where: { seasonId_memberId: { seasonId: season.id, memberId: member.id } },
           update: {
-            name: espnTeam.team_name || ownerName,
+            name: espnTeam.team_name || espnTeam.name || ownerName,
             platformTeamId: String(espnTeam.team_id),
           },
           create: {
             seasonId: season.id,
             memberId: member.id,
-            name: espnTeam.team_name || ownerName,
+            name: espnTeam.team_name || espnTeam.name || ownerName,
             platformTeamId: String(espnTeam.team_id),
           },
         });
@@ -126,68 +182,113 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 3. Create Weeks + Matchups
+    // 7. Upsert Weeks + Matchups
     let weekCount = 0;
     let matchupCount = 0;
 
     if (espnData.matchups && Array.isArray(espnData.matchups)) {
-      // Group matchups by week
+      // Group by week
       const weekGroups: Record<number, typeof espnData.matchups> = {};
       for (const m of espnData.matchups) {
-        const wk = m.week ?? m.matchup_period ?? 0;
+        const wk = m.week ?? 0;
         if (!weekGroups[wk]) weekGroups[wk] = [];
         weekGroups[wk].push(m);
       }
 
-      for (const [weekNum, matchups] of Object.entries(weekGroups)) {
+      for (const [weekNumStr, matchups] of Object.entries(weekGroups)) {
+        const weekNumber = parseInt(weekNumStr);
         const week = await prisma.week.upsert({
-          where: {
-            seasonId_weekNumber: { seasonId: season.id, weekNumber: parseInt(weekNum) },
-          },
+          where: { seasonId_weekNumber: { seasonId: season.id, weekNumber } },
           update: {},
-          create: {
-            seasonId: season.id,
-            weekNumber: parseInt(weekNum),
-          },
+          create: { seasonId: season.id, weekNumber },
         });
         weekCount++;
 
         for (const m of matchups) {
-          const homeTeamId = teamMap[m.home_team_id ?? m.home_id];
-          const awayTeamId = teamMap[m.away_team_id ?? m.away_id];
-
+          const homeTeamId = teamMap[m.home_team_id];
+          const awayTeamId = teamMap[m.away_team_id];
           if (!homeTeamId || !awayTeamId) continue;
 
-          // Use upsert to avoid duplicates
           try {
             await prisma.matchup.upsert({
-              where: {
-                weekId_homeTeamId: { weekId: week.id, homeTeamId },
-              },
+              where: { weekId_homeTeamId: { weekId: week.id, homeTeamId } },
               update: {
-                homeScore: m.home_score ?? m.home_points ?? null,
-                awayScore: m.away_score ?? m.away_points ?? null,
+                homeScore: m.home_score ?? null,
+                awayScore: m.away_score ?? null,
                 status: m.home_score != null ? "COMPLETED" : "SCHEDULED",
               },
               create: {
                 weekId: week.id,
                 homeTeamId,
                 awayTeamId,
-                homeScore: m.home_score ?? m.home_points ?? null,
-                awayScore: m.away_score ?? m.away_points ?? null,
+                homeScore: m.home_score ?? null,
+                awayScore: m.away_score ?? null,
                 status: m.home_score != null ? "COMPLETED" : "SCHEDULED",
               },
             });
             matchupCount++;
-          } catch (err) {
-            // Skip duplicate matchup errors
-            console.warn("Skipping matchup:", err);
+          } catch {
+            // skip duplicate/constraint errors silently
           }
         }
       }
     }
 
-    // 4. Mark sync as completed
+    // 8. Save Rosters + Players
+    let rosterWeekCount = 0;
+    let playerCount = 0;
+
+    if (espnData.rosters && Array.isArray(espnData.rosters)) {
+      for (const rosterWeek of espnData.rosters) {
+        const ourTeamId = teamMap[rosterWeek.team_id];
+        if (!ourTeamId || !rosterWeek.players?.length) continue;
+
+        // Create a Roster record for this team + week
+        const roster = await prisma.roster.create({
+          data: {
+            teamId: ourTeamId,
+            weekNumber: rosterWeek.week,
+          },
+        });
+        rosterWeekCount++;
+
+        for (const p of rosterWeek.players) {
+          try {
+            // Upsert Player by ESPN ID
+            const player = await prisma.player.upsert({
+              where: { espnId: p.player_id },
+              update: {
+                name: p.name,
+                position: p.position,
+                team: p.pro_team || null,
+              },
+              create: {
+                name: p.name,
+                position: p.position,
+                team: p.pro_team || null,
+                espnId: p.player_id,
+              },
+            });
+
+            // Create RosterSpot
+            await prisma.rosterSpot.create({
+              data: {
+                rosterId: roster.id,
+                playerId: player.id,
+                position: p.slot_position,
+                isStarter: p.is_starter,
+                points: p.points ?? null,
+              },
+            });
+            playerCount++;
+          } catch {
+            // skip constraint/duplicate errors per player
+          }
+        }
+      }
+    }
+
+    // 9. Mark sync completed
     await prisma.season.update({
       where: { id: season.id },
       data: { syncStatus: "COMPLETED", lastSyncedAt: new Date() },
@@ -201,8 +302,10 @@ export async function POST(request: NextRequest) {
         teams: Object.keys(teamMap).length,
         weeks: weekCount,
         matchups: matchupCount,
+        rosterWeeks: rosterWeekCount,
+        players: playerCount,
       },
-      message: `Imported ${Object.keys(teamMap).length} teams, ${weekCount} weeks, ${matchupCount} matchups`,
+      message: `Imported ${Object.keys(teamMap).length} teams, ${weekCount} weeks, ${matchupCount} matchups, ${playerCount} roster spots across ${rosterWeekCount} team-weeks`,
     });
   } catch (error) {
     console.error("ESPN import error:", error);

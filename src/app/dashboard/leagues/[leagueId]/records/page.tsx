@@ -19,91 +19,191 @@ export default async function RecordBookPage({
     select: { name: true },
   });
 
-  if (!league) return <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">League not found</div>;
+  if (!league)
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+        League not found
+      </div>
+    );
 
   const records = await getRecordBook(leagueId);
 
-  // Group by category
-  const categories: Map<string, typeof records> = new Map();
+  // Group by category, preserving insertion order
+  const categories = new Map<string, typeof records>();
   for (const r of records) {
     if (!categories.has(r.category)) categories.set(r.category, []);
     categories.get(r.category)!.push(r);
   }
 
-  const categoryConfig: Record<string, { icon: string; color: string; border: string; bg: string }> = {
-    Scoring: { icon: "🎯", color: "text-emerald-400", border: "border-emerald-500/20 hover:border-emerald-500/50", bg: "from-emerald-900/30 to-green-900/30" },
-    Matchups: { icon: "⚔️", color: "text-red-400", border: "border-red-500/20 hover:border-red-500/50", bg: "from-red-900/30 to-orange-900/30" },
-    Season: { icon: "📅", color: "text-blue-400", border: "border-blue-500/20 hover:border-blue-500/50", bg: "from-blue-900/30 to-indigo-900/30" },
-    Streaks: { icon: "🔥", color: "text-orange-400", border: "border-orange-500/20 hover:border-orange-500/50", bg: "from-orange-900/30 to-red-900/30" },
-    "All-Time": { icon: "🏆", color: "text-yellow-400", border: "border-yellow-500/20 hover:border-yellow-500/50", bg: "from-yellow-900/30 to-amber-900/30" },
-    "Top Scores": { icon: "📈", color: "text-green-400", border: "border-green-500/20 hover:border-green-500/50", bg: "from-green-900/30 to-emerald-900/30" },
-    "Bottom Scores": { icon: "📉", color: "text-purple-400", border: "border-purple-500/20 hover:border-purple-500/50", bg: "from-purple-900/30 to-pink-900/30" },
-    Luck: { icon: "🍀", color: "text-cyan-400", border: "border-cyan-500/20 hover:border-cyan-500/50", bg: "from-cyan-900/30 to-blue-900/30" },
+  const CATEGORY_META: Record<
+    string,
+    { icon: string; accent: string; accentBg: string; accentBorder: string }
+  > = {
+    Scoring:        { icon: "🎯", accent: "text-emerald-400", accentBg: "bg-emerald-500/10",  accentBorder: "border-emerald-500/25" },
+    Matchups:       { icon: "⚔️", accent: "text-red-400",     accentBg: "bg-red-500/10",      accentBorder: "border-red-500/25" },
+    Season:         { icon: "📅", accent: "text-blue-400",    accentBg: "bg-blue-500/10",     accentBorder: "border-blue-500/25" },
+    Streaks:        { icon: "🔥", accent: "text-orange-400",  accentBg: "bg-orange-500/10",   accentBorder: "border-orange-500/25" },
+    "All-Time":     { icon: "🏆", accent: "text-yellow-400",  accentBg: "bg-yellow-500/10",   accentBorder: "border-yellow-500/25" },
+    "Top Scores":   { icon: "📈", accent: "text-green-400",   accentBg: "bg-green-500/10",    accentBorder: "border-green-500/25" },
+    "Bottom Scores":{ icon: "📉", accent: "text-purple-400",  accentBg: "bg-purple-500/10",   accentBorder: "border-purple-500/25" },
+    Luck:           { icon: "🍀", accent: "text-cyan-400",    accentBg: "bg-cyan-500/10",     accentBorder: "border-cyan-500/25" },
   };
 
-  const defaultConfig = { icon: "📊", color: "text-emerald-400", border: "border-emerald-500/20 hover:border-emerald-500/50", bg: "from-slate-800/90 to-slate-900/90" };
+  const DEFAULT_META = {
+    icon: "📊",
+    accent: "text-emerald-400",
+    accentBg: "bg-emerald-500/10",
+    accentBorder: "border-emerald-500/25",
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12 space-y-12">
-      {/* Header */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-600/20 via-amber-700/10 to-yellow-900/20 rounded-3xl blur-3xl"></div>
-        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-yellow-500/30 rounded-3xl p-10 shadow-2xl">
-          <Link href={`/dashboard/leagues/${leagueId}`} className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-bold mb-4 transition-colors">
-            <span className="text-2xl">←</span>
-            <span>Back to {league.name}</span>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+
+      {/* ── HEADER ───────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-white/5">
+        <div className="absolute -top-24 left-0 w-80 h-64 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative px-6 md:px-12 pt-8 pb-8">
+          <Link
+            href={`/dashboard/leagues/${leagueId}`}
+            className="inline-flex items-center gap-1.5 text-slate-500 hover:text-yellow-400 font-bold text-sm transition-colors mb-6"
+          >
+            ← {league.name}
           </Link>
-          <h1 className="text-6xl md:text-7xl font-black tracking-tight mb-3">🏆 Record Book</h1>
-          <p className="text-2xl text-slate-400 font-semibold">
-            <span className="text-yellow-400 font-black">{records.length}</span> records across{" "}
-            <span className="text-yellow-400 font-black">{categories.size}</span> categories
-          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight flex items-center gap-3">
+                <span>🏆</span> Record Book
+              </h1>
+              <p className="text-sm text-slate-500 font-medium mt-2">
+                <span className="text-white font-bold">{records.length}</span> records across{" "}
+                <span className="text-white font-bold">{categories.size}</span> categories
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {records.length === 0 ? (
-        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-yellow-500/30 rounded-3xl p-16 text-center shadow-2xl">
-          <div className="text-9xl mb-6">📊</div>
-          <h3 className="text-4xl font-black mb-4 text-white">No Records Yet</h3>
-          <p className="text-xl text-slate-400 font-semibold">Import some seasons and the record book will populate automatically.</p>
-        </div>
-      ) : (
-        Array.from(categories.entries()).map(([category, recs]) => {
-          const config = categoryConfig[category] ?? defaultConfig;
-          return (
-            <div key={category} className="space-y-6">
-              {/* Category Header */}
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">{config.icon}</span>
-                <h2 className={`text-4xl font-black ${config.color}`}>{category}</h2>
-                <span className="px-4 py-1 bg-slate-700/50 border border-slate-600/30 rounded-full text-slate-400 font-bold text-sm">
-                  {recs.length} records
-                </span>
-              </div>
-              
-              {/* Records Grid */}
-              <div className="grid gap-4 md:grid-cols-2">
-                {recs.map((r, i) => (
-                  <div key={i} className={`group relative bg-gradient-to-br ${config.bg} backdrop-blur-xl rounded-2xl p-6 border-2 ${config.border} transition-all duration-500 transform hover:scale-[1.02] shadow-xl`}>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-black text-lg mb-2 text-white group-hover:text-emerald-400 transition-colors">{r.title}</h3>
-                        <p className="text-sm text-slate-400 font-medium leading-relaxed">{r.detail}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className={`text-4xl font-black ${config.color} mb-1`}>{r.value}</p>
-                        <span className="inline-block px-3 py-1 bg-slate-700/50 border border-slate-600/30 rounded-full text-white font-bold text-sm">
-                          {r.holder}
-                        </span>
-                      </div>
+      {/* ── CONTENT ──────────────────────────────────────────────────────── */}
+      <div className="px-6 md:px-12 py-10 space-y-16">
+        {records.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="text-6xl mb-5">📊</div>
+            <h3 className="text-2xl font-black text-white mb-3">No Records Yet</h3>
+            <p className="text-slate-500 text-sm max-w-sm leading-relaxed">
+              Import some seasons and the record book will populate automatically.
+            </p>
+          </div>
+        ) : (
+          Array.from(categories.entries()).map(([category, recs]) => {
+            const meta = CATEGORY_META[category] ?? DEFAULT_META;
+            const [featured, ...rest] = recs;
+
+            return (
+              <section key={category}>
+                {/* Category heading */}
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-2xl">{meta.icon}</span>
+                  <h2 className={`text-xl font-black uppercase tracking-widest ${meta.accent}`}>
+                    {category}
+                  </h2>
+                  <span className="text-xs font-bold text-slate-600 border border-slate-700/50 rounded-full px-2.5 py-1">
+                    {recs.length}
+                  </span>
+                  <div className="flex-1 h-px bg-white/5" />
+                </div>
+
+                {/* Featured record — full width, gold treatment */}
+                <div className={`relative rounded-2xl border-2 p-7 mb-5 overflow-hidden ${meta.accentBg} ${meta.accentBorder}`}>
+                  {/* rank badge */}
+                  <div className="absolute top-4 right-5">
+                    <div className="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/40 flex items-center justify-center">
+                      <span className="text-yellow-400 font-black text-xs">#1</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          );
-        })
-      )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+                    <div className="flex-1">
+                      <p className={`text-xs font-black uppercase tracking-widest mb-1 ${meta.accent} opacity-70`}>
+                        {featured.title}
+                      </p>
+                      {/* holder name — the hero */}
+                      <p className="text-3xl md:text-4xl font-black text-white leading-tight">
+                        {featured.holder}
+                      </p>
+                      {featured.detail && (
+                        <p className="text-sm text-slate-500 font-medium mt-2 leading-relaxed">
+                          {featured.detail}
+                        </p>
+                      )}
+                    </div>
+                    <div className={`text-right flex-shrink-0`}>
+                      <p className={`text-5xl md:text-6xl font-black ${meta.accent}`}>
+                        {featured.value}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Remaining records — 2-col grid */}
+                {rest.length > 0 && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {rest.map((r, i) => (
+                      <RecordCard key={i} r={r} rank={i + 2} meta={meta} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function RecordCard({
+  r,
+  rank,
+  meta,
+}: {
+  r: { title: string; holder: string; value: string; detail: string };
+  rank: number;
+  meta: { accent: string; accentBg: string; accentBorder: string };
+}) {
+  const rankBadge =
+    rank === 2
+      ? { bg: "bg-slate-400/15 border-slate-400/30", text: "text-slate-300" }
+      : rank === 3
+      ? { bg: "bg-amber-700/15 border-amber-700/30", text: "text-amber-600" }
+      : { bg: "bg-slate-700/30 border-slate-600/20",  text: "text-slate-500" };
+
+  return (
+    <div className="flex items-stretch rounded-xl border border-white/8 bg-slate-900 overflow-hidden hover:border-white/15 transition-colors group">
+      {/* left rank strip */}
+      <div className={`flex items-center justify-center w-10 flex-shrink-0 border-r border-white/5 ${rankBadge.bg}`}>
+        <span className={`text-xs font-black ${rankBadge.text}`}>#{rank}</span>
+      </div>
+
+      {/* content */}
+      <div className="flex items-center justify-between flex-1 px-5 py-4 gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5 truncate">
+            {r.title}
+          </p>
+          <p className="font-black text-white text-sm truncate group-hover:text-emerald-400 transition-colors">
+            {r.holder}
+          </p>
+          {r.detail && (
+            <p className="text-xs text-slate-600 font-medium mt-0.5 truncate">{r.detail}</p>
+          )}
+        </div>
+        <div className="flex-shrink-0 text-right">
+          <p className={`text-2xl font-black ${meta.accent}`}>{r.value}</p>
+        </div>
+      </div>
     </div>
   );
 }

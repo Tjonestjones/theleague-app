@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --kill-others \"python3 services/espn-importer/main.py\" \"next dev\"",
+    "dev": "concurrently \"python3 services/espn-importer/main.py\" \"next dev\"",
     "dev:next": "next dev",
     "espn-service": "python3 services/espn-importer/main.py",
     "build": "next build",
