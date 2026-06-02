@@ -1,8 +1,27 @@
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, getLeagueAccess } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LeagueMembers } from "./league-members";
+import { TrialBanner } from "@/components/subscription-gate";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ leagueId: string }>;
+}): Promise<Metadata> {
+  const { leagueId } = await params;
+  const league = await prisma.league.findUnique({
+    where: { id: leagueId },
+    select: { name: true, description: true },
+  });
+  if (!league) return { title: "League — TheLeague" };
+  return {
+    title: `${league.name} — TheLeague`,
+    description: league.description ?? `${league.name} fantasy football league on TheLeague`,
+  };
+}
 
 export default async function LeagueDetailPage({
   params,
@@ -46,6 +65,8 @@ export default async function LeagueDetailPage({
     );
   }
 
+  const access = await getLeagueAccess(leagueId);
+
   const currentMember = league.members.find((m) => m.userId === user.id);
   const isCommissioner =
     currentMember?.role === "COMMISSIONER" || currentMember?.role === "CO_COMMISSIONER";
@@ -72,6 +93,11 @@ export default async function LeagueDetailPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+
+      {/* ── TRIAL BANNER ─────────────────────────────────────────────────── */}
+      {access.ok && access.daysLeft !== null && access.daysLeft <= 7 && (
+        <TrialBanner leagueId={leagueId} daysLeft={access.daysLeft} />
+      )}
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden border-b border-white/5">

@@ -3,6 +3,18 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { AnalyticsCharts } from "./analytics-charts";
+import { SubscriptionGate } from "@/components/subscription-gate";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ leagueId: string }>;
+}): Promise<Metadata> {
+  const { leagueId } = await params;
+  const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
+  return { title: league ? `${league.name} · Analytics — TheLeague` : "Analytics — TheLeague" };
+}
 
 export default async function AnalyticsPage({
   params,
@@ -28,6 +40,7 @@ export default async function AnalyticsPage({
   }
 
   return (
+    <SubscriptionGate leagueId={leagueId} leagueName={league.name}>
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
@@ -102,5 +115,6 @@ export default async function AnalyticsPage({
         <AnalyticsCharts leagueId={leagueId} />
       </div>
     </div>
+    </SubscriptionGate>
   );
 }

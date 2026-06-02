@@ -4,6 +4,24 @@ import { redirect } from "next/navigation";
 import { getMemberCareerStats } from "@/lib/records";
 import Link from "next/link";
 import { MemberCharts } from "./member-charts";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ leagueId: string; memberId: string }>;
+}): Promise<Metadata> {
+  const { leagueId, memberId } = await params;
+  const [league, member] = await Promise.all([
+    prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } }),
+    prisma.member.findUnique({ where: { id: memberId }, select: { displayName: true } }),
+  ]);
+  if (!league || !member) return { title: "Member — TheLeague" };
+  return {
+    title: `${member.displayName} · ${league.name} — TheLeague`,
+    description: `${member.displayName}'s career stats and history in ${league.name}`,
+  };
+}
 
 export default async function MemberDetailPage({
   params,

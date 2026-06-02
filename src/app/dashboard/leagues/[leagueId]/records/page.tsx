@@ -3,6 +3,18 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getRecordBook } from "@/lib/records";
 import Link from "next/link";
+import { SubscriptionGate } from "@/components/subscription-gate";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ leagueId: string }>;
+}): Promise<Metadata> {
+  const { leagueId } = await params;
+  const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
+  return { title: league ? `${league.name} · Record Book — TheLeague` : "Record Book — TheLeague" };
+}
 
 export default async function RecordBookPage({
   params,
@@ -57,6 +69,7 @@ export default async function RecordBookPage({
   };
 
   return (
+    <SubscriptionGate leagueId={leagueId} leagueName={league.name}>
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
 
       {/* ── HEADER ───────────────────────────────────────────────────────── */}
@@ -159,6 +172,7 @@ export default async function RecordBookPage({
         )}
       </div>
     </div>
+    </SubscriptionGate>
   );
 }
 

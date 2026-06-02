@@ -4,6 +4,18 @@ import { redirect } from "next/navigation";
 import { getAllTimeStandings, getSeasonStandings } from "@/lib/records";
 import Link from "next/link";
 import { SeasonTabs } from "./season-tabs";
+import { SubscriptionGate } from "@/components/subscription-gate";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ leagueId: string }>;
+}): Promise<Metadata> {
+  const { leagueId } = await params;
+  const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
+  return { title: league ? `${league.name} · History — TheLeague` : "History — TheLeague" };
+}
 
 export default async function HistoryPage({
   params,
@@ -42,6 +54,7 @@ export default async function HistoryPage({
       : "text-slate-600 font-bold";
 
   return (
+    <SubscriptionGate leagueId={leagueId} leagueName={league.name}>
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
@@ -156,5 +169,6 @@ export default async function HistoryPage({
         )}
       </div>
     </div>
+    </SubscriptionGate>
   );
 }
