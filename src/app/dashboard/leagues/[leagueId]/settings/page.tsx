@@ -54,7 +54,7 @@ export default function LeagueSettingsPage() {
         return;
       }
 
-      setSuccess("Settings saved successfully!");
+      setSuccess("Settings saved.");
       setTimeout(() => setSuccess(""), 3000);
     } catch {
       setError("Something went wrong");
@@ -65,94 +65,144 @@ export default function LeagueSettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl animate-bounce mb-4">⚙️</div>
-          <p className="text-xl text-slate-400 font-semibold">Loading settings...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-slate-500/30 border-t-slate-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12">
-      <div className="max-w-2xl mx-auto space-y-10">
-        {/* Header */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-600/20 via-slate-700/10 to-slate-900/20 rounded-3xl blur-3xl"></div>
-          <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-slate-500/30 rounded-3xl p-10 shadow-2xl">
-            <Link href={`/dashboard/leagues/${leagueId}`} className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-300 font-bold mb-4 transition-colors">
-              <span className="text-2xl">←</span>
-              <span>Back to League</span>
-            </Link>
-            <h1 className="text-6xl md:text-7xl font-black tracking-tight">⚙️ Settings</h1>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+
+      {/* ── HEADER ──────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-white/5">
+        <div className="relative px-6 md:px-12 pt-10 pb-8">
+          <Link
+            href={`/dashboard/leagues/${leagueId}`}
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-300 mb-6 transition-colors"
+          >
+            ← Back to League
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight">League Settings</h1>
+          <p className="text-slate-500 text-sm font-medium mt-1">
+            Update your league name, description, and visibility.
+          </p>
         </div>
+      </div>
 
-        {/* Form */}
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-slate-500/20 rounded-3xl p-10 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-8">
+      {/* ── FORM ───────────────────────────────────────────────────────── */}
+      <div className="px-6 md:px-12 py-10 max-w-2xl">
+        <div className="bg-slate-900 border border-white/8 rounded-2xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-7">
+
             {error && (
-              <div className="p-4 bg-red-500/20 border-2 border-red-500/30 rounded-2xl text-red-400 font-bold">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="p-4 bg-green-500/20 border-2 border-green-500/30 rounded-2xl text-green-400 font-bold">
-                {success}
+              <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-xl p-4">
+                <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <p className="text-sm font-bold text-red-400">{error}</p>
               </div>
             )}
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">League Name</label>
+            {success && (
+              <div className="flex items-start gap-3 bg-emerald-500/8 border border-emerald-500/20 rounded-xl p-4">
+                <svg className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="text-sm font-bold text-emerald-400">{success}</p>
+              </div>
+            )}
+
+            {/* League Name */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">
+                League Name <span className="text-emerald-500">*</span>
+              </label>
               <input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-emerald-500/40 focus:outline-none transition-colors"
               />
             </div>
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">Description</label>
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Description</label>
               <input
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none transition-colors"
                 placeholder="A brief description of your league"
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold placeholder-slate-600 focus:border-emerald-500/40 focus:outline-none transition-colors"
               />
             </div>
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">Visibility</label>
+            {/* Visibility */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Visibility</label>
               <select
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
                 value={formData.visibility}
                 onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-emerald-500/40 focus:outline-none transition-colors"
               >
-                <option value="PRIVATE">🔒 Private</option>
-                <option value="PUBLIC">🌐 Public</option>
-                <option value="UNLISTED">🔗 Unlisted</option>
+                <option value="PRIVATE">Private — Members only</option>
+                <option value="PUBLIC">Public — Anyone can view</option>
+                <option value="UNLISTED">Unlisted — Accessible via link</option>
               </select>
+              <p className="text-xs text-slate-600 font-medium">
+                Public and Unlisted leagues get a shareable public page.
+              </p>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            {/* Actions */}
+            <div className="flex gap-3 pt-1">
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 h-14 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-black text-lg shadow-2xl hover:shadow-emerald-500/50 transition-all transform hover:scale-105 disabled:opacity-50"
+                className="flex-1 h-11 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-40"
               >
-                {saving ? "Saving..." : "Save Settings"}
+                {saving ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : "Save Settings"}
               </button>
               <button
                 type="button"
                 onClick={() => router.push(`/dashboard/leagues/${leagueId}`)}
-                className="h-14 px-8 bg-slate-700/50 border-2 border-slate-600/30 text-slate-300 rounded-xl font-bold hover:bg-slate-600/50 hover:border-slate-500/50 transition-all"
+                className="h-11 px-6 rounded-xl bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
               >
                 Cancel
               </button>
             </div>
           </form>
+        </div>
+
+        {/* ── DANGER ZONE ─────────────────────────────────────────────── */}
+        <div className="mt-8 bg-slate-900 border border-red-500/15 rounded-2xl p-6">
+          <h3 className="text-xs font-black uppercase tracking-widest text-red-400 mb-4">Danger Zone</h3>
+          <div className="flex items-center justify-between gap-6">
+            <div>
+              <p className="text-sm font-bold text-white">Delete this league</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Permanently removes all seasons, records, and member data. This cannot be undone.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="flex-shrink-0 h-9 px-4 rounded-xl border border-red-500/25 text-red-400 hover:bg-red-500/10 hover:border-red-500/40 font-bold text-xs transition-all"
+              onClick={() => {
+                if (window.confirm("Delete this league? This action cannot be undone.")) {
+                  fetch(`/api/leagues/${leagueId}`, { method: "DELETE" }).then(() =>
+                    router.push("/dashboard")
+                  );
+                }
+              }}
+            >
+              Delete League
+            </button>
+          </div>
         </div>
       </div>
     </div>

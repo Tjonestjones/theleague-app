@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const SPORTS = [
+  { value: "NFL", label: "NFL", sub: "Fantasy Football" },
+  { value: "NBA", label: "NBA", sub: "Fantasy Basketball" },
+  { value: "MLB", label: "MLB", sub: "Fantasy Baseball" },
+  { value: "NHL", label: "NHL", sub: "Fantasy Hockey" },
+];
+
 export default function CreateLeaguePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -42,110 +49,128 @@ export default function CreateLeaguePage() {
     }
   };
 
-  const sports = [
-    { value: "NFL", label: "🏈 NFL Fantasy Football", icon: "🏈" },
-    { value: "NBA", label: "🏀 NBA Fantasy Basketball", icon: "🏀" },
-    { value: "MLB", label: "⚾ MLB Fantasy Baseball", icon: "⚾" },
-    { value: "NHL", label: "🏒 NHL Fantasy Hockey", icon: "🏒" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12">
-      <div className="max-w-2xl mx-auto space-y-10">
-        {/* Header */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-green-700/10 to-emerald-900/20 rounded-3xl blur-3xl"></div>
-          <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-10 shadow-2xl">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold mb-4 transition-colors">
-              <span className="text-2xl">←</span>
-              <span>Back to Dashboard</span>
-            </Link>
-            <h1 className="text-6xl md:text-7xl font-black tracking-tight mb-3">Create a League</h1>
-            <p className="text-2xl text-slate-400 font-semibold">
-              Set up your fantasy football league and start importing your history.
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
 
-        {/* Form */}
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/20 rounded-3xl p-10 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-8">
+      {/* ── HEADER ──────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-white/5">
+        <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative px-6 md:px-12 pt-10 pb-8">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-300 mb-6 transition-colors"
+          >
+            ← Dashboard
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight">Create a League</h1>
+          <p className="text-slate-500 text-sm font-medium mt-1">
+            Set up your league and start importing your history.
+          </p>
+        </div>
+      </div>
+
+      {/* ── FORM ───────────────────────────────────────────────────────── */}
+      <div className="px-6 md:px-12 py-10 max-w-2xl">
+        <div className="bg-slate-900 border border-white/8 rounded-2xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-7">
+
             {error && (
-              <div className="p-4 bg-red-500/20 border-2 border-red-500/30 rounded-2xl text-red-400 font-bold">
-                {error}
+              <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-xl p-4">
+                <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <p className="text-sm font-bold text-red-400">{error}</p>
               </div>
             )}
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">League Name *</label>
+            {/* League Name */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">
+                League Name <span className="text-emerald-500">*</span>
+              </label>
               <input
                 placeholder="e.g. Sunday Night Legends"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold placeholder-slate-600 focus:border-emerald-500/40 focus:outline-none transition-colors"
               />
             </div>
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">Description</label>
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">
+                Description <span className="text-slate-700 font-normal normal-case tracking-normal">optional</span>
+              </label>
               <input
                 placeholder="A brief description of your league"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold placeholder-slate-600 focus:border-emerald-500/40 focus:outline-none transition-colors"
               />
             </div>
 
+            {/* Sport */}
             <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">Sport</label>
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Sport</label>
               <div className="grid grid-cols-2 gap-3">
-                {sports.map((sport) => (
-                  <button
-                    key={sport.value}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, sport: sport.value })}
-                    className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
-                      formData.sport === sport.value
-                        ? "border-emerald-500/50 bg-emerald-500/20 shadow-lg shadow-emerald-500/10"
-                        : "border-slate-600/50 bg-slate-800/50 hover:border-slate-500/50"
-                    }`}
-                  >
-                    <span className="text-3xl block mb-2">{sport.icon}</span>
-                    <span className={`font-bold ${formData.sport === sport.value ? "text-emerald-400" : "text-slate-300"}`}>
-                      {sport.label.replace(/^[^ ]+ /, "")}
-                    </span>
-                  </button>
-                ))}
+                {SPORTS.map((sport) => {
+                  const selected = formData.sport === sport.value;
+                  return (
+                    <button
+                      key={sport.value}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, sport: sport.value })}
+                      className={`p-4 rounded-xl border text-left transition-all ${
+                        selected
+                          ? "border-emerald-500/40 bg-emerald-500/10"
+                          : "border-white/8 bg-slate-800/30 hover:border-white/15"
+                      }`}
+                    >
+                      <span className={`block text-xs font-black uppercase tracking-widest mb-1 ${selected ? "text-emerald-400" : "text-slate-500"}`}>
+                        {sport.label}
+                      </span>
+                      <span className={`text-sm font-bold ${selected ? "text-white" : "text-slate-400"}`}>
+                        {sport.sub}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="block text-sm font-black text-emerald-400 uppercase tracking-wider">Visibility</label>
+            {/* Visibility */}
+            <div className="space-y-2">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Visibility</label>
               <select
-                className="h-14 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-5 text-white text-lg font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
                 value={formData.visibility}
                 onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
+                className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-emerald-500/40 focus:outline-none transition-colors"
               >
-                <option value="PRIVATE">🔒 Private – Members only</option>
-                <option value="PUBLIC">🌐 Public – Anyone can view</option>
-                <option value="UNLISTED">🔗 Unlisted – Accessible via link</option>
+                <option value="PRIVATE">Private — Members only</option>
+                <option value="PUBLIC">Public — Anyone can view</option>
+                <option value="UNLISTED">Unlisted — Accessible via link</option>
               </select>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            {/* Actions */}
+            <div className="flex gap-3 pt-1">
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative flex-1 h-14 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-black text-lg shadow-2xl hover:shadow-emerald-500/50 transition-all transform hover:scale-105 disabled:opacity-50 overflow-hidden"
+                className="flex-1 h-11 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-40"
               >
-                <span className="relative z-10">{loading ? "Creating..." : "Create League 🏈"}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {loading ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Creating...
+                  </>
+                ) : "Create League"}
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/dashboard")}
-                className="h-14 px-8 bg-slate-700/50 border-2 border-slate-600/30 text-slate-300 rounded-xl font-bold hover:bg-slate-600/50 hover:border-slate-500/50 transition-all"
+                className="h-11 px-6 rounded-xl bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
               >
                 Cancel
               </button>

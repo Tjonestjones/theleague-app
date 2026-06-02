@@ -20,104 +20,141 @@ export default async function HistoryPage({
     select: { name: true },
   });
 
-  if (!league) return <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">League not found</div>;
+  if (!league)
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+        League not found
+      </div>
+    );
 
   const [allTimeStandings, seasonStandings] = await Promise.all([
     getAllTimeStandings(leagueId),
     getSeasonStandings(leagueId),
   ]);
 
+  const rankStyle = (i: number) =>
+    i === 0
+      ? "text-yellow-400 font-black"
+      : i === 1
+      ? "text-slate-400 font-black"
+      : i === 2
+      ? "text-amber-600 font-black"
+      : "text-slate-600 font-bold";
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12 space-y-12">
-      {/* Header */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-green-700/10 to-emerald-900/20 rounded-3xl blur-3xl"></div>
-        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-10 shadow-2xl">
-          <div className="flex items-center justify-between flex-wrap gap-6">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+
+      {/* ── HEADER ──────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-white/5">
+        <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-600/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative px-6 md:px-12 pt-10 pb-8">
+          <Link
+            href={`/dashboard/leagues/${leagueId}`}
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-300 mb-6 transition-colors"
+          >
+            ← {league.name}
+          </Link>
+
+          <div className="flex items-end justify-between gap-6 flex-wrap">
             <div>
-              <Link href={`/dashboard/leagues/${leagueId}`} className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold mb-4 transition-colors">
-                <span className="text-2xl">←</span>
-                <span>Back to {league.name}</span>
-              </Link>
-              <h1 className="text-6xl md:text-7xl font-black tracking-tight">League History</h1>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight">League History</h1>
+              <p className="text-slate-500 text-sm font-medium mt-1">
+                All-time standings and season-by-season breakdown
+              </p>
             </div>
-            <div className="flex gap-3">
-              <Link href={`/dashboard/leagues/${leagueId}/records`}>
-                <button className="px-6 py-3 bg-yellow-500/20 border-2 border-yellow-500/30 text-yellow-400 rounded-xl hover:bg-yellow-500/30 hover:border-yellow-500/50 font-bold transition-all">
-                  🏆 Record Book
-                </button>
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/dashboard/leagues/${leagueId}/records`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-yellow-400 hover:border-yellow-500/25 font-bold text-sm transition-all"
+              >
+                Records
               </Link>
-              <Link href={`/dashboard/leagues/${leagueId}/members`}>
-                <button className="px-6 py-3 bg-blue-500/20 border-2 border-blue-500/30 text-blue-400 rounded-xl hover:bg-blue-500/30 hover:border-blue-500/50 font-bold transition-all">
-                  👥 Members
-                </button>
+              <Link
+                href={`/dashboard/leagues/${leagueId}/members`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-blue-400 hover:border-blue-500/25 font-bold text-sm transition-all"
+              >
+                Members
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* All-Time Standings */}
-      <div>
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-3 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-full px-6 py-3 mb-4">
-            <span className="text-3xl">🏆</span>
-            <span className="font-black text-emerald-400 uppercase tracking-wider">All-Time</span>
-          </div>
-          <h2 className="text-5xl font-black text-white">All-Time Standings</h2>
+      <div className="px-6 md:px-12 py-10 space-y-12">
+
+        {/* ── ALL-TIME STANDINGS ──────────────────────────────────────── */}
+        <div>
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-6">
+            All-Time Standings
+          </h2>
+
+          {allTimeStandings.length === 0 ? (
+            <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
+              <p className="text-slate-600 font-bold text-sm">No data yet. Import some seasons first.</p>
+            </div>
+          ) : (
+            <div className="bg-slate-900 border border-white/8 rounded-2xl overflow-hidden">
+              <table className="w-full">
+                <thead className="border-b border-white/8">
+                  <tr>
+                    {["#", "Member", "W", "L", "T", "Win %", "PF", "PA", "Seasons"].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`px-5 py-4 text-xs font-black uppercase tracking-widest text-slate-500 ${
+                          i === 0 ? "text-left w-10" :
+                          i === 1 ? "text-left" :
+                          i <= 5 ? "text-center" :
+                          "text-right"
+                        }`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {allTimeStandings.map((s, i) => (
+                    <tr
+                      key={s.memberId}
+                      className={`transition-colors hover:bg-white/3 ${i === 0 ? "bg-yellow-500/4" : ""}`}
+                    >
+                      <td className={`px-5 py-4 text-sm ${rankStyle(i)}`}>
+                        {i < 3 ? ["1st", "2nd", "3rd"][i] : i + 1}
+                      </td>
+                      <td className="px-5 py-4">
+                        <Link
+                          href={`/dashboard/leagues/${leagueId}/members/${s.memberId}`}
+                          className="font-bold text-white hover:text-emerald-400 transition-colors text-sm"
+                        >
+                          {s.memberName}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-4 text-center text-sm font-black text-emerald-400">{s.wins}</td>
+                      <td className="px-5 py-4 text-center text-sm font-bold text-red-400">{s.losses}</td>
+                      <td className="px-5 py-4 text-center text-sm font-bold text-slate-600">{s.ties}</td>
+                      <td className="px-5 py-4 text-center text-sm font-black text-white">
+                        {(s.winPct * 100).toFixed(1)}%
+                      </td>
+                      <td className="px-5 py-4 text-right text-sm font-bold text-white">
+                        {s.pointsFor.toFixed(1)}
+                      </td>
+                      <td className="px-5 py-4 text-right text-sm font-bold text-slate-400">
+                        {s.pointsAgainst.toFixed(1)}
+                      </td>
+                      <td className="px-5 py-4 text-right text-sm font-bold text-white">{s.seasons}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        {allTimeStandings.length === 0 ? (
-          <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-emerald-500/30 rounded-3xl p-16 text-center shadow-2xl">
-            <div className="text-9xl mb-6">📊</div>
-            <p className="text-2xl text-slate-400 font-semibold">No data yet. Import some seasons first!</p>
-          </div>
-        ) : (
-          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-emerald-500/20 shadow-2xl">
-            <table className="w-full">
-              <thead className="bg-slate-900/50 border-b-2 border-emerald-500/20">
-                <tr>
-                  <th className="text-left px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">#</th>
-                  <th className="text-left px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Member</th>
-                  <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">W</th>
-                  <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">L</th>
-                  <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">T</th>
-                  <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Win %</th>
-                  <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">PF</th>
-                  <th className="text-right px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">PA</th>
-                  <th className="text-center px-6 py-5 font-black text-emerald-400 uppercase tracking-wider text-sm">Seasons</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {allTimeStandings.map((s, i) => (
-                  <tr key={s.memberId} className={`hover:bg-slate-700/30 transition-colors ${i === 0 ? "bg-yellow-900/10" : ""}`}>
-                    <td className="px-6 py-5 font-black text-white text-lg">
-                      {i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
-                    </td>
-                    <td className="px-6 py-5">
-                      <Link href={`/dashboard/leagues/${leagueId}/members/${s.memberId}`} className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors text-lg">
-                        {s.memberName}
-                      </Link>
-                    </td>
-                    <td className="text-center px-6 py-5 text-green-400 font-black text-lg">{s.wins}</td>
-                    <td className="text-center px-6 py-5 text-red-400 font-bold">{s.losses}</td>
-                    <td className="text-center px-6 py-5 text-slate-500 font-bold">{s.ties}</td>
-                    <td className="text-center px-6 py-5 font-black text-white text-lg">{(s.winPct * 100).toFixed(1)}%</td>
-                    <td className="text-right px-6 py-5 font-bold text-white">{s.pointsFor.toFixed(1)}</td>
-                    <td className="text-right px-6 py-5 font-bold text-slate-400">{s.pointsAgainst.toFixed(1)}</td>
-                    <td className="text-center px-6 py-5 font-bold text-white">{s.seasons}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {/* ── SEASON-BY-SEASON ────────────────────────────────────────── */}
+        {seasonStandings.length > 0 && (
+          <SeasonTabs seasons={seasonStandings} leagueId={leagueId} />
         )}
       </div>
-
-      {/* Season-by-Season */}
-      {seasonStandings.length > 0 && (
-        <SeasonTabs seasons={seasonStandings} leagueId={leagueId} />
-      )}
     </div>
   );
 }
