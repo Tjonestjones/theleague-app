@@ -3,6 +3,7 @@ import { getCurrentUser, getLeagueAccess } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LeagueMembers } from "./league-members";
+import { MilestoneWatch } from "./milestone-watch";
 import { TrialBanner } from "@/components/subscription-gate";
 import type { Metadata } from "next";
 
@@ -179,6 +180,9 @@ export default async function LeagueDetailPage({
             </Link>
           ))}
         </div>
+
+        {/* ── MILESTONE WATCH ─────────────────────────────────────────── */}
+        <MilestoneWatch leagueId={leagueId} />
 
         {/* ── SEASONS ─────────────────────────────────────────────────── */}
         <div>

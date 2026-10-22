@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import { describeMove, formatMoveDate, getPlayerJourney, type MoveRow } from "@/lib/transactions";
 import { TypeBadge, weekLabel } from "../../transactions/move-parts";
+import { getPlayerMilestones } from "@/lib/milestones";
+import { MilestonesPanel } from "./milestones";
 
 export async function generateMetadata({
   params,
@@ -43,6 +45,7 @@ export default async function PlayerJourneyPage({
     );
 
   const { player, moves, stats } = journey;
+  const milestones = await getPlayerMilestones(leagueId, playerId, player.position);
   const bySeason = new Map<number, MoveRow[]>();
   for (const m of moves) {
     if (!bySeason.has(m.season.year)) bySeason.set(m.season.year, []);
@@ -89,7 +92,15 @@ export default async function PlayerJourneyPage({
           </div>
         </div>
 
-        <div className="px-6 md:px-12 py-10 space-y-10 max-w-4xl">
+        <div className="px-6 md:px-12 pt-10">
+          <MilestonesPanel data={milestones} leagueName={league.name} />
+        </div>
+
+        <div className="px-6 md:px-12 pt-12">
+          <h2 className="text-lg font-black uppercase tracking-wider text-white">Transaction history</h2>
+        </div>
+
+        <div className="px-6 md:px-12 pt-6 pb-10 space-y-10 max-w-4xl">
           {moves.length === 0 && (
             <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
               <p className="text-slate-600 font-bold text-sm">This player hasn&apos;t been on a roster in this league.</p>

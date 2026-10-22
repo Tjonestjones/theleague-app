@@ -137,6 +137,25 @@ npm run load:espn-transactions -- <league id or slug> seasons.json
 
 ---
 
+## Player Milestones
+
+Player pages show two groups of milestones, each with the round number last reached and how far off the next one is:
+
+- **NFL career** (regular season): passing/rushing/receiving yards and TDs, receptions, scrimmage yards, field goals, and counts of 1,000-yard / 4,000-yard seasons. Stats come from [nflverse](https://github.com/nflverse/nflverse-data) (free, every season since 1999, updated during the season) and are matched to our players by ESPN id.
+- **In the league**: fantasy points in starting lineups, starts and weeks rostered (from imported weekly rosters), plus managers, times drafted and transactions.
+
+A milestone is **close** when the player should reach it within 4 games at his current-season rate (3 starts for league milestones, which only count while the league's latest season is the one in progress). The league page's **Milestone Watch** lists rostered players who are close, or who passed one this season.
+
+```bash
+npx prisma migrate deploy   # adds player_season_stats
+npm run sync:nfl-stats      # ~20s; re-run weekly in season to keep "close" current
+npm run test:unit           # milestone rule tests
+```
+
+nflverse totals are built from play-by-play and can differ from official totals by a few yards.
+
+---
+
 ## Roadmap
 
 ### Phase 0 — Setup ✅ Complete
@@ -177,6 +196,7 @@ npm run load:espn-transactions -- <league id or slug> seasons.json
 - [x] Season history / timeline page
 - [x] Starters vs bench split on roster page with per-player points
 - [x] Transactions page (filter by season, manager, type, player), trades view, player journey pages
+- [x] Player milestones — NFL career (nflverse stats) and in-league (points, starts, managers), plus a Milestone Watch on the league page
 - [ ] Expand record book to 50+ records (currently ~20)
 - [ ] Streaks tracker (current win/loss streak)
 - [ ] Filter records by season or member

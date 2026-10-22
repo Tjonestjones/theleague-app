@@ -316,6 +316,7 @@ model Player {
   yahooId       String?  @unique
   fleaflickerId Int?     @unique
   nflId         String?  @unique
+  gsisId        String?  @unique // nflverse / NFL GSIS id, for real-life stats
   
   isActive      Boolean  @default(true)
   
@@ -326,6 +327,7 @@ model Player {
   rosterSpots   RosterSpot[]
   draftPicks    DraftPick[]
   transactions  Transaction[]
+  seasonStats   PlayerSeasonStat[]
 
   @@index([name])
   @@index([sleeperId])
@@ -366,6 +368,43 @@ model RosterSpot {
   @@index([rosterId])
   @@index([playerId])
   @@map("roster_spots")
+}
+
+// Real-life NFL regular-season stats, one row per player per season.
+// Synced from nflverse (scripts/sync-nfl-stats.mts); used for career milestones.
+model PlayerSeasonStat {
+  id              String   @id @default(cuid())
+  
+  playerId        String
+  player          Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  season          Int
+  team            String?
+  games           Int      @default(0)
+  
+  completions     Int      @default(0)
+  attempts        Int      @default(0)
+  passingYards    Int      @default(0)
+  passingTds      Int      @default(0)
+  interceptions   Int      @default(0)
+  
+  carries         Int      @default(0)
+  rushingYards    Int      @default(0)
+  rushingTds      Int      @default(0)
+  
+  targets         Int      @default(0)
+  receptions      Int      @default(0)
+  receivingYards  Int      @default(0)
+  receivingTds    Int      @default(0)
+  
+  fgMade          Int      @default(0)
+  fgAttempts      Int      @default(0)
+  
+  updatedAt       DateTime @updatedAt
+
+  @@unique([playerId, season])
+  @@index([playerId])
+  @@map("player_season_stats")
 }
 
 // ============================================
