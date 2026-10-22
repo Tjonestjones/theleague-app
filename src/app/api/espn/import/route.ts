@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import {
+  saveSeasonTransactions,
+  type ImportedSeasonTransactions,
+  type SaveResult,
+} from "@/lib/transactions-import";
 
 const ESPN_SERVICE_URL = process.env.ESPN_SERVICE_URL || "http://127.0.0.1:8001";
 
@@ -288,7 +293,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 9. Mark sync completed
+    // 9. Transaction history — every draft pick, add, drop and trade.
+    //    Non-fatal: a failure here still leaves the season's scores imported.
+    let transactionStats: SaveResult | null = null;
+    let transactionWarning: string | null = null;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 170_000);
+      const txResponse = await fetch(`${ESPN_SERVICE_URL}/api/espn/transactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!txResponse.ok) {
+        const error = await txResponse.json().catch(() => ({ detail: "ESPN service error" }));
+        transactionWarning = `Transactions not imported: ${error.detail || txResponse.status}`;
+      } else {
+        const txData: ImportedSeasonTransactions = await txResponse.json();
+        transactionStats = await saveSeasonTransactions(prisma, season.id, teamMap, txData);
+      }
+    } catch (txErr) {
+      console.error("ESPN transaction import error:", txErr);
+      transactionWarning = "Transactions not imported: the ESPN service didn't respond in time";
+    }
+
+    // 10. Mark sync completed
     await prisma.season.update({
       where: { id: season.id },
       data: { syncStatus: "COMPLETED", lastSyncedAt: new Date() },
@@ -304,8 +335,13 @@ export async function POST(request: NextRequest) {
         matchups: matchupCount,
         rosterWeeks: rosterWeekCount,
         players: playerCount,
+        transactions: transactionStats?.saved ?? 0,
+        trades: transactionStats?.trades ?? 0,
       },
-      message: `Imported ${Object.keys(teamMap).length} teams, ${weekCount} weeks, ${matchupCount} matchups, ${playerCount} roster spots across ${rosterWeekCount} team-weeks`,
+      warning: transactionWarning,
+      message:
+        `Imported ${Object.keys(teamMap).length} teams, ${weekCount} weeks, ${matchupCount} matchups, ${playerCount} roster spots across ${rosterWeekCount} team-weeks` +
+        (transactionStats ? `, ${transactionStats.saved} transactions (${transactionStats.trades} trades)` : ""),
     });
   } catch (error) {
     console.error("ESPN import error:", error);

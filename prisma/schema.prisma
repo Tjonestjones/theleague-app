@@ -232,6 +232,8 @@ model Team {
   awayMatchups  Matchup[] @relation("AwayTeam")
   rosters       Roster[]
   draftPicks    DraftPick[]
+  transactionsOut Transaction[] @relation("TransactionFrom")
+  transactionsIn  Transaction[] @relation("TransactionTo")
 
   @@unique([seasonId, memberId])
   @@index([seasonId])
@@ -323,6 +325,7 @@ model Player {
   // Relations
   rosterSpots   RosterSpot[]
   draftPicks    DraftPick[]
+  transactions  Transaction[]
 
   @@index([name])
   @@index([sleeperId])
@@ -421,38 +424,67 @@ model DraftPick {
 // TRANSACTIONS
 // ============================================
 
+// One row per player movement: a player drafted, claimed, added, dropped or
+// traded. A trade is several rows sharing a tradeGroup.
 model Transaction {
   id            String   @id @default(cuid())
-  
+
   seasonId      String
   season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  
+
   type          TransactionType
   status        TransactionStatus @default(COMPLETED)
-  
+
+  // Chronological order within the season (1 = first move)
+  sequence      Int
   weekNumber    Int?
-  
-  // Trade-specific (JSON for flexibility)
-  tradeDetails  Json?
-  
-  // Add/Drop-specific
-  addedPlayer   String?
-  droppedPlayer String?
-  teamId        String?
-  
-  processedAt   DateTime
+
+  playerId      String
+  player        Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  // null = free agency / waivers
+  fromTeamId    String?
+  fromTeam      Team?    @relation("TransactionFrom", fields: [fromTeamId], references: [id], onDelete: SetNull)
+  toTeamId      String?
+  toTeam        Team?    @relation("TransactionTo", fields: [toTeamId], references: [id], onDelete: SetNull)
+
+  // Rows of the same trade share this id (e.g. "T2024-03")
+  tradeGroup    String?
+
+  draftPick     Int?     // overall pick number
+  draftRound    Int?
+  waiverBid     Int?     // FAAB bid, when the league uses a budget
+
+  // Where the row came from: the platform's transaction log, or
+  // reconstructed from week-to-week roster snapshots
+  source        TransactionSource @default(PLATFORM_LOG)
+  note          String?
+
+  // null when only the week is known
+  processedAt   DateTime?
   createdAt     DateTime @default(now())
 
+  @@unique([seasonId, sequence])
   @@index([seasonId])
   @@index([weekNumber])
+  @@index([playerId])
+  @@index([fromTeamId])
+  @@index([toTeamId])
+  @@index([tradeGroup])
   @@map("transactions")
 }
 
 enum TransactionType {
-  TRADE
-  ADD
+  DRAFT
+  ADD       // free-agent pickup
+  WAIVER    // waiver claim
   DROP
-  WAIVER
+  TRADE
+}
+
+enum TransactionSource {
+  PLATFORM_LOG
+  ROSTER_SNAPSHOT
 }
 
 enum TransactionStatus {

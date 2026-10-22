@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from espn_api.football import League
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
+from transactions import fetch_season_raw, build_season_moves
 import logging
 import signal
 import asyncio
@@ -321,6 +322,62 @@ async def import_league_data(request: ESPNAuthRequest):
     except Exception as e:
         logger.error(f"Import failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
+class TransactionMove(BaseModel):
+    seq: int
+    week: int
+    ts: Optional[int] = None          # epoch ms; None when only the week is known
+    type: str                         # DRAFT | ADD | WAIVER | DROP | TRADE
+    player_id: int
+    from_team_id: Optional[int] = None  # None = free agency / waivers
+    to_team_id: Optional[int] = None
+    source: str                       # LOG | ROSTER
+    note: Optional[str] = None
+    draft_pick: Optional[int] = None
+    draft_round: Optional[int] = None
+    waiver_bid: Optional[int] = None    # FAAB leagues only
+    trade_group: Optional[str] = None
+
+
+class SeasonTransactions(BaseModel):
+    year: int
+    teams: List[Dict[str, Any]]
+    players: Dict[str, Dict[str, Any]]
+    moves: List[TransactionMove]
+    vetoed_trades: int
+    failed_pages: List[str]
+
+
+@app.post("/api/espn/transactions", response_model=SeasonTransactions)
+async def import_transactions(request: ESPNAuthRequest):
+    """
+    Every player movement in one season: draft picks, waiver claims,
+    free-agent adds, drops and trades. Built from ESPN's transaction log plus
+    weekly roster snapshots (see transactions.py).
+    """
+    loop = asyncio.get_event_loop()
+    try:
+        raw = await asyncio.wait_for(
+            loop.run_in_executor(
+                executor,
+                functools.partial(fetch_season_raw, request.league_id, request.year,
+                                  request.espn_s2, request.swid)
+            ),
+            timeout=150
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="ESPN transaction pull timed out")
+    except Exception as e:
+        logger.error(f"Transaction pull failed: {e}", exc_info=True)
+        raise HTTPException(status_code=400, detail=f"Transaction pull failed: {str(e)}")
+
+    result = build_season_moves(raw, request.year)
+    logger.info(
+        f"Transactions {request.year}: {len(result['moves'])} moves, "
+        f"{len({m.get('trade_group') for m in result['moves'] if m.get('trade_group')})} trades"
+    )
+    return result
 
 
 @app.get("/api/espn/available-years/{league_id}")
