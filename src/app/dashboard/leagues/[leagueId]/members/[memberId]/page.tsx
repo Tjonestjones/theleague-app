@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getMemberCareerStats } from "@/lib/records";
 import Link from "next/link";
 import { MemberCharts } from "./member-charts";
+import { formatMoveDate, getMemberTransactionSummary } from "@/lib/transactions";
+import { TypeBadge } from "../../transactions/move-parts";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -57,7 +59,10 @@ export default async function MemberDetailPage({
 
   if (!league || !member) return <div>Not found</div>;
 
-  const stats = await getMemberCareerStats(leagueId, memberId);
+  const [stats, txSummary] = await Promise.all([
+    getMemberCareerStats(leagueId, memberId),
+    getMemberTransactionSummary(leagueId, memberId),
+  ]);
   const roster = latestTeam?.rosters[0];
 
   // Split roster into starters and bench
@@ -321,6 +326,50 @@ export default async function MemberDetailPage({
                 </tbody>
               </table>
             </div>
+          </section>
+        )}
+
+        {/* ── TRANSACTIONS ─────────────────────────────────────────────── */}
+        {txSummary.recent.length > 0 && (
+          <section>
+            <SectionHeading label="Transactions" icon="🔁" accent="blue" />
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
+              <BigStat label="Drafted" value={String(txSummary.drafted)} color="slate" />
+              <BigStat label="Waiver Claims" value={String(txSummary.claimed)} color="blue" />
+              <BigStat label="FA Pickups" value={String(txSummary.added)} color="emerald" />
+              <BigStat label="Drops" value={String(txSummary.dropped)} color="red" />
+              <BigStat label="Trades" value={String(txSummary.trades)} color="yellow" />
+            </div>
+            <div className="rounded-2xl overflow-hidden border border-white/8 bg-slate-900 divide-y divide-white/5">
+              {txSummary.recent.map((m) => (
+                <div key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5">
+                  <span className="w-24 text-xs font-bold text-slate-500">
+                    {m.processedAt ? formatMoveDate(m.processedAt) : m.season.year}
+                  </span>
+                  <TypeBadge type={m.type} />
+                  <Link
+                    href={`/dashboard/leagues/${leagueId}/players/${m.player.id}`}
+                    className="text-sm font-bold text-white hover:text-emerald-400 transition-colors"
+                  >
+                    {m.player.name}
+                    <span className="ml-1.5 text-xs text-slate-500">{m.player.position}</span>
+                  </Link>
+                  <span className="text-xs font-medium text-slate-500">
+                    {m.type === "TRADE"
+                      ? m.toTeam?.member.id === memberId
+                        ? `from ${m.fromTeam?.member.displayName ?? "?"}`
+                        : `to ${m.toTeam?.member.displayName ?? "?"}`
+                      : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <Link
+              href={`/dashboard/leagues/${leagueId}/transactions?member=${memberId}`}
+              className="inline-block mt-4 text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              All of {member.displayName}&apos;s transactions →
+            </Link>
           </section>
         )}
       </div>

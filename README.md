@@ -86,6 +86,8 @@ theleague-app/
 │   │       ├── page.tsx                  # League overview
 │   │       ├── members/[memberId]/       # Member detail + roster
 │   │       ├── records/                  # Record book
+│   │       ├── transactions/             # Every add, drop, claim, trade
+│   │       ├── players/[playerId]/       # One player's path through the league
 │   │       ├── history/                  # Season timeline
 │   │       ├── analytics/                # Charts
 │   │       ├── finances/                 # Dues + payouts
@@ -101,13 +103,36 @@ theleague-app/
 │       └── stripe/                       # Checkout + webhooks
 ├── services/
 │   └── espn-importer/
-│       └── main.py                       # FastAPI ESPN service (v2)
+│       ├── main.py                       # FastAPI ESPN service (v2)
+│       └── transactions.py               # Transaction history builder
 ├── prisma/
 │   └── schema.prisma                     # Full DB schema
 └── src/lib/
     ├── db.ts                             # Prisma client
     ├── auth.ts                           # getCurrentUser helper
-    └── records.ts                        # Record book + career stats engine
+    ├── records.ts                        # Record book + career stats engine
+    ├── transactions.ts                   # Transaction queries for pages
+    └── transactions-import.ts            # Saves imported transaction history
+```
+
+---
+
+## Transaction History
+
+ESPN imports now include every player movement for the season: draft picks, waiver claims, free-agent adds, drops and trades, one `Transaction` row per player moved.
+
+ESPN keeps a week-by-week transaction log for past seasons but no longer records which players moved in most historical trades. `services/espn-importer/transactions.py` combines that log with weekly roster snapshots: logged moves come straight from the log with exact timestamps, and replaying them against each week's rosters recovers trades and anything the log missed. A roster-found trade is dated by matching it to the log's accept/uphold events (same or adjacent week, accepted by one of the two teams). Rows recovered from rosters are marked `source = ROSTER_SNAPSHOT`.
+
+```bash
+# Apply the schema change
+npx prisma migrate deploy
+
+# Tests for the builder
+cd services/espn-importer && python3 -m unittest test_transactions
+
+# Backfill from saved raw ESPN JSON (year -> fetch_season_raw output) without re-importing
+python3 services/espn-importer/transactions.py raw.json --league-id 6911200 > seasons.json
+npm run load:espn-transactions -- <league id or slug> seasons.json
 ```
 
 ---
@@ -134,6 +159,7 @@ theleague-app/
   - [x] Weekly roster + player lineup data (starters vs bench, points per player)
   - [x] Private league support (espn_s2 + SWID cookies)
   - [x] Per-week async timeouts; server no longer crashes on large imports
+  - [x] Transaction history: every draft pick, waiver claim, free-agent add, drop and trade (`services/espn-importer/transactions.py`)
 - [x] Sleeper importer
 - [x] Yahoo importer (OAuth2)
 - [x] Fleaflicker importer
@@ -150,6 +176,7 @@ theleague-app/
 - [x] Member charts (Recharts — weekly scores, season PF bar chart)
 - [x] Season history / timeline page
 - [x] Starters vs bench split on roster page with per-player points
+- [x] Transactions page (filter by season, manager, type, player), trades view, player journey pages
 - [ ] Expand record book to 50+ records (currently ~20)
 - [ ] Streaks tracker (current win/loss streak)
 - [ ] Filter records by season or member
@@ -194,6 +221,7 @@ theleague-app/
 | Dashboard requires live DB to render | Temporary mock data in `dashboard/page.tsx` for UI preview |
 | Background weekly sync not implemented | Pending — Inngest / BullMQ not yet wired up |
 | Record book capped at ~20 records | Target is 50+; `lib/records.ts` is extensible |
+| ESPN members are keyed by team slot, not owner | A slot that changed hands (e.g. a new manager taking over team 2) is treated as one member across seasons, which merges career stats, records and transactions. Fix: key members by ESPN owner id in `/api/espn/import` |
 
 ---
 
