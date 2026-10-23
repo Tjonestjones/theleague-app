@@ -3,6 +3,7 @@ import { getCurrentUser, getLeagueAccess } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LeagueMembers } from "./league-members";
+import { MilestoneWatch } from "./milestone-watch";
 import { TrialBanner } from "@/components/subscription-gate";
 import type { Metadata } from "next";
 
@@ -74,6 +75,7 @@ export default async function LeagueDetailPage({
   const navItems = [
     { href: `/dashboard/leagues/${leagueId}/history`,   abbr: "HST", label: "History",    bar: "bg-emerald-500", text: "group-hover:text-emerald-400", border: "hover:border-emerald-500/40" },
     { href: `/dashboard/leagues/${leagueId}/records`,   abbr: "REC", label: "Records",    bar: "bg-yellow-500",  text: "group-hover:text-yellow-400",  border: "hover:border-yellow-500/40" },
+    { href: `/dashboard/leagues/${leagueId}/transactions`, abbr: "TXN", label: "Transactions", bar: "bg-orange-500", text: "group-hover:text-orange-400", border: "hover:border-orange-500/40" },
     { href: `/dashboard/leagues/${leagueId}/analytics`, abbr: "ANA", label: "Analytics",  bar: "bg-cyan-500",    text: "group-hover:text-cyan-400",    border: "hover:border-cyan-500/40" },
     { href: `/dashboard/leagues/${leagueId}/members`,   abbr: "MBR", label: "Members",    bar: "bg-blue-500",    text: "group-hover:text-blue-400",    border: "hover:border-blue-500/40" },
     { href: `/dashboard/leagues/${leagueId}/finances`,  abbr: "FIN", label: "Finances",   bar: "bg-green-500",   text: "group-hover:text-green-400",   border: "hover:border-green-500/40" },
@@ -165,7 +167,7 @@ export default async function LeagueDetailPage({
       <div className="px-6 md:px-12 py-10 space-y-12">
 
         {/* ── NAVIGATION ──────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <div className={`group relative flex flex-col items-center bg-slate-900 border border-white/8 ${item.border} rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer`}>
@@ -178,6 +180,9 @@ export default async function LeagueDetailPage({
             </Link>
           ))}
         </div>
+
+        {/* ── MILESTONE WATCH ─────────────────────────────────────────── */}
+        <MilestoneWatch leagueId={leagueId} />
 
         {/* ── SEASONS ─────────────────────────────────────────────────── */}
         <div>

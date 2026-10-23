@@ -232,6 +232,8 @@ model Team {
   awayMatchups  Matchup[] @relation("AwayTeam")
   rosters       Roster[]
   draftPicks    DraftPick[]
+  transactionsOut Transaction[] @relation("TransactionFrom")
+  transactionsIn  Transaction[] @relation("TransactionTo")
 
   @@unique([seasonId, memberId])
   @@index([seasonId])
@@ -314,6 +316,7 @@ model Player {
   yahooId       String?  @unique
   fleaflickerId Int?     @unique
   nflId         String?  @unique
+  gsisId        String?  @unique // nflverse / NFL GSIS id, for real-life stats
   
   isActive      Boolean  @default(true)
   
@@ -323,6 +326,8 @@ model Player {
   // Relations
   rosterSpots   RosterSpot[]
   draftPicks    DraftPick[]
+  transactions  Transaction[]
+  seasonStats   PlayerSeasonStat[]
 
   @@index([name])
   @@index([sleeperId])
@@ -363,6 +368,43 @@ model RosterSpot {
   @@index([rosterId])
   @@index([playerId])
   @@map("roster_spots")
+}
+
+// Real-life NFL regular-season stats, one row per player per season.
+// Synced from nflverse (scripts/sync-nfl-stats.mts); used for career milestones.
+model PlayerSeasonStat {
+  id              String   @id @default(cuid())
+  
+  playerId        String
+  player          Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  season          Int
+  team            String?
+  games           Int      @default(0)
+  
+  completions     Int      @default(0)
+  attempts        Int      @default(0)
+  passingYards    Int      @default(0)
+  passingTds      Int      @default(0)
+  interceptions   Int      @default(0)
+  
+  carries         Int      @default(0)
+  rushingYards    Int      @default(0)
+  rushingTds      Int      @default(0)
+  
+  targets         Int      @default(0)
+  receptions      Int      @default(0)
+  receivingYards  Int      @default(0)
+  receivingTds    Int      @default(0)
+  
+  fgMade          Int      @default(0)
+  fgAttempts      Int      @default(0)
+  
+  updatedAt       DateTime @updatedAt
+
+  @@unique([playerId, season])
+  @@index([playerId])
+  @@map("player_season_stats")
 }
 
 // ============================================
@@ -421,38 +463,67 @@ model DraftPick {
 // TRANSACTIONS
 // ============================================
 
+// One row per player movement: a player drafted, claimed, added, dropped or
+// traded. A trade is several rows sharing a tradeGroup.
 model Transaction {
   id            String   @id @default(cuid())
-  
+
   seasonId      String
   season        Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  
+
   type          TransactionType
   status        TransactionStatus @default(COMPLETED)
-  
+
+  // Chronological order within the season (1 = first move)
+  sequence      Int
   weekNumber    Int?
-  
-  // Trade-specific (JSON for flexibility)
-  tradeDetails  Json?
-  
-  // Add/Drop-specific
-  addedPlayer   String?
-  droppedPlayer String?
-  teamId        String?
-  
-  processedAt   DateTime
+
+  playerId      String
+  player        Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  // null = free agency / waivers
+  fromTeamId    String?
+  fromTeam      Team?    @relation("TransactionFrom", fields: [fromTeamId], references: [id], onDelete: SetNull)
+  toTeamId      String?
+  toTeam        Team?    @relation("TransactionTo", fields: [toTeamId], references: [id], onDelete: SetNull)
+
+  // Rows of the same trade share this id (e.g. "T2024-03")
+  tradeGroup    String?
+
+  draftPick     Int?     // overall pick number
+  draftRound    Int?
+  waiverBid     Int?     // FAAB bid, when the league uses a budget
+
+  // Where the row came from: the platform's transaction log, or
+  // reconstructed from week-to-week roster snapshots
+  source        TransactionSource @default(PLATFORM_LOG)
+  note          String?
+
+  // null when only the week is known
+  processedAt   DateTime?
   createdAt     DateTime @default(now())
 
+  @@unique([seasonId, sequence])
   @@index([seasonId])
   @@index([weekNumber])
+  @@index([playerId])
+  @@index([fromTeamId])
+  @@index([toTeamId])
+  @@index([tradeGroup])
   @@map("transactions")
 }
 
 enum TransactionType {
-  TRADE
-  ADD
+  DRAFT
+  ADD       // free-agent pickup
+  WAIVER    // waiver claim
   DROP
-  WAIVER
+  TRADE
+}
+
+enum TransactionSource {
+  PLATFORM_LOG
+  ROSTER_SNAPSHOT
 }
 
 enum TransactionStatus {

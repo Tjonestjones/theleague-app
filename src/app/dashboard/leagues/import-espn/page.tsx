@@ -62,7 +62,7 @@ function ImportESPNContent() {
       return;
     }
     setStatus("importing");
-    setMessage("Importing league data — this can take a few minutes for large seasons...");
+    setMessage("Importing scores, rosters and every transaction — this can take a few minutes for large seasons...");
     try {
       const response = await fetch("/api/espn/import", {
         method: "POST",
@@ -72,8 +72,8 @@ function ImportESPNContent() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Import failed");
       setStatus("success");
-      setMessage(data.message);
-      setTimeout(() => router.push(`/dashboard/leagues/${leagueId}`), 2000);
+      setMessage(data.warning ? `${data.message}. ${data.warning}` : data.message);
+      setTimeout(() => router.push(`/dashboard/leagues/${leagueId}`), data.warning ? 6000 : 2000);
     } catch (error: unknown) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Unknown error");

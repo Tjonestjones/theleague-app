@@ -6,10 +6,13 @@
     "dev": "concurrently \"python3 services/espn-importer/main.py\" \"next dev\"",
     "dev:next": "next dev",
     "espn-service": "python3 services/espn-importer/main.py",
+    "load:espn-transactions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/load-espn-transactions.mts",
+    "sync:nfl-stats": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/sync-nfl-stats.mts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "playwright test",
+    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mts",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report"

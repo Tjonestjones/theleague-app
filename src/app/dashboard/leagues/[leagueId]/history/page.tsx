@@ -83,6 +83,12 @@ export default async function HistoryPage({
                 Records
               </Link>
               <Link
+                href={`/dashboard/leagues/${leagueId}/transactions`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-orange-400 hover:border-orange-500/25 font-bold text-sm transition-all"
+              >
+                Transactions
+              </Link>
+              <Link
                 href={`/dashboard/leagues/${leagueId}/members`}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-blue-400 hover:border-blue-500/25 font-bold text-sm transition-all"
               >
