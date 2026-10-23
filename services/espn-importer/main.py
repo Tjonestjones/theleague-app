@@ -395,5 +395,9 @@ def get_available_years(league_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info",
+    import os
+    # Locally this stays on 127.0.0.1:8001. On Railway, set HOST=:: so the
+    # Next.js service can reach it over the private network, and PORT=8001.
+    uvicorn.run(app, host=os.environ.get("HOST", "127.0.0.1"),
+                port=int(os.environ.get("PORT", "8001")), log_level="info",
                 timeout_keep_alive=120)
