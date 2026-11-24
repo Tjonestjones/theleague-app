@@ -6,6 +6,7 @@ import {
   type ImportedSeasonTransactions,
   type SaveResult,
 } from "@/lib/transactions-import";
+import { syncSeasonProjections } from "@/lib/fantasy-seasons";
 
 const ESPN_SERVICE_URL = process.env.ESPN_SERVICE_URL || "http://127.0.0.1:8001";
 
@@ -319,7 +320,21 @@ export async function POST(request: NextRequest) {
       transactionWarning = "Transactions not imported: the ESPN service didn't respond in time";
     }
 
-    // 10. Mark sync completed
+    // 10. Season projections + actual totals for draft returns (non-fatal)
+    let projectionCount = 0;
+    try {
+      projectionCount = await syncSeasonProjections(
+        prisma,
+        ESPN_SERVICE_URL,
+        { id: season.id, year: season.year, platformId: String(league_id) },
+        { espn_s2, swid },
+      );
+    } catch (projErr) {
+      console.error("ESPN projections import error:", projErr);
+      transactionWarning = [transactionWarning, "Draft projections not imported"].filter(Boolean).join("; ");
+    }
+
+    // 11. Mark sync completed
     await prisma.season.update({
       where: { id: season.id },
       data: { syncStatus: "COMPLETED", lastSyncedAt: new Date() },
@@ -337,6 +352,7 @@ export async function POST(request: NextRequest) {
         players: playerCount,
         transactions: transactionStats?.saved ?? 0,
         trades: transactionStats?.trades ?? 0,
+        projections: projectionCount,
       },
       warning: transactionWarning,
       message:

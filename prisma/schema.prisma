@@ -187,6 +187,7 @@ model Season {
   weeks         Week[]
   transactions  Transaction[]
   draft         Draft?
+  playerFantasy PlayerFantasySeason[]
 
   @@unique([leagueId, year])
   @@index([leagueId])
@@ -328,6 +329,8 @@ model Player {
   draftPicks    DraftPick[]
   transactions  Transaction[]
   seasonStats   PlayerSeasonStat[]
+  fantasySeasons PlayerFantasySeason[]
+  gameLogs      PlayerGameLog[]
 
   @@index([name])
   @@index([sleeperId])
@@ -372,6 +375,39 @@ model RosterSpot {
 
 // Real-life NFL regular-season stats, one row per player per season.
 // Synced from nflverse (scripts/sync-nfl-stats.mts); used for career milestones.
+// A player's fantasy season in one of our league-seasons: ESPN's preseason
+// projection and his actual full-season total under that league's scoring.
+// Drives draft returns (actual ÷ projected).
+model PlayerFantasySeason {
+  id              String   @id @default(cuid())
+  playerId        String
+  player          Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  seasonId        String
+  season          Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  projectedPoints Float?
+  actualPoints    Float?
+  updatedAt       DateTime @updatedAt
+
+  @@unique([playerId, seasonId])
+  @@index([seasonId])
+  @@map("player_fantasy_seasons")
+}
+
+// One row per NFL regular-season game a player appeared in (nflverse weekly
+// stats). Drives availability: games played vs games available.
+model PlayerGameLog {
+  id        String  @id @default(cuid())
+  playerId  String
+  player    Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  season    Int
+  week      Int
+  team      String?
+
+  @@unique([playerId, season, week])
+  @@index([season])
+  @@map("player_game_logs")
+}
+
 model PlayerSeasonStat {
   id              String   @id @default(cuid())
   

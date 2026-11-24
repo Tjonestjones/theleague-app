@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from espn_api.football import League
 from typing import Optional, List, Dict, Any
 from transactions import fetch_season_raw, build_season_moves
+from projections import fetch_player_seasons
 import logging
 import signal
 import asyncio
@@ -378,6 +379,39 @@ async def import_transactions(request: ESPNAuthRequest):
         f"{len({m.get('trade_group') for m in result['moves'] if m.get('trade_group')})} trades"
     )
     return result
+
+
+class PlayerSeasonsRequest(ESPNAuthRequest):
+    player_ids: List[int]
+
+
+class PlayerSeasonTotal(BaseModel):
+    player_id: int
+    projected: Optional[float] = None
+    actual: Optional[float] = None
+
+
+@app.post("/api/espn/player-seasons", response_model=List[PlayerSeasonTotal])
+async def import_player_seasons(request: PlayerSeasonsRequest):
+    """
+    Preseason projection and actual season total, in league scoring, for the
+    given ESPN player ids. Used for draft returns.
+    """
+    loop = asyncio.get_event_loop()
+    try:
+        return await asyncio.wait_for(
+            loop.run_in_executor(
+                executor,
+                functools.partial(fetch_player_seasons, request.league_id, request.year,
+                                  request.player_ids, request.espn_s2, request.swid)
+            ),
+            timeout=120
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="ESPN projections pull timed out")
+    except Exception as e:
+        logger.error(f"Projections pull failed: {e}", exc_info=True)
+        raise HTTPException(status_code=400, detail=f"Projections pull failed: {str(e)}")
 
 
 @app.get("/api/espn/available-years/{league_id}")

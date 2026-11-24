@@ -101,10 +101,10 @@ function SidebarBody({
     {
       title: "Analysis",
       items: [
-        { label: "Luck & all-play", soon: true },
-        { label: "Close games", soon: true },
-        { label: "Draft", soon: true },
-        { label: "Availability", soon: true },
+        { label: "Luck & all-play", href: `${base}/luck` },
+        { label: "Close games", href: `${base}/close-games` },
+        { label: "Draft", href: `${base}/draft` },
+        { label: "Availability", href: `${base}/availability` },
         { label: "Lineups", href: `${base}/analytics` },
         { label: "Records", href: `${base}/records` },
       ],

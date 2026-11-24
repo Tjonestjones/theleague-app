@@ -345,10 +345,10 @@ const eligible = (slot: string, pos: string) => {
   if (FLEX_ELIGIBLE[slot]) return FLEX_ELIGIBLE[slot].includes(norm(pos));
   return norm(slot) === norm(pos);
 };
-const BENCH_SLOTS = new Set(["BE", "BN", "BENCH", "IR"]);
+export const BENCH_SLOTS = new Set(["BE", "BN", "BENCH", "IR"]);
 
 /** Best possible lineup using the same starting slots, flex slots filled last. */
-function optimalLineup(starters: LineupSlot[], all: LineupSlot[]) {
+export function optimalLineup(starters: LineupSlot[], all: LineupSlot[]) {
   const slots = starters.map((s) => s.slot).sort((a, b) => Number(!!FLEX_ELIGIBLE[a]) - Number(!!FLEX_ELIGIBLE[b]));
   const pool = [...all].filter((p) => p.slot !== "IR").sort((a, b) => b.points - a.points);
   const used = new Set<string>();
