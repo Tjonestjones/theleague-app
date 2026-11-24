@@ -61,6 +61,7 @@ model League {
   members       Member[]
   invites       Invite[]
   finances      Finance[]
+  recaps        Recap[]
 
   @@index([ownerId])
   @@index([slug])
@@ -406,6 +407,36 @@ model PlayerGameLog {
   @@unique([playerId, season, week])
   @@index([season])
   @@map("player_game_logs")
+}
+
+// AI- or template-written recaps: weekly league recap, one manager's week,
+// the season story, and a manager's Season Wrapped. week = 0 and memberId =
+// "" stand in for "not applicable" so the unique key works.
+model Recap {
+  id          String    @id @default(cuid())
+  leagueId    String
+  league      League    @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  kind        RecapKind
+  year        Int
+  week        Int       @default(0)
+  memberId    String    @default("")
+  title       String
+  body        String
+  facts       Json
+  writer      String    // model id, or "template"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([leagueId, kind, year, week, memberId])
+  @@index([leagueId, year])
+  @@map("recaps")
+}
+
+enum RecapKind {
+  WEEKLY
+  MANAGER_WEEKLY
+  SEASON_STORY
+  SEASON_WRAPPED
 }
 
 model PlayerSeasonStat {

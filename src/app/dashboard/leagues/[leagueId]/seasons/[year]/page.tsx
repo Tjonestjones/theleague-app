@@ -7,6 +7,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSeasonDetail, ordinal, signed, type BracketGame, type SeasonTeamRow } from "@/lib/season";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import { PageHeader, Section } from "@/components/page-chrome";
+import { RecapPanel } from "@/components/recap-panel";
+import { getRecap, seasonStoryFacts, seasonStoryTemplate, aiEnabled } from "@/lib/recaps";
+import { getViewer } from "@/lib/viewer";
 
 type Params = Promise<{ leagueId: string; year: string }>;
 
@@ -29,6 +32,11 @@ export default async function SeasonPage({ params }: { params: Params }) {
     prisma.season.findMany({ where: { leagueId }, select: { year: true }, orderBy: { year: "asc" } }),
   ]);
   if (!league || !detail) notFound();
+  const [story, storyFacts, viewer] = await Promise.all([
+    getRecap(leagueId, "SEASON_STORY", year),
+    seasonStoryFacts(leagueId, year),
+    getViewer(leagueId),
+  ]);
 
   const idx = years.findIndex((s) => s.year === year);
   const prevYear = idx > 0 ? years[idx - 1].year : null;
@@ -183,11 +191,15 @@ export default async function SeasonPage({ params }: { params: Params }) {
             </Section>
           </div>
 
-          {/* Essay placeholder */}
+          {/* Season story */}
           <Section title="Season story">
-            <div className="border border-dashed border-white/10 rounded-lg px-6 py-8 text-sm text-slate-500">
-              A written recap of the {year} season will appear here once AI-written recaps are switched on.
-            </div>
+            <RecapPanel
+              recap={story}
+              preview={storyFacts ? seasonStoryTemplate(storyFacts) : null}
+              canWrite={!!viewer?.isCommissioner}
+              aiEnabled={aiEnabled()}
+              target={{ leagueId, kind: "SEASON_STORY", year, week: 0, memberId: "" }}
+            />
           </Section>
         </div>
       </div>

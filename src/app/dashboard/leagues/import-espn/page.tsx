@@ -22,10 +22,15 @@ function ImportESPNContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const leagueId = searchParams.get("leagueId");
+  // NFL seasons start in September; offer the current one and the 15 before it.
+  const now = new Date();
+  const currentSeason = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+  const yearOptions = Array.from({ length: 16 }, (_, i) => currentSeason - i);
+  const requestedYear = Number(searchParams.get("year"));
 
   const [formData, setFormData] = useState({
-    league_id: "",
-    year: "2024",
+    league_id: searchParams.get("espnLeagueId") ?? "",
+    year: String(yearOptions.includes(requestedYear) ? requestedYear : currentSeason),
     espn_s2: "",
     swid: "",
   });
@@ -157,7 +162,7 @@ function ImportESPNContent() {
               disabled={isLoading}
               className="h-11 w-full rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-red-500/40 focus:outline-none transition-colors disabled:opacity-50"
             >
-              {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map((year) => (
+              {yearOptions.map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
