@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { BarChart3, Loader2 } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -86,7 +87,7 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="text-6xl animate-bounce mb-4">📊</div>
+          <Loader2 className="w-8 h-8 animate-spin text-slate-500 mb-4 mx-auto" />
           <p className="text-xl text-slate-400 font-semibold">Crunching numbers...</p>
         </div>
       </div>
@@ -95,9 +96,9 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
 
   if (!data || data.analytics.length === 0) {
     return (
-      <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-cyan-500/30 rounded-3xl p-16 text-center shadow-2xl">
-        <div className="text-9xl mb-6">📊</div>
-        <h3 className="text-4xl font-black mb-4 text-white">No Analytics Data</h3>
+      <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-cyan-500/30 rounded-lg p-16 text-center shadow-2xl">
+        <BarChart3 className="w-12 h-12 text-slate-600 mb-6 mx-auto" />
+        <h3 className="text-4xl font-semibold mb-4 text-white">No Analytics Data</h3>
         <p className="text-xl text-slate-400 font-semibold max-w-2xl mx-auto">
           Analytics require roster data with player points. Import a season with full roster details to see efficiency graphs.
         </p>
@@ -176,11 +177,11 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       <div className="flex gap-4 items-center flex-wrap">
         {data.seasons.length > 1 && (
           <div>
-            <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Season</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Season</label>
             <select
               value={selectedSeason}
               onChange={(e) => handleSeasonChange(e.target.value)}
-              className="h-12 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
+              className="h-12 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
             >
               {data.seasons.map((s) => (
                 <option key={s.id} value={s.id}>{s.year}</option>
@@ -189,11 +190,11 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
           </div>
         )}
         <div>
-          <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Team</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Team</label>
           <select
             value={selectedTeam}
             onChange={(e) => setSelectedTeam(e.target.value)}
-            className="h-12 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
+            className="h-12 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
           >
             <option value="all">All Teams</option>
             {analytics.map((t) => (
@@ -202,11 +203,11 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Week</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Week</label>
           <select
             value={selectedWeek}
             onChange={(e) => setSelectedWeek(Number(e.target.value))}
-            className="h-12 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
+            className="h-12 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-cyan-500/50 focus:outline-none transition-colors"
           >
             <option value={0}>All Weeks</option>
             {Array.from({ length: maxWeeks }, (_, i) => (
@@ -219,15 +220,14 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       {/* Efficiency Rankings */}
       <div>
         <div className="mb-6">
-          <div className="inline-flex items-center gap-3 bg-cyan-500/20 border-2 border-cyan-500/30 rounded-full px-6 py-3 mb-4">
-            <span className="text-3xl">🎯</span>
-            <span className="font-black text-cyan-400 uppercase tracking-wider">Lineup Efficiency</span>
+          <div className="inline-flex items-center gap-3 bg-cyan-500/20 border border-cyan-500/30 rounded-md px-3 py-1 mb-4 text-xs">
+            <span className="font-semibold text-cyan-400 uppercase tracking-wider">Lineup Efficiency</span>
           </div>
-          <h2 className="text-5xl font-black text-white">Who Sets the Best Lineup?</h2>
+          <h2 className="text-5xl font-semibold text-white">Who Sets the Best Lineup?</h2>
           <p className="text-xl text-slate-400 font-semibold mt-2">Actual points as a percentage of max potential points</p>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-8 border-2 border-cyan-500/20 shadow-2xl">
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg p-8 border-2 border-cyan-500/20 shadow-2xl">
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={efficiencyRanking} layout="vertical" margin={{ left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -252,19 +252,18 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       {selectedTeamData && (
         <div>
           <div className="mb-6">
-            <div className="inline-flex items-center gap-3 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-full px-6 py-3 mb-4">
-              <span className="text-3xl">📈</span>
-              <span className="font-black text-emerald-400 uppercase tracking-wider">Player Breakdown</span>
+            <div className="inline-flex items-center gap-3 bg-emerald-500/20 border border-emerald-500/30 rounded-md px-3 py-1 mb-4 text-xs">
+              <span className="font-semibold text-emerald-400 uppercase tracking-wider">Player Breakdown</span>
             </div>
-            <h2 className="text-5xl font-black text-white">{selectedTeamData.memberName}</h2>
+            <h2 className="text-5xl font-semibold text-white">{selectedTeamData.memberName}</h2>
             <p className="text-xl text-slate-400 font-semibold mt-2">
-              Avg: <span className="text-emerald-400 font-black">{selectedTeamData.avgActual.toFixed(1)}</span> pts |
-              Max: <span className="text-cyan-400 font-black">{selectedTeamData.avgMax.toFixed(1)}</span> pts |
-              Efficiency: <span className="text-yellow-400 font-black">{(selectedTeamData.avgEfficiency * 100).toFixed(1)}%</span>
+              Avg: <span className="text-emerald-400 font-semibold">{selectedTeamData.avgActual.toFixed(1)}</span> pts |
+              Max: <span className="text-cyan-400 font-semibold">{selectedTeamData.avgMax.toFixed(1)}</span> pts |
+              Efficiency: <span className="text-yellow-400 font-semibold">{(selectedTeamData.avgEfficiency * 100).toFixed(1)}%</span>
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-8 border-2 border-emerald-500/20 shadow-2xl">
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg p-8 border-2 border-emerald-500/20 shadow-2xl">
             <ResponsiveContainer width="100%" height={400}>
               <ComposedChart data={teamWeeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -289,15 +288,14 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       {selectedWeek > 0 && weeklyComparison.length > 0 && (
         <div>
           <div className="mb-6">
-            <div className="inline-flex items-center gap-3 bg-orange-500/20 border-2 border-orange-500/30 rounded-full px-6 py-3 mb-4">
-              <span className="text-3xl">⚔️</span>
-              <span className="font-black text-orange-400 uppercase tracking-wider">Week {selectedWeek}</span>
+            <div className="inline-flex items-center gap-3 bg-orange-500/20 border border-orange-500/30 rounded-md px-3 py-1 mb-4 text-xs">
+              <span className="font-semibold text-orange-400 uppercase tracking-wider">Week {selectedWeek}</span>
             </div>
-            <h2 className="text-5xl font-black text-white">Week {selectedWeek} Breakdown</h2>
+            <h2 className="text-5xl font-semibold text-white">Week {selectedWeek} Breakdown</h2>
             <p className="text-xl text-slate-400 font-semibold mt-2">Actual points (solid) vs wasted potential (faded)</p>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-8 border-2 border-orange-500/20 shadow-2xl">
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg p-8 border-2 border-orange-500/20 shadow-2xl">
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={weeklyComparison}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -319,15 +317,14 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       {/* Points Left on Bench */}
       <div>
         <div className="mb-6">
-          <div className="inline-flex items-center gap-3 bg-red-500/20 border-2 border-red-500/30 rounded-full px-6 py-3 mb-4">
-            <span className="text-3xl">🪑</span>
-            <span className="font-black text-red-400 uppercase tracking-wider">Bench Analysis</span>
+          <div className="inline-flex items-center gap-3 bg-red-500/20 border border-red-500/30 rounded-md px-3 py-1 mb-4 text-xs">
+            <span className="font-semibold text-red-400 uppercase tracking-wider">Bench Analysis</span>
           </div>
-          <h2 className="text-5xl font-black text-white">Total Points Left on Bench</h2>
+          <h2 className="text-5xl font-semibold text-white">Total Points Left on Bench</h2>
           <p className="text-xl text-slate-400 font-semibold mt-2">Who leaves the most points sitting on the bench all season?</p>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-8 border-2 border-red-500/20 shadow-2xl">
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg p-8 border-2 border-red-500/20 shadow-2xl">
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={benchData} layout="vertical" margin={{ left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -351,45 +348,45 @@ export function AnalyticsCharts({ leagueId }: { leagueId: string }) {
       {/* Stat Cards Summary */}
       <div>
         <div className="mb-6">
-          <h2 className="text-5xl font-black text-white">Team Summary</h2>
+          <h2 className="text-5xl font-semibold text-white">Team Summary</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {analytics.map((team, i) => (
             <div
               key={team.teamId}
-              className="group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl p-6 border-2 border-cyan-500/20 hover:border-cyan-500/50 transition-all duration-500 transform hover:scale-[1.02] shadow-xl cursor-pointer"
+              className="group relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg p-6 border-2 border-cyan-500/20 hover:border-cyan-500/50 transition-all duration-500 transform hover:scale-[1.02] shadow-xl cursor-pointer"
               onClick={() => setSelectedTeam(team.teamId)}
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="text-2xl font-black text-slate-500">
-                  {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                <span className="text-2xl font-semibold text-slate-500">
+                  {`#${i + 1}`}
                 </span>
                 <span
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: TEAM_COLORS[i % TEAM_COLORS.length] }}
                 ></span>
               </div>
-              <h3 className="font-black text-xl text-white mb-1 group-hover:text-cyan-400 transition-colors">
+              <h3 className="font-semibold text-xl text-white mb-1 group-hover:text-cyan-400 transition-colors">
                 {team.memberName}
               </h3>
               <p className="text-sm text-slate-500 font-semibold mb-4">{team.teamName}</p>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center">
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider">Efficiency</p>
-                  <p className="text-2xl font-black text-cyan-400">{(team.avgEfficiency * 100).toFixed(1)}%</p>
+                <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Efficiency</p>
+                  <p className="text-2xl font-semibold text-cyan-400">{(team.avgEfficiency * 100).toFixed(1)}%</p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center">
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider">Avg Score</p>
-                  <p className="text-2xl font-black text-emerald-400">{team.avgActual.toFixed(1)}</p>
+                <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Score</p>
+                  <p className="text-2xl font-semibold text-emerald-400">{team.avgActual.toFixed(1)}</p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center">
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider">Avg Max</p>
-                  <p className="text-2xl font-black text-white">{team.avgMax.toFixed(1)}</p>
+                <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Max</p>
+                  <p className="text-2xl font-semibold text-white">{team.avgMax.toFixed(1)}</p>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center">
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider">Pts Wasted</p>
-                  <p className="text-2xl font-black text-red-400">{team.totalPointsLeft.toFixed(0)}</p>
+                <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pts Wasted</p>
+                  <p className="text-2xl font-semibold text-red-400">{team.totalPointsLeft.toFixed(0)}</p>
                 </div>
               </div>
             </div>

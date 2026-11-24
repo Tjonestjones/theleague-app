@@ -56,8 +56,8 @@ export default async function LeagueDetailPage({
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-6xl font-black text-slate-700 mb-4">404</p>
-          <h2 className="text-2xl font-black mb-4">League Not Found</h2>
+          <p className="text-6xl font-semibold text-slate-700 mb-4">404</p>
+          <h2 className="text-2xl font-semibold mb-4">League Not Found</h2>
           <Link href="/dashboard" className="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">
             ← Back to Dashboard
           </Link>
@@ -114,7 +114,7 @@ export default async function LeagueDetailPage({
 
           <div className="flex items-start justify-between flex-wrap gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">{league.name}</h1>
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">{league.name}</h1>
               {league.description && (
                 <p className="text-slate-400 text-sm font-medium mb-3">{league.description}</p>
               )}
@@ -151,7 +151,7 @@ export default async function LeagueDetailPage({
             {isCommissioner && (
               <Link
                 href={`/dashboard/leagues/${leagueId}/settings`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -170,11 +170,11 @@ export default async function LeagueDetailPage({
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
-              <div className={`group relative flex flex-col items-center bg-slate-900 border border-white/8 ${item.border} rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer`}>
+              <div className={`group relative flex flex-col items-center bg-slate-900 border border-white/8 ${item.border} rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer`}>
                 <div className={`w-full h-0.5 ${item.bar}`} />
                 <div className="py-5 px-3 text-center">
-                  <span className={`block text-xs font-black text-slate-600 tracking-widest mb-1.5 uppercase`}>{item.abbr}</span>
-                  <span className={`font-black text-sm text-white ${item.text} transition-colors`}>{item.label}</span>
+                  <span className={`block text-xs font-semibold text-slate-600 tracking-widest mb-1.5 uppercase`}>{item.abbr}</span>
+                  <span className={`font-semibold text-sm text-white ${item.text} transition-colors`}>{item.label}</span>
                 </div>
               </div>
             </Link>
@@ -187,11 +187,11 @@ export default async function LeagueDetailPage({
         {/* ── SEASONS ─────────────────────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Imported Seasons</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Imported Seasons</h2>
             {isCommissioner && (
               <Link
                 href={`/dashboard/leagues/import?leagueId=${leagueId}`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/50"
               >
                 + Import Data
               </Link>
@@ -199,15 +199,15 @@ export default async function LeagueDetailPage({
           </div>
 
           {league.seasons.length === 0 ? (
-            <div className="border-2 border-dashed border-white/8 rounded-2xl p-14 text-center">
-              <p className="text-slate-600 font-black text-sm uppercase tracking-widest mb-2">No seasons imported</p>
+            <div className="border-2 border-dashed border-white/8 rounded-lg p-14 text-center">
+              <p className="text-slate-600 font-semibold text-sm uppercase tracking-widest mb-2">No seasons imported</p>
               <p className="text-slate-500 text-sm font-medium mb-6">
                 Import from ESPN, Sleeper, Yahoo, or Fleaflicker to unlock your league history.
               </p>
               {isCommissioner && (
                 <Link
                   href={`/dashboard/leagues/import?leagueId=${leagueId}`}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/50"
                 >
                   Import Your First Season →
                 </Link>
@@ -218,9 +218,9 @@ export default async function LeagueDetailPage({
               {league.seasons.map((season) => (
                 <div
                   key={season.id}
-                  className="group flex items-center gap-6 bg-slate-900 border border-white/8 rounded-2xl px-6 py-5"
+                  className="group flex items-center gap-6 bg-slate-900 border border-white/8 rounded-lg px-6 py-5"
                 >
-                  <div className="text-2xl font-black text-white w-16 flex-shrink-0">
+                  <div className="text-2xl font-semibold text-white w-16 flex-shrink-0">
                     {season.year}
                   </div>
 
@@ -234,7 +234,7 @@ export default async function LeagueDetailPage({
                     <span>{season._count.weeks} weeks</span>
                   </div>
 
-                  <span className={`text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full border flex-shrink-0 ${syncStatusStyle(season.syncStatus)}`}>
+                  <span className={`text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border flex-shrink-0 ${syncStatusStyle(season.syncStatus)}`}>
                     {season.syncStatus}
                   </span>
                 </div>

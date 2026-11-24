@@ -30,7 +30,7 @@ export function UpgradeButton({ leagueId, size = "lg" }: Props) {
       <button
         onClick={handleUpgrade}
         disabled={loading}
-        className="flex-shrink-0 h-8 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition-all disabled:opacity-50"
+        className="flex-shrink-0 h-8 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all disabled:opacity-50"
       >
         {loading ? "..." : "Subscribe — $36/yr"}
       </button>
@@ -41,7 +41,7 @@ export function UpgradeButton({ leagueId, size = "lg" }: Props) {
     <button
       onClick={handleUpgrade}
       disabled={loading}
-      className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-50"
+      className="w-full h-12 flex items-center justify-center gap-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-50"
     >
       {loading ? (
         <>

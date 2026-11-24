@@ -50,7 +50,7 @@ export default async function TransactionsPage({
   const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
   if (!league)
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-semibold">
         League not found
       </div>
     );
@@ -99,18 +99,18 @@ export default async function TransactionsPage({
             </Link>
             <div className="flex items-end justify-between gap-6 flex-wrap">
               <div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight">Transactions</h1>
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Transactions</h1>
                 <p className="text-slate-500 text-sm font-medium mt-1">
                   Every draft pick, waiver claim, pickup, drop and trade
                   {hasHistory && ` · ${options.seasons[options.seasons.length - 1]}–${options.seasons[0]}`}
                 </p>
               </div>
-              <div className="flex rounded-xl bg-slate-900 border border-white/10 p-1">
+              <div className="flex rounded-md bg-slate-900 border border-white/10 p-1">
                 {(["all", "trades"] as const).map((v) => (
                   <Link
                     key={v}
                     href={href({ view: v === "trades" ? "trades" : undefined, page: undefined, type: v === "trades" ? undefined : filters.type?.toLowerCase() })}
-                    className={`px-4 py-2 rounded-lg text-sm font-black transition-colors ${
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                       view === v ? "bg-slate-700 text-white" : "text-slate-500 hover:text-slate-300"
                     }`}
                   >
@@ -124,8 +124,8 @@ export default async function TransactionsPage({
 
         <div className="px-6 md:px-12 py-10 space-y-8">
           {!hasHistory ? (
-            <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
-              <p className="text-slate-600 font-black text-sm uppercase tracking-widest mb-2">No transactions yet</p>
+            <div className="border-2 border-dashed border-white/8 rounded-lg p-12 text-center">
+              <p className="text-slate-600 font-semibold text-sm uppercase tracking-widest mb-2">No transactions yet</p>
               <p className="text-slate-500 text-sm font-medium">
                 Import a season from ESPN to load its draft, waiver, free-agent and trade history.
               </p>
@@ -141,16 +141,16 @@ export default async function TransactionsPage({
                   <FilterSelect name="type" label="Type" value={filters.type?.toLowerCase()} options={TRANSACTION_TYPES.map((t) => ({ value: t.toLowerCase(), label: TYPE_LABEL[t] }))} all="All types" />
                 )}
                 <label className="flex flex-col gap-1.5">
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Player</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Player</span>
                   <input
                     type="search"
                     name="q"
                     defaultValue={filters.q}
                     placeholder="Search a player"
-                    className="h-10 w-52 rounded-xl bg-slate-900 border border-white/10 px-3 text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50"
+                    className="h-10 w-52 rounded-md bg-slate-900 border border-white/10 px-3 text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50"
                   />
                 </label>
-                <button type="submit" className="h-10 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-colors">
+                <button type="submit" className="h-10 px-5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors">
                   Apply
                 </button>
                 {(filters.season || filters.memberId || filters.type || filters.q) && (
@@ -205,29 +205,29 @@ async function AllMoves({
             <Link
               key={t.type}
               href={href({ type: active ? undefined : t.type.toLowerCase(), page: undefined })}
-              className={`rounded-2xl border px-5 py-4 transition-colors ${
+              className={`rounded-lg border px-5 py-4 transition-colors ${
                 active ? "bg-slate-800 border-white/20" : "bg-slate-900 border-white/8 hover:border-white/15"
               }`}
             >
-              <span className="block text-2xl font-black text-white tabular-nums">{t.value.toLocaleString()}</span>
-              <span className="block text-xs font-black uppercase tracking-widest text-slate-500 mt-1">{t.label}</span>
+              <span className="block text-2xl font-semibold text-white tabular-nums">{t.value.toLocaleString()}</span>
+              <span className="block text-xs font-semibold uppercase tracking-widest text-slate-500 mt-1">{t.label}</span>
             </Link>
           );
         })}
       </div>
 
       {rows.length === 0 ? (
-        <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
+        <div className="border-2 border-dashed border-white/8 rounded-lg p-12 text-center">
           <p className="text-slate-600 font-bold text-sm">No moves match these filters.</p>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-white/8 rounded-2xl overflow-hidden">
+        <div className="bg-slate-900 border border-white/8 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px]">
               <thead className="border-b border-white/8">
                 <tr>
                   {["Date", "Type", "Player", "From", "", "To"].map((h, i) => (
-                    <th key={i} className="px-5 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">
+                    <th key={i} className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">
                       {h}
                     </th>
                   ))}
@@ -268,7 +268,7 @@ async function AllMoves({
                     <td className="px-5 py-3.5 max-w-[200px]">
                       <TeamCell team={m.fromTeam} leagueId={leagueId} empty={m.type === "DRAFT" ? "Draft" : m.type === "WAIVER" ? "Waivers" : "Free agency"} />
                     </td>
-                    <td className="py-3.5 text-slate-600 font-black">→</td>
+                    <td className="py-3.5 text-slate-600 font-semibold">→</td>
                     <td className="px-5 py-3.5 max-w-[200px]">
                       <TeamCell team={m.toTeam} leagueId={leagueId} empty={m.type === "DROP" ? "Waivers" : "Free agency"} />
                     </td>
@@ -288,12 +288,12 @@ async function AllMoves({
           </span>
           <div className="flex gap-2">
             {page > 1 && (
-              <Link href={href({ page: page - 1 })} className="px-4 py-2 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white">
+              <Link href={href({ page: page - 1 })} className="px-4 py-2 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-white">
                 ← Newer
               </Link>
             )}
             {page < pages && (
-              <Link href={href({ page: page + 1 })} className="px-4 py-2 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white">
+              <Link href={href({ page: page + 1 })} className="px-4 py-2 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-white">
                 Older →
               </Link>
             )}
@@ -311,31 +311,31 @@ async function TradesList({ leagueId, filters }: { leagueId: string; filters: Tr
 
   if (!trades.length)
     return (
-      <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
+      <div className="border-2 border-dashed border-white/8 rounded-lg p-12 text-center">
         <p className="text-slate-600 font-bold text-sm">No trades match these filters.</p>
       </div>
     );
 
   return (
     <div className="space-y-4">
-      <p className="text-xs font-black uppercase tracking-widest text-slate-500">
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
         {trades.length} trade{trades.length === 1 ? "" : "s"}
       </p>
       {trades.map((t) => (
-        <div key={`${t.year}-${t.group}`} className="bg-slate-900 border border-white/8 rounded-2xl overflow-hidden">
+        <div key={`${t.year}-${t.group}`} className="bg-slate-900 border border-white/8 rounded-lg overflow-hidden">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3 border-b border-white/5 text-xs font-bold text-slate-500">
-            <span className="font-black text-yellow-400">{t.year}</span>
+            <span className="font-semibold text-yellow-400">{t.year}</span>
             <span>{weekLabel(t.week)}</span>
             {t.processedAt ? <span>{formatMoveDate(t.processedAt)}</span> : <span>Exact date not recorded</span>}
           </div>
           <div className={`grid gap-px bg-white/5 ${t.sides.length > 2 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
             {t.sides.map((s) => (
               <div key={s.teamId} className="bg-slate-900 px-6 py-5">
-                <Link href={`/dashboard/leagues/${leagueId}/members/${s.memberId}`} className="font-black text-white hover:text-emerald-400 transition-colors">
+                <Link href={`/dashboard/leagues/${leagueId}/members/${s.memberId}`} className="font-semibold text-white hover:text-emerald-400 transition-colors">
                   {s.memberName}
                 </Link>
                 <span className="block text-xs font-medium text-slate-500 mb-3">{s.teamName}</span>
-                <span className="block text-[11px] font-black uppercase tracking-widest text-slate-600 mb-2">Receives</span>
+                <span className="block text-[11px] font-semibold uppercase tracking-widest text-slate-600 mb-2">Receives</span>
                 {s.receives.length ? (
                   <ul className="space-y-1.5">
                     {s.receives.map((p) => (
@@ -379,11 +379,11 @@ function FilterSelect({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">{label}</span>
       <select
         name={name}
         defaultValue={value ?? ""}
-        className="h-10 min-w-40 rounded-xl bg-slate-900 border border-white/10 px-3 text-sm font-bold text-white focus:outline-none focus:border-emerald-500/50"
+        className="h-10 min-w-40 rounded-md bg-slate-900 border border-white/10 px-3 text-sm font-bold text-white focus:outline-none focus:border-emerald-500/50"
       >
         <option value="">{all}</option>
         {options.map((o) => (

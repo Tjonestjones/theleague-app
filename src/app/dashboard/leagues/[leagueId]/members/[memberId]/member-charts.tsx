@@ -36,7 +36,7 @@ export function MemberCharts({ weekScores, seasons }: Props) {
     <div className="space-y-8">
       {/* Scoring Trend */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">📈 Scoring Trend</h2>
+        <h2 className="text-xl font-semibold mb-4">Scoring Trend</h2>
         <div className="border rounded-lg p-4">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={weekData}>
@@ -60,7 +60,7 @@ export function MemberCharts({ weekScores, seasons }: Props) {
       {/* Season Wins/Losses */}
       {seasonData.length > 1 && (
         <div>
-          <h2 className="text-xl font-semibold mb-4">📊 Season Records</h2>
+          <h2 className="text-xl font-semibold mb-4">Season Records</h2>
           <div className="border rounded-lg p-4">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={seasonData}>
@@ -80,7 +80,7 @@ export function MemberCharts({ weekScores, seasons }: Props) {
       {/* Season Points */}
       {seasonData.length > 1 && (
         <div>
-          <h2 className="text-xl font-semibold mb-4">💰 Total Points by Season</h2>
+          <h2 className="text-xl font-semibold mb-4">Total Points by Season</h2>
           <div className="border rounded-lg p-4">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={seasonData}>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { Download, Trophy, ListOrdered, ArrowLeftRight, LineChart, Globe, Wallet, Mail, Archive } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Landing Page
@@ -12,7 +13,7 @@ export default function HomePage() {
       {/* ── NAV ─────────────────────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 border-b border-white/6 bg-black/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="text-base font-black tracking-tight text-white hover:text-emerald-400 transition-colors">
+          <Link href="/" className="text-base font-semibold tracking-tight text-white hover:text-emerald-400 transition-colors">
             TheLeague
           </Link>
           <nav className="hidden md:flex items-center gap-8">
@@ -36,7 +37,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/sign-up"
-                className="text-sm font-black text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg transition-colors"
+                className="text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg transition-colors"
               >
                 Get started
               </Link>
@@ -44,7 +45,7 @@ export default function HomePage() {
             <SignedIn>
               <Link
                 href="/dashboard"
-                className="text-sm font-black text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg transition-colors"
+                className="text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg transition-colors"
               >
                 Dashboard
               </Link>
@@ -72,7 +73,7 @@ export default function HomePage() {
           </div>
 
           {/* headline */}
-          <h1 className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight leading-[0.92] mb-8">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl font-semibold tracking-tight leading-[0.92] mb-8">
             Your league&apos;s history,{" "}
             <span className="bg-gradient-to-br from-emerald-400 to-green-500 bg-clip-text text-transparent">
               preserved forever.
@@ -89,19 +90,19 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <SignedOut>
               <Link href="/sign-up">
-                <button className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+                <button className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                   Start free trial
                 </button>
               </Link>
               <Link href="/sign-in">
-                <button className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/8 border border-white/10 text-white rounded-xl font-bold text-base transition-all">
+                <button className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/8 border border-white/10 text-white rounded-md font-bold text-base transition-all">
                   Sign in
                 </button>
               </Link>
             </SignedOut>
             <SignedIn>
               <Link href="/dashboard">
-                <button className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+                <button className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                   Open dashboard
                 </button>
               </Link>
@@ -128,7 +129,7 @@ export default function HomePage() {
 
       {/* ── TICKER STRIP ─────────────────────────────────────────────────── */}
       <div className="border-y border-white/6 bg-slate-950 py-4 overflow-hidden">
-        <div className="flex gap-12 items-center text-xs font-black uppercase tracking-widest text-slate-600 whitespace-nowrap px-6">
+        <div className="flex gap-12 items-center text-xs font-semibold uppercase tracking-widest text-slate-600 whitespace-nowrap px-6">
           {[
             "One-click import",
             "50+ automated records",
@@ -153,8 +154,8 @@ export default function HomePage() {
       <section id="features" className="py-28 bg-gradient-to-b from-slate-950 to-black">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-500 mb-4">Features</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white max-w-xl leading-tight">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-4">Features</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white max-w-xl leading-tight">
               Everything your league needs. Nothing it doesn&apos;t.
             </h2>
           </div>
@@ -163,17 +164,17 @@ export default function HomePage() {
             {FEATURES.map((feature, i) => (
               <div
                 key={feature.title}
-                className="group relative bg-slate-900 border border-white/6 hover:border-emerald-500/30 rounded-2xl p-7 transition-all duration-200"
+                className="group relative bg-slate-900 border border-white/6 hover:border-emerald-500/30 rounded-lg p-7 transition-all duration-200"
               >
                 <div className="flex items-start justify-between mb-5">
-                  <span className="text-xs font-black text-slate-700 tabular-nums">
+                  <span className="text-xs font-semibold text-slate-700 tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center border text-xs font-black ${feature.accentBg} ${feature.accentBorder} ${feature.accentText}`}>
-                    {feature.abbr}
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center border text-xs font-semibold ${feature.accentBg} ${feature.accentBorder} ${feature.accentText}`}>
+                    <feature.icon className="w-4 h-4" strokeWidth={2} />
                   </div>
                 </div>
-                <h3 className="font-black text-white text-lg mb-2 group-hover:text-emerald-400 transition-colors">
+                <h3 className="font-semibold text-white text-lg mb-2 group-hover:text-emerald-400 transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-slate-500 leading-relaxed font-medium">{feature.desc}</p>
@@ -188,8 +189,8 @@ export default function HomePage() {
       <section className="py-28 bg-black border-y border-white/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="mb-16 text-center">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-500 mb-4">Setup in minutes</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-4">Setup in minutes</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
               Three steps to your league archive.
             </h2>
           </div>
@@ -215,11 +216,11 @@ export default function HomePage() {
               },
             ].map((s) => (
               <div key={s.step} className="flex flex-col items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-sm font-black text-emerald-400">
+                <div className="w-10 h-10 rounded-md bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-sm font-semibold text-emerald-400">
                   {s.step}
                 </div>
                 <div>
-                  <h3 className="font-black text-white text-lg mb-2">{s.title}</h3>
+                  <h3 className="font-semibold text-white text-lg mb-2">{s.title}</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">{s.body}</p>
                 </div>
               </div>
@@ -232,8 +233,8 @@ export default function HomePage() {
       <section id="platforms" className="py-28 bg-gradient-to-b from-black to-slate-950">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-500 mb-4">Integrations</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white max-w-xl leading-tight">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-4">Integrations</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white max-w-xl leading-tight">
               Import from any platform.
             </h2>
             <p className="text-slate-500 mt-4 max-w-md text-sm leading-relaxed font-medium">
@@ -245,12 +246,12 @@ export default function HomePage() {
             {PLATFORMS.map((p) => (
               <div
                 key={p.name}
-                className={`group relative rounded-2xl border p-8 transition-all duration-200 ${p.bg} ${p.border}`}
+                className={`group relative rounded-lg border p-8 transition-all duration-200 ${p.bg} ${p.border}`}
               >
-                <div className={`text-xs font-black uppercase tracking-widest mb-4 ${p.labelColor}`}>
+                <div className={`text-xs font-semibold uppercase tracking-widest mb-4 ${p.labelColor}`}>
                   {p.label}
                 </div>
-                <p className={`text-2xl font-black ${p.nameColor} mb-2`}>{p.name}</p>
+                <p className={`text-2xl font-semibold ${p.nameColor} mb-2`}>{p.name}</p>
                 <p className="text-xs text-slate-600 font-medium leading-relaxed">{p.desc}</p>
                 <div className={`absolute bottom-0 inset-x-0 h-px rounded-b-2xl ${p.bottomLine} opacity-0 group-hover:opacity-100 transition-opacity`} />
               </div>
@@ -263,8 +264,8 @@ export default function HomePage() {
       <section id="pricing" className="py-28 bg-slate-950 border-y border-white/5">
         <div className="max-w-xl mx-auto px-6">
           <div className="mb-12 text-center">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-500 mb-4">Pricing</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-4">Pricing</p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
               One price. Unlimited history.
             </h2>
             <p className="text-slate-500 mt-4 text-sm leading-relaxed">
@@ -273,14 +274,14 @@ export default function HomePage() {
           </div>
 
           {/* pricing card */}
-          <div className="relative rounded-2xl border border-emerald-500/25 bg-slate-900 overflow-hidden">
+          <div className="relative rounded-lg border border-emerald-500/25 bg-slate-900 overflow-hidden">
             {/* top accent line */}
             <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent" />
 
             <div className="p-8">
               {/* plan label */}
               <div className="flex items-center justify-between mb-8">
-                <span className="text-xs font-black uppercase tracking-widest text-emerald-400 border border-emerald-500/25 rounded-full px-3 py-1">
+                <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400 border border-emerald-500/25 rounded-full px-3 py-1">
                   Pro
                 </span>
                 <span className="text-xs font-bold text-slate-600">Per league · billed annually</span>
@@ -288,8 +289,8 @@ export default function HomePage() {
 
               {/* price */}
               <div className="flex items-end gap-2 mb-2">
-                <span className="text-lg font-black text-slate-400 leading-none mb-2">$</span>
-                <span className="text-7xl font-black text-white leading-none">36</span>
+                <span className="text-lg font-semibold text-slate-400 leading-none mb-2">$</span>
+                <span className="text-7xl font-semibold text-white leading-none">36</span>
                 <span className="text-sm font-bold text-slate-500 leading-none mb-3">/year</span>
               </div>
               <p className="text-xs text-slate-600 font-medium mb-8">
@@ -323,14 +324,14 @@ export default function HomePage() {
               {/* CTA */}
               <SignedOut>
                 <Link href="/sign-up" className="block">
-                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                     Start your free trial
                   </button>
                 </Link>
               </SignedOut>
               <SignedIn>
                 <Link href="/dashboard" className="block">
-                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+                  <button className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                     Go to dashboard
                   </button>
                 </Link>
@@ -348,7 +349,7 @@ export default function HomePage() {
       <section className="py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.08),transparent_60%)]" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-5 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-5 leading-tight">
             Stop losing history to platform resets.{" "}
             <span className="text-emerald-400">Build the archive your league deserves.</span>
           </h2>
@@ -357,14 +358,14 @@ export default function HomePage() {
           </p>
           <SignedOut>
             <Link href="/sign-up">
-              <button className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+              <button className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                 Start your free trial
               </button>
             </Link>
           </SignedOut>
           <SignedIn>
             <Link href="/dashboard">
-              <button className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-emerald-950/60">
+              <button className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold text-base transition-all shadow-lg shadow-emerald-950/60">
                 Open dashboard
               </button>
             </Link>
@@ -378,7 +379,7 @@ export default function HomePage() {
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
       <footer className="border-t border-white/6 bg-black py-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-black text-slate-600 tracking-tight">TheLeague</span>
+          <span className="text-sm font-semibold text-slate-600 tracking-tight">TheLeague</span>
           <p className="text-xs text-slate-700 font-medium">
             &copy; 2026 TheLeague. All rights reserved.
           </p>
@@ -413,63 +414,63 @@ const FEATURES = [
   {
     title: "One-Click Import",
     desc: "Pull every season from ESPN, Sleeper, Yahoo, or Fleaflicker in minutes. Historical seasons, rosters, scores — all of it.",
-    abbr: "↓",
+    icon: Download,
     accentBg: "bg-emerald-500/10", accentBorder: "border-emerald-500/20", accentText: "text-emerald-400",
     gradientLine: "from-transparent via-emerald-500/40 to-transparent",
   },
   {
     title: "50+ Automated Records",
     desc: "Highest single-week score, longest win streak, biggest blowout, worst loss — every record tracked from day one.",
-    abbr: "★",
+    icon: Trophy,
     accentBg: "bg-yellow-500/10", accentBorder: "border-yellow-500/20", accentText: "text-yellow-400",
     gradientLine: "from-transparent via-yellow-500/40 to-transparent",
   },
   {
     title: "All-Time Standings",
     desc: "Career win percentages, total points scored, season-by-season breakdowns. See who actually dominates.",
-    abbr: "≡",
+    icon: ListOrdered,
     accentBg: "bg-blue-500/10", accentBorder: "border-blue-500/20", accentText: "text-blue-400",
     gradientLine: "from-transparent via-blue-500/40 to-transparent",
   },
   {
     title: "Head-to-Head History",
     desc: "Every matchup between every pair of managers, going back as far as your data reaches.",
-    abbr: "↔",
+    icon: ArrowLeftRight,
     accentBg: "bg-red-500/10", accentBorder: "border-red-500/20", accentText: "text-red-400",
     gradientLine: "from-transparent via-red-500/40 to-transparent",
   },
   {
     title: "Charts & Analytics",
     desc: "Scoring trends over time, season comparisons, and per-member performance visualizations.",
-    abbr: "∿",
+    icon: LineChart,
     accentBg: "bg-purple-500/10", accentBorder: "border-purple-500/20", accentText: "text-purple-400",
     gradientLine: "from-transparent via-purple-500/40 to-transparent",
   },
   {
     title: "Public League Page",
     desc: "A shareable URL for your league — standings, records, champions. No login required for members.",
-    abbr: "↗",
+    icon: Globe,
     accentBg: "bg-cyan-500/10", accentBorder: "border-cyan-500/20", accentText: "text-cyan-400",
     gradientLine: "from-transparent via-cyan-500/40 to-transparent",
   },
   {
     title: "Finance Tracking",
     desc: "Track dues, payouts, and fines. Generate dues for all members in one click.",
-    abbr: "$",
+    icon: Wallet,
     accentBg: "bg-green-500/10", accentBorder: "border-green-500/20", accentText: "text-green-400",
     gradientLine: "from-transparent via-green-500/40 to-transparent",
   },
   {
     title: "Weekly Newsletters",
     desc: "Auto-generated weekly recap emails with scores, standings, and highlights — ready to send.",
-    abbr: "✉",
+    icon: Mail,
     accentBg: "bg-orange-500/10", accentBorder: "border-orange-500/20", accentText: "text-orange-400",
     gradientLine: "from-transparent via-orange-500/40 to-transparent",
   },
   {
     title: "Permanent Archive",
     desc: "Your data is stored regardless of what happens to the original platform. Import once, access forever.",
-    abbr: "∞",
+    icon: Archive,
     accentBg: "bg-slate-600/20", accentBorder: "border-slate-500/20", accentText: "text-slate-400",
     gradientLine: "from-transparent via-slate-500/40 to-transparent",
   },

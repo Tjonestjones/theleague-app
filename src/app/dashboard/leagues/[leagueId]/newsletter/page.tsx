@@ -99,7 +99,7 @@ export default function NewsletterPage() {
           >
             ← Back to League
           </Link>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight">Newsletter</h1>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Newsletter</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">
             Generate a weekly recap to share with your league.
           </p>
@@ -109,16 +109,16 @@ export default function NewsletterPage() {
       <div className="px-6 md:px-12 py-10 space-y-8 max-w-4xl">
 
         {/* ── CONTROLS ────────────────────────────────────────────────── */}
-        <div className="bg-slate-900 border border-white/8 rounded-2xl p-6">
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-5">Generate Recap</p>
+        <div className="bg-slate-900 border border-white/8 rounded-lg p-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-5">Generate Recap</p>
           <div className="flex flex-wrap gap-4 items-end">
 
             <div className="space-y-2">
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Season</label>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">Season</label>
               <select
                 value={selectedSeason}
                 onChange={(e) => setSelectedSeason(e.target.value)}
-                className="h-11 w-44 rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-purple-500/40 focus:outline-none transition-colors"
+                className="h-11 w-44 rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-purple-500/40 focus:outline-none transition-colors"
               >
                 {seasons.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -129,11 +129,11 @@ export default function NewsletterPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-500">Week</label>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">Week</label>
               <select
                 value={weekNumber}
                 onChange={(e) => setWeekNumber(e.target.value)}
-                className="h-11 w-28 rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-purple-500/40 focus:outline-none transition-colors"
+                className="h-11 w-28 rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-purple-500/40 focus:outline-none transition-colors"
               >
                 {Array.from(
                   { length: selectedSeasonData?.weekCount ?? 17 },
@@ -149,7 +149,7 @@ export default function NewsletterPage() {
             <button
               onClick={handleGenerate}
               disabled={loading || !selectedSeason}
-              className="h-11 px-6 flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm transition-all shadow-lg shadow-purple-900/50 disabled:opacity-40"
+              className="h-11 px-6 flex items-center gap-2 rounded-md bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-900/50 disabled:opacity-40"
             >
               {loading ? (
                 <>
@@ -165,7 +165,7 @@ export default function NewsletterPage() {
 
         {/* ── ERROR ───────────────────────────────────────────────────── */}
         {error && (
-          <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-xl p-4">
+          <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-md p-4">
             <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -178,12 +178,12 @@ export default function NewsletterPage() {
           <div className="space-y-4">
             {/* View toggle + copy */}
             <div className="flex items-center justify-between gap-4">
-              <div className="flex gap-1 bg-slate-800/50 rounded-xl p-1 border border-white/8">
+              <div className="flex gap-1 bg-slate-800/50 rounded-md p-1 border border-white/8">
                 {(["preview", "markdown", "html"] as const).map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode)}
-                    className={`px-4 py-2 text-xs rounded-lg font-black transition-all uppercase tracking-wider ${
+                    className={`px-4 py-2 text-xs rounded-lg font-semibold transition-all uppercase tracking-wider ${
                       viewMode === mode
                         ? "bg-purple-600 text-white"
                         : "text-slate-500 hover:text-white"
@@ -195,7 +195,7 @@ export default function NewsletterPage() {
               </div>
               <button
                 onClick={copyContent}
-                className="flex items-center gap-2 h-9 px-4 rounded-xl bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-xs transition-all"
+                className="flex items-center gap-2 h-9 px-4 rounded-md bg-slate-800 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 font-bold text-xs transition-all"
               >
                 {copied ? (
                   <>
@@ -211,10 +211,10 @@ export default function NewsletterPage() {
             </div>
 
             {/* Content */}
-            <div className="bg-slate-900 border border-white/8 rounded-2xl overflow-hidden">
+            <div className="bg-slate-900 border border-white/8 rounded-lg overflow-hidden">
               {viewMode === "preview" ? (
                 <div
-                  className="p-8 prose prose-invert max-w-none prose-headings:font-black prose-a:text-purple-400"
+                  className="p-8 prose prose-invert max-w-none prose-headings:font-semibold prose-a:text-purple-400"
                   dangerouslySetInnerHTML={{ __html: html }}
                 />
               ) : (
@@ -228,13 +228,13 @@ export default function NewsletterPage() {
 
         {/* ── EMPTY STATE ─────────────────────────────────────────────── */}
         {!newsletter && !error && !loading && (
-          <div className="border-2 border-dashed border-white/8 rounded-2xl p-14 text-center">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-4">
+          <div className="border-2 border-dashed border-white/8 rounded-lg p-14 text-center">
+            <div className="w-12 h-12 rounded-md bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
-            <p className="text-sm font-black text-slate-600 uppercase tracking-widest mb-1">Ready to generate</p>
+            <p className="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-1">Ready to generate</p>
             <p className="text-xs text-slate-600 font-medium">
               Select a season and week above, then hit Generate Recap.
             </p>

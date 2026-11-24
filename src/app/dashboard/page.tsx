@@ -2,6 +2,7 @@
 // import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Download, Trophy } from "lucide-react";
 
 // ─── MOCK DATA (remove when DB is connected) ──────────────────────────────────
 const MOCK_USER = { id: "mock-user", firstName: "Thomas" };
@@ -80,7 +81,7 @@ export default async function DashboardPage() {
           {/* greeting + quick stats */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
                 {user.firstName ? (
                   <>Welcome back, <span className="text-emerald-400">{user.firstName}</span>.</>
                 ) : (
@@ -91,7 +92,7 @@ export default async function DashboardPage() {
                 <Pill label={`${leagues.length} league${leagues.length !== 1 ? "s" : ""}`} color="emerald" />
                 <Pill label={`${totalSeasons} season${totalSeasons !== 1 ? "s" : ""} imported`} color="blue" />
                 {ownedCount > 0 && (
-                  <Pill label={`${ownedCount} commissioner`} color="yellow" icon="👑" />
+                  <Pill label={`${ownedCount} commissioner`} color="yellow" />
                 )}
               </div>
             </div>
@@ -100,13 +101,13 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3 flex-shrink-0">
               <Link
                 href="/dashboard/leagues/import"
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-5 py-3 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-bold text-sm transition-all"
               >
-                <span>📥</span> Import
+                <Download className="w-4 h-4" /> Import
               </Link>
               <Link
                 href="/dashboard/leagues/create"
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50"
+                className="flex items-center gap-2 px-5 py-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/50"
               >
                 <span>＋</span> Create League
               </Link>
@@ -121,7 +122,7 @@ export default async function DashboardPage() {
           <EmptyState />
         ) : (
           <>
-            <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-6">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-6">
               My Leagues
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -139,26 +140,26 @@ export default async function DashboardPage() {
 
                 return (
                   <Link key={league.id} href={`/dashboard/leagues/${league.id}`}>
-                    <div className="group relative flex flex-col bg-slate-900 border border-white/8 hover:border-emerald-500/40 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-emerald-950/60 cursor-pointer">
+                    <div className="group relative flex flex-col bg-slate-900 border border-white/8 hover:border-emerald-500/40 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-emerald-950/60 cursor-pointer">
 
                       {/* colour bar top */}
                       <div className={`h-1 w-full ${isOwner ? "bg-gradient-to-r from-yellow-500 to-amber-400" : isCoComm ? "bg-gradient-to-r from-blue-500 to-indigo-400" : "bg-gradient-to-r from-emerald-600 to-green-500"}`} />
 
                       <div className="flex items-start gap-5 p-6">
                         {/* league avatar */}
-                        <div className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-black ${isOwner ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25" : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"}`}>
+                        <div className={`flex-shrink-0 w-14 h-14 rounded-md flex items-center justify-center text-2xl font-semibold ${isOwner ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25" : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"}`}>
                           {initial}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           {/* name + role */}
                           <div className="flex items-start justify-between gap-3 mb-1">
-                            <h3 className="text-lg font-black text-white group-hover:text-emerald-400 transition-colors truncate leading-tight">
+                            <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors truncate leading-tight">
                               {league.name}
                             </h3>
                             {(isOwner || isCoComm) && (
-                              <span className={`flex-shrink-0 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${isOwner ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25" : "bg-blue-500/15 text-blue-400 border border-blue-500/25"}`}>
-                                {isOwner ? "👑 Owner" : "⚡ Co-Comm"}
+                              <span className={`flex-shrink-0 text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full ${isOwner ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25" : "bg-blue-500/15 text-blue-400 border border-blue-500/25"}`}>
+                                {isOwner ? "Owner" : "Co-Comm"}
                               </span>
                             )}
                           </div>
@@ -191,7 +192,7 @@ export default async function DashboardPage() {
 
               {/* "Add another" card */}
               <Link href="/dashboard/leagues/create">
-                <div className="group flex flex-col items-center justify-center border-2 border-dashed border-white/8 hover:border-emerald-500/30 rounded-2xl p-10 transition-all duration-300 cursor-pointer min-h-[160px]">
+                <div className="group flex flex-col items-center justify-center border-2 border-dashed border-white/8 hover:border-emerald-500/30 rounded-lg p-10 transition-all duration-300 cursor-pointer min-h-[160px]">
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 group-hover:bg-emerald-500/20 border border-emerald-500/20 flex items-center justify-center text-2xl text-emerald-500 mb-3 transition-all">
                     ＋
                   </div>
@@ -235,8 +236,8 @@ function Pill({
 function EmptyState() {
   return (
     <div className="max-w-2xl mx-auto pt-10 text-center">
-      <div className="text-7xl mb-6">🏈</div>
-      <h2 className="text-3xl font-black text-white mb-3">
+      <div className="mx-auto mb-6 w-14 h-14 rounded-md border border-white/10 bg-white/5 flex items-center justify-center"><Trophy className="w-6 h-6 text-slate-400" /></div>
+      <h2 className="text-3xl font-semibold text-white mb-3">
         No leagues yet
       </h2>
       <p className="text-slate-400 mb-10 leading-relaxed">
@@ -246,13 +247,13 @@ function EmptyState() {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <Link
           href="/dashboard/leagues/create"
-          className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black transition-all shadow-lg shadow-emerald-900/50"
+          className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold transition-all shadow-lg shadow-emerald-900/50"
         >
           Create a League
         </Link>
         <Link
           href="/dashboard/leagues/import"
-          className="px-8 py-4 bg-slate-800 hover:bg-slate-700 border border-white/10 text-white rounded-xl font-bold transition-all"
+          className="px-8 py-4 bg-slate-800 hover:bg-slate-700 border border-white/10 text-white rounded-md font-bold transition-all"
         >
           Import Existing Data
         </Link>

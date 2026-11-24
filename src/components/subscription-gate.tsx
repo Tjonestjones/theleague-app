@@ -64,14 +64,14 @@ function UpgradeWall({
       <div className="w-full max-w-md text-center">
 
         {/* Icon */}
-        <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center mx-auto mb-6">
+        <div className="w-16 h-16 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
 
         {/* Heading */}
-        <h1 className="text-2xl font-black tracking-tight mb-2">
+        <h1 className="text-2xl font-semibold tracking-tight mb-2">
           {reason === "canceled" ? "Subscription Canceled" : "Trial Ended"}
         </h1>
         {leagueName && (
@@ -85,12 +85,12 @@ function UpgradeWall({
         </p>
 
         {/* Pricing card */}
-        <div className="bg-slate-900 border border-white/8 rounded-2xl p-6 mb-6 text-left">
+        <div className="bg-slate-900 border border-white/8 rounded-lg p-6 mb-6 text-left">
           <div className="flex items-end justify-between mb-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-1">TheLeague Pro</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">TheLeague Pro</p>
               <div className="flex items-end gap-1">
-                <span className="text-4xl font-black text-white">$36</span>
+                <span className="text-4xl font-semibold text-white">$36</span>
                 <span className="text-slate-500 font-medium mb-1">/ year</span>
               </div>
             </div>

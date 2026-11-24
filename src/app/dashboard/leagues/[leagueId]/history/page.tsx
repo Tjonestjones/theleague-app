@@ -34,7 +34,7 @@ export default async function HistoryPage({
 
   if (!league)
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-semibold">
         League not found
       </div>
     );
@@ -46,11 +46,11 @@ export default async function HistoryPage({
 
   const rankStyle = (i: number) =>
     i === 0
-      ? "text-yellow-400 font-black"
+      ? "text-yellow-400 font-semibold"
       : i === 1
-      ? "text-slate-400 font-black"
+      ? "text-slate-400 font-semibold"
       : i === 2
-      ? "text-amber-600 font-black"
+      ? "text-amber-600 font-semibold"
       : "text-slate-600 font-bold";
 
   return (
@@ -70,7 +70,7 @@ export default async function HistoryPage({
 
           <div className="flex items-end justify-between gap-6 flex-wrap">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight">League History</h1>
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">League History</h1>
               <p className="text-slate-500 text-sm font-medium mt-1">
                 All-time standings and season-by-season breakdown
               </p>
@@ -78,19 +78,19 @@ export default async function HistoryPage({
             <div className="flex items-center gap-3">
               <Link
                 href={`/dashboard/leagues/${leagueId}/records`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-yellow-400 hover:border-yellow-500/25 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-yellow-400 hover:border-yellow-500/25 font-bold text-sm transition-all"
               >
                 Records
               </Link>
               <Link
                 href={`/dashboard/leagues/${leagueId}/transactions`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-orange-400 hover:border-orange-500/25 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-orange-400 hover:border-orange-500/25 font-bold text-sm transition-all"
               >
                 Transactions
               </Link>
               <Link
                 href={`/dashboard/leagues/${leagueId}/members`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-blue-400 hover:border-blue-500/25 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-blue-400 hover:border-blue-500/25 font-bold text-sm transition-all"
               >
                 Members
               </Link>
@@ -103,23 +103,23 @@ export default async function HistoryPage({
 
         {/* ── ALL-TIME STANDINGS ──────────────────────────────────────── */}
         <div>
-          <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-6">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-6">
             All-Time Standings
           </h2>
 
           {allTimeStandings.length === 0 ? (
-            <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
+            <div className="border-2 border-dashed border-white/8 rounded-lg p-12 text-center">
               <p className="text-slate-600 font-bold text-sm">No data yet. Import some seasons first.</p>
             </div>
           ) : (
-            <div className="bg-slate-900 border border-white/8 rounded-2xl overflow-hidden">
+            <div className="bg-slate-900 border border-white/8 rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="border-b border-white/8">
                   <tr>
                     {["#", "Member", "W", "L", "T", "Win %", "PF", "PA", "Seasons"].map((h, i) => (
                       <th
                         key={h}
-                        className={`px-5 py-4 text-xs font-black uppercase tracking-widest text-slate-500 ${
+                        className={`px-5 py-4 text-xs font-semibold uppercase tracking-widest text-slate-500 ${
                           i === 0 ? "text-left w-10" :
                           i === 1 ? "text-left" :
                           i <= 5 ? "text-center" :
@@ -148,10 +148,10 @@ export default async function HistoryPage({
                           {s.memberName}
                         </Link>
                       </td>
-                      <td className="px-5 py-4 text-center text-sm font-black text-emerald-400">{s.wins}</td>
+                      <td className="px-5 py-4 text-center text-sm font-semibold text-emerald-400">{s.wins}</td>
                       <td className="px-5 py-4 text-center text-sm font-bold text-red-400">{s.losses}</td>
                       <td className="px-5 py-4 text-center text-sm font-bold text-slate-600">{s.ties}</td>
-                      <td className="px-5 py-4 text-center text-sm font-black text-white">
+                      <td className="px-5 py-4 text-center text-sm font-semibold text-white">
                         {(s.winPct * 100).toFixed(1)}%
                       </td>
                       <td className="px-5 py-4 text-right text-sm font-bold text-white">
