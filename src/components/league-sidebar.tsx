@@ -78,9 +78,7 @@ function SidebarBody({
     {
       items: [
         { label: "Overview", href: base, exact: true },
-        liveYear
-          ? { label: `Live ${liveYear}`, soon: true }
-          : { label: "Live season", soon: true },
+        { label: liveYear ? `Live ${liveYear}` : "Live season", href: `${base}/live` },
       ],
     },
     {
@@ -112,10 +110,10 @@ function SidebarBody({
     {
       title: "Recaps",
       items: [
-        { label: "Weekly recap", href: `${base}/newsletter` },
-        { label: "My recap", soon: true },
-        { label: "Season Wrapped", soon: true },
-        { label: "Trends", soon: true },
+        { label: "Weekly recap", href: `${base}/recaps`, exact: true },
+        { label: "My recap", href: `${base}/recaps/me` },
+        { label: "Season Wrapped", href: `${base}/wrapped` },
+        { label: "Trends", href: `${base}/trends` },
       ],
     },
     {

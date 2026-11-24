@@ -249,6 +249,10 @@ export async function POST(request: NextRequest) {
         const ourTeamId = teamMap[rosterWeek.team_id];
         if (!ourTeamId || !rosterWeek.players?.length) continue;
 
+        // Replace any earlier snapshot of this team-week so re-importing a
+        // season (e.g. weekly during the live season) doesn't duplicate rows.
+        await prisma.roster.deleteMany({ where: { teamId: ourTeamId, weekNumber: rosterWeek.week } });
+
         // Create a Roster record for this team + week
         const roster = await prisma.roster.create({
           data: {
