@@ -5,6 +5,8 @@ import Link from "next/link";
 import { LeagueMembers } from "./league-members";
 import { MilestoneWatch } from "./milestone-watch";
 import { TrialBanner } from "@/components/subscription-gate";
+import { getEra } from "@/lib/era";
+import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -66,21 +68,13 @@ export default async function LeagueDetailPage({
     );
   }
 
-  const access = await getLeagueAccess(leagueId);
+  const [access, era] = await Promise.all([getLeagueAccess(leagueId), getEra(leagueId)]);
+  const eraSeasons = league.seasons.filter((s) => era.years.includes(s.year));
 
   const currentMember = league.members.find((m) => m.userId === user.id);
   const isCommissioner =
     currentMember?.role === "COMMISSIONER" || currentMember?.role === "CO_COMMISSIONER";
 
-  const navItems = [
-    { href: `/dashboard/leagues/${leagueId}/history`,   abbr: "HST", label: "History",    bar: "bg-emerald-500", text: "group-hover:text-emerald-400", border: "hover:border-emerald-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/records`,   abbr: "REC", label: "Records",    bar: "bg-yellow-500",  text: "group-hover:text-yellow-400",  border: "hover:border-yellow-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/transactions`, abbr: "TXN", label: "Transactions", bar: "bg-orange-500", text: "group-hover:text-orange-400", border: "hover:border-orange-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/analytics`, abbr: "ANA", label: "Analytics",  bar: "bg-cyan-500",    text: "group-hover:text-cyan-400",    border: "hover:border-cyan-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/members`,   abbr: "MBR", label: "Members",    bar: "bg-blue-500",    text: "group-hover:text-blue-400",    border: "hover:border-blue-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/finances`,  abbr: "FIN", label: "Finances",   bar: "bg-green-500",   text: "group-hover:text-green-400",   border: "hover:border-green-500/40" },
-    { href: `/dashboard/leagues/${leagueId}/newsletter`,abbr: "NWS", label: "Newsletter", bar: "bg-purple-500",  text: "group-hover:text-purple-400",  border: "hover:border-purple-500/40" },
-  ];
 
   const syncStatusStyle = (status: string) => {
     if (status === "COMPLETED") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
@@ -105,12 +99,6 @@ export default async function LeagueDetailPage({
       <div className="relative overflow-hidden border-b border-white/5">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative px-6 md:px-12 pt-10 pb-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-300 mb-6 transition-colors"
-          >
-            ← Dashboard
-          </Link>
 
           <div className="flex items-start justify-between flex-wrap gap-6">
             <div>
@@ -166,20 +154,6 @@ export default async function LeagueDetailPage({
 
       <div className="px-6 md:px-12 py-10 space-y-12">
 
-        {/* ── NAVIGATION ──────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <div className={`group relative flex flex-col items-center bg-slate-900 border border-white/8 ${item.border} rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer`}>
-                <div className={`w-full h-0.5 ${item.bar}`} />
-                <div className="py-5 px-3 text-center">
-                  <span className={`block text-xs font-semibold text-slate-600 tracking-widest mb-1.5 uppercase`}>{item.abbr}</span>
-                  <span className={`font-semibold text-sm text-white ${item.text} transition-colors`}>{item.label}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
 
         {/* ── MILESTONE WATCH ─────────────────────────────────────────── */}
         <MilestoneWatch leagueId={leagueId} />
@@ -187,7 +161,9 @@ export default async function LeagueDetailPage({
         {/* ── SEASONS ─────────────────────────────────────────────────── */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Imported Seasons</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Seasons{!era.isAll && <span className="ml-2 normal-case tracking-normal font-medium text-slate-600">({era.label})</span>}
+            </h2>
             {isCommissioner && (
               <Link
                 href={`/dashboard/leagues/import?leagueId=${leagueId}`}
@@ -215,10 +191,11 @@ export default async function LeagueDetailPage({
             </div>
           ) : (
             <div className="space-y-3">
-              {league.seasons.map((season) => (
-                <div
+              {eraSeasons.map((season) => (
+                <Link
                   key={season.id}
-                  className="group flex items-center gap-6 bg-slate-900 border border-white/8 rounded-lg px-6 py-5"
+                  href={`/dashboard/leagues/${leagueId}/seasons/${season.year}`}
+                  className="group flex items-center gap-6 bg-slate-900 border border-white/8 rounded-lg px-6 py-4 hover:border-white/20 transition-colors"
                 >
                   <div className="text-2xl font-semibold text-white w-16 flex-shrink-0">
                     {season.year}
@@ -237,7 +214,8 @@ export default async function LeagueDetailPage({
                   <span className={`text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border flex-shrink-0 ${syncStatusStyle(season.syncStatus)}`}>
                     {season.syncStatus}
                   </span>
-                </div>
+                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition-colors" />
+                </Link>
               ))}
             </div>
           )}

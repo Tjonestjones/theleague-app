@@ -143,3 +143,9 @@
     font-variant-numeric: tabular-nums;
   }
 }
+@utility btn-secondary {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/10 bg-white/[0.03] text-sm text-slate-300 transition-colors;
+  &:hover {
+    @apply text-white border-white/25;
+  }
+}

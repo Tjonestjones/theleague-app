@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import type { Metadata } from "next";
 import { Target, Swords, CalendarDays, Flame, Trophy, TrendingUp, TrendingDown, Clover, BarChart3, type LucideIcon } from "lucide-react";
+import { getEra } from "@/lib/era";
 
 export async function generateMetadata({
   params,
@@ -39,7 +40,8 @@ export default async function RecordBookPage({
       </div>
     );
 
-  const records = await getRecordBook(leagueId);
+  const era = await getEra(leagueId);
+  const records = await getRecordBook(leagueId, era.scope);
 
   // Group by category, preserving insertion order
   const categories = new Map<string, typeof records>();
@@ -91,7 +93,7 @@ export default async function RecordBookPage({
               </h1>
               <p className="text-sm text-slate-500 font-medium mt-2">
                 <span className="text-white font-bold">{records.length}</span> records across{" "}
-                <span className="text-white font-bold">{categories.size}</span> categories
+                <span className="text-white font-bold">{categories.size}</span> categories{!era.isAll && <> · {era.label}</>}
               </p>
             </div>
           </div>
