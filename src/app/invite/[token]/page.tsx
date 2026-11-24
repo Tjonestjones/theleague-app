@@ -58,7 +58,7 @@ export default function AcceptInvitePage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">🏈 League Invitation</CardTitle>
+          <CardTitle className="text-2xl">League Invitation</CardTitle>
           {status === "ready" && (
             <CardDescription>You&apos;ve been invited to join <strong>{leagueName}</strong></CardDescription>
           )}
@@ -79,7 +79,7 @@ export default function AcceptInvitePage() {
 
           {status === "success" && (
             <div className="text-green-600">
-              <p className="text-lg font-medium">🎉 Welcome to {leagueName}!</p>
+              <p className="text-lg font-medium">Welcome to {leagueName}!</p>
               <p className="text-sm mt-1">Redirecting to your league...</p>
             </div>
           )}

@@ -13,7 +13,7 @@ export async function MilestoneWatch({ leagueId }: { leagueId: string }) {
   return (
     <div>
       <div className="flex items-baseline justify-between gap-4 mb-6 flex-wrap">
-        <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Milestone Watch</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Milestone Watch</h2>
         <span className="text-xs font-bold text-slate-600">
           Players on {rosterYear} rosters{nflSeason ? ` · NFL stats through ${nflSeason}` : ""}
         </span>
@@ -23,10 +23,10 @@ export async function MilestoneWatch({ leagueId }: { leagueId: string }) {
           <Link
             key={`${it.playerId}-${it.scope}-${it.milestone.key}`}
             href={`/dashboard/leagues/${leagueId}/players/${it.playerId}`}
-            className="group flex items-start gap-4 bg-slate-900 border border-white/8 hover:border-amber-500/30 rounded-2xl px-5 py-4 transition-colors"
+            className="group flex items-start gap-4 bg-slate-900 border border-white/8 hover:border-amber-500/30 rounded-lg px-5 py-4 transition-colors"
           >
             <span
-              className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+              className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                 it.milestone.near
                   ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
                   : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
@@ -35,7 +35,7 @@ export async function MilestoneWatch({ leagueId }: { leagueId: string }) {
               {it.scope === "NFL" ? "NFL" : "League"}
             </span>
             <div className="min-w-0">
-              <p className="font-black text-white group-hover:text-amber-300 transition-colors">
+              <p className="font-semibold text-white group-hover:text-amber-300 transition-colors">
                 {it.playerName}
                 <span className="ml-1.5 text-xs font-bold text-slate-500">{it.position}</span>
               </p>

@@ -48,12 +48,12 @@ function Row({ m }: { m: Milestone }) {
       <p className="text-sm font-bold text-slate-400">{headline}</p>
       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         {m.reachedThisSeason && (
-          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider text-emerald-400">
+          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
             This season
           </span>
         )}
         {m.near && (
-          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider text-amber-400">
+          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-amber-400">
             Close
           </span>
         )}
@@ -90,17 +90,17 @@ export function MilestonesPanel({ data, leagueName }: { data: PlayerMilestones; 
     <section className="grid lg:grid-cols-2 gap-6">
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3">
-          <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">NFL career milestones</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">NFL career milestones</h2>
           <span className="text-[11px] font-bold text-slate-600">
             Regular season{data.nflSeason ? ` · through ${data.nflSeason}` : ""}
           </span>
         </div>
         {nfl.length ? (
-          <ul className="rounded-2xl border border-white/8 bg-slate-900 divide-y divide-white/5">
+          <ul className="rounded-lg border border-white/8 bg-slate-900 divide-y divide-white/5">
             {nfl.map((m) => <Row key={m.key} m={m} />)}
           </ul>
         ) : (
-          <p className="rounded-2xl border border-dashed border-white/8 px-5 py-6 text-sm font-medium text-slate-600">
+          <p className="rounded-lg border border-dashed border-white/8 px-5 py-6 text-sm font-medium text-slate-600">
             {data.nflSeasons ? "No career milestones yet." : "No NFL stats synced for this player."}
           </p>
         )}
@@ -109,7 +109,7 @@ export function MilestonesPanel({ data, leagueName }: { data: PlayerMilestones; 
 
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3">
-          <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">In {leagueName}</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">In {leagueName}</h2>
           {data.ranks.points && (
             <span className="text-[11px] font-bold text-slate-600">
               {ordinal(data.ranks.points)} in league history for starter points
@@ -117,7 +117,7 @@ export function MilestonesPanel({ data, leagueName }: { data: PlayerMilestones; 
           )}
         </div>
         {league.length ? (
-          <ul className="rounded-2xl border border-white/8 bg-slate-900 divide-y divide-white/5">
+          <ul className="rounded-lg border border-white/8 bg-slate-900 divide-y divide-white/5">
             {league.map((m) => <Row key={m.key} m={m} />)}
             {data.topManager && (
               <li className="px-5 py-3.5 text-xs font-bold text-slate-500">
@@ -126,7 +126,7 @@ export function MilestonesPanel({ data, leagueName }: { data: PlayerMilestones; 
             )}
           </ul>
         ) : (
-          <p className="rounded-2xl border border-dashed border-white/8 px-5 py-6 text-sm font-medium text-slate-600">No league milestones yet.</p>
+          <p className="rounded-lg border border-dashed border-white/8 px-5 py-6 text-sm font-medium text-slate-600">No league milestones yet.</p>
         )}
         {!data.leagueHasRosters && (
           <p className="mt-2 text-[11px] font-medium text-slate-600">

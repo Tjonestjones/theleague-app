@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Check, Loader2, Trash2, Undo2, Wallet, X } from "lucide-react";
 
 interface FinanceEntry {
   id: string;
@@ -136,11 +137,11 @@ export default function FinancesPage() {
   };
 
   const summaryCards = summary ? [
-    { label: "Total Dues", value: `$${summary.totalDues.toFixed(2)}`, color: "emerald", icon: "💰" },
-    { label: "Collected", value: `$${summary.totalCollected.toFixed(2)}`, color: "green", icon: "✅" },
-    { label: "Outstanding", value: `$${summary.totalOwed.toFixed(2)}`, color: "yellow", icon: "⏳" },
-    { label: "Payouts", value: `$${summary.totalPayouts.toFixed(2)}`, color: "blue", icon: "💸" },
-    { label: "Fines", value: `$${summary.totalFines.toFixed(2)}`, color: "red", icon: "⚠️" },
+    { label: "Total Dues", value: `$${summary.totalDues.toFixed(2)}`, color: "emerald" },
+    { label: "Collected", value: `$${summary.totalCollected.toFixed(2)}`, color: "green" },
+    { label: "Outstanding", value: `$${summary.totalOwed.toFixed(2)}`, color: "yellow" },
+    { label: "Payouts", value: `$${summary.totalPayouts.toFixed(2)}`, color: "blue" },
+    { label: "Fines", value: `$${summary.totalFines.toFixed(2)}`, color: "red" },
   ] : [];
 
   const colorClasses: Record<string, string> = {
@@ -163,7 +164,7 @@ export default function FinancesPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl animate-bounce mb-4">💰</div>
+          <Loader2 className="w-8 h-8 animate-spin text-slate-500 mb-4 mx-auto" />
           <p className="text-xl text-slate-400 font-semibold">Loading finances...</p>
         </div>
       </div>
@@ -174,26 +175,26 @@ export default function FinancesPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white p-6 md:p-12 space-y-10">
       {/* Header */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 via-emerald-700/10 to-green-900/20 rounded-3xl blur-3xl"></div>
-        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-green-500/30 rounded-3xl p-10 shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 via-emerald-700/10 to-green-900/20 rounded-lg blur-3xl"></div>
+        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-green-500/30 rounded-lg p-10 shadow-2xl">
           <div className="flex items-center justify-between flex-wrap gap-6">
             <div>
               <Link href={`/dashboard/leagues/${leagueId}`} className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 font-bold mb-4 transition-colors">
-                <span className="text-2xl">←</span>
+                <ArrowLeft className="w-4 h-4" />
                 <span>Back to League</span>
               </Link>
-              <h1 className="text-6xl md:text-7xl font-black tracking-tight">💰 Finances</h1>
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">Finances</h1>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDuesGen(!showDuesGen)}
-                className="px-6 py-3 bg-blue-500/20 border-2 border-blue-500/30 text-blue-400 rounded-xl hover:bg-blue-500/30 hover:border-blue-500/50 font-bold transition-all"
+                className="px-6 py-3 bg-blue-500/20 border-2 border-blue-500/30 text-blue-400 rounded-md hover:bg-blue-500/30 hover:border-blue-500/50 font-bold transition-all"
               >
                 Generate Dues
               </button>
               <button
                 onClick={() => setShowAdd(!showAdd)}
-                className="group relative px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-bold shadow-lg hover:shadow-emerald-500/50 transition-all transform hover:scale-105"
+                className="group relative px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-md font-bold shadow-lg hover:shadow-emerald-500/50 transition-all transform hover:scale-105"
               >
                 + Add Entry
               </button>
@@ -203,17 +204,17 @@ export default function FinancesPage() {
       </div>
 
       {message && (
-        <div className="p-4 bg-green-500/20 border-2 border-green-500/30 rounded-2xl text-green-400 font-bold">{message}</div>
+        <div className="p-4 bg-green-500/20 border-2 border-green-500/30 rounded-lg text-green-400 font-bold">{message}</div>
       )}
 
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {summaryCards.map((card) => (
-            <div key={card.label} className={`group relative bg-gradient-to-br ${colorClasses[card.color]} backdrop-blur-xl rounded-2xl p-6 text-center border-2 transition-all duration-500 transform hover:scale-105 shadow-xl`}>
-              <span className="text-3xl block mb-2">{card.icon}</span>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{card.label}</p>
-              <p className={`text-3xl font-black ${textColors[card.color]}`}>{card.value}</p>
+            <div key={card.label} className={`group relative bg-gradient-to-br ${colorClasses[card.color]} backdrop-blur-xl rounded-lg p-6 text-center border-2 transition-all duration-500 transform hover:scale-105 shadow-xl`}>
+              
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{card.label}</p>
+              <p className={`text-3xl font-semibold ${textColors[card.color]}`}>{card.value}</p>
             </div>
           ))}
         </div>
@@ -221,11 +222,11 @@ export default function FinancesPage() {
 
       {/* Generate Dues Form */}
       {showDuesGen && (
-        <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border-2 border-blue-500/30 rounded-2xl p-6">
-          <h3 className="font-black text-xl text-blue-400 mb-4">Generate Dues for All Members</h3>
+        <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border-2 border-blue-500/30 rounded-lg p-6">
+          <h3 className="font-semibold text-xl text-blue-400 mb-4">Generate Dues for All Members</h3>
           <form onSubmit={handleGenerateDues} className="flex gap-4 items-end flex-wrap">
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Amount ($)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -233,32 +234,32 @@ export default function FinancesPage() {
                 onChange={(e) => setDuesForm({ ...duesForm, amount: e.target.value })}
                 placeholder="50.00"
                 required
-                className="h-12 w-36 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
+                className="h-12 w-36 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Year</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Year</label>
               <input
                 type="number"
                 value={duesForm.year}
                 onChange={(e) => setDuesForm({ ...duesForm, year: e.target.value })}
                 required
-                className="h-12 w-28 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
+                className="h-12 w-28 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Due Date</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Due Date</label>
               <input
                 type="date"
                 value={duesForm.dueDate}
                 onChange={(e) => setDuesForm({ ...duesForm, dueDate: e.target.value })}
-                className="h-12 w-44 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
+                className="h-12 w-44 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-blue-500/50 focus:outline-none transition-colors"
               />
             </div>
-            <button type="submit" className="h-12 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:shadow-blue-500/50 shadow-lg transition-all">
+            <button type="submit" className="h-12 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-md font-bold hover:shadow-blue-500/50 shadow-lg transition-all">
               Generate
             </button>
-            <button type="button" onClick={() => setShowDuesGen(false)} className="h-12 px-6 bg-slate-700/50 border-2 border-slate-600/30 text-slate-400 rounded-xl font-bold hover:bg-slate-600/50 transition-all">
+            <button type="button" onClick={() => setShowDuesGen(false)} className="h-12 px-6 bg-slate-700/50 border-2 border-slate-600/30 text-slate-400 rounded-md font-bold hover:bg-slate-600/50 transition-all">
               Cancel
             </button>
           </form>
@@ -267,13 +268,13 @@ export default function FinancesPage() {
 
       {/* Add Entry Form */}
       {showAdd && (
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-2xl p-6">
-          <h3 className="font-black text-xl text-emerald-400 mb-4">Add Finance Entry</h3>
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-emerald-500/30 rounded-lg p-6">
+          <h3 className="font-semibold text-xl text-emerald-400 mb-4">Add Finance Entry</h3>
           <form onSubmit={handleAdd} className="grid grid-cols-2 md:grid-cols-6 gap-4 items-end">
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Type</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Type</label>
               <select
-                className="h-12 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-12 w-full rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
                 value={newEntry.type}
                 onChange={(e) => setNewEntry({ ...newEntry, type: e.target.value })}
               >
@@ -284,30 +285,30 @@ export default function FinancesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Amount ($)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount ($)</label>
               <input
                 type="number"
                 step="0.01"
                 value={newEntry.amount}
                 onChange={(e) => setNewEntry({ ...newEntry, amount: e.target.value })}
                 required
-                className="h-12 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-12 w-full rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Year</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Year</label>
               <input
                 type="number"
                 value={newEntry.year}
                 onChange={(e) => setNewEntry({ ...newEntry, year: e.target.value })}
                 required
-                className="h-12 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-12 w-full rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Member</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Member</label>
               <select
-                className="h-12 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-12 w-full rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
                 value={newEntry.memberId}
                 onChange={(e) => setNewEntry({ ...newEntry, memberId: e.target.value })}
               >
@@ -318,20 +319,20 @@ export default function FinancesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Description</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Description</label>
               <input
                 value={newEntry.description}
                 onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
                 placeholder="Optional note"
-                className="h-12 w-full rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none transition-colors"
+                className="h-12 w-full rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none transition-colors"
               />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="h-12 px-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-bold hover:shadow-emerald-500/50 shadow-lg transition-all">
+              <button type="submit" className="h-12 px-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-md font-bold hover:shadow-emerald-500/50 shadow-lg transition-all">
                 Add
               </button>
-              <button type="button" onClick={() => setShowAdd(false)} className="h-12 px-4 bg-slate-700/50 border-2 border-slate-600/30 text-slate-400 rounded-xl font-bold hover:bg-slate-600/50 transition-all">
-                ✕
+              <button type="button" onClick={() => setShowAdd(false)} className="h-12 px-4 bg-slate-700/50 border-2 border-slate-600/30 text-slate-400 rounded-md font-bold hover:bg-slate-600/50 transition-all">
+                <X className="w-4 h-4" />
               </button>
             </div>
           </form>
@@ -341,7 +342,7 @@ export default function FinancesPage() {
       {/* Filters */}
       <div className="flex gap-4 items-center">
         <select
-          className="h-10 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+          className="h-10 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
           value={filterYear}
           onChange={(e) => setFilterYear(e.target.value)}
         >
@@ -351,7 +352,7 @@ export default function FinancesPage() {
           ))}
         </select>
         <select
-          className="h-10 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
+          className="h-10 rounded-md border-2 border-slate-600/50 bg-slate-800/50 px-4 text-white font-bold focus:border-emerald-500/50 focus:outline-none transition-colors"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
@@ -366,41 +367,41 @@ export default function FinancesPage() {
 
       {/* Finance Table */}
       {finances.length === 0 ? (
-        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-green-500/30 rounded-3xl p-16 text-center shadow-2xl">
-          <div className="text-9xl mb-6">💰</div>
-          <h3 className="text-4xl font-black mb-4 text-white">No Finance Entries Yet</h3>
+        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border-2 border-dashed border-green-500/30 rounded-lg p-16 text-center shadow-2xl">
+          <Wallet className="w-12 h-12 text-slate-600 mb-6 mx-auto" />
+          <h3 className="text-4xl font-semibold mb-4 text-white">No Finance Entries Yet</h3>
           <p className="text-xl text-slate-400 font-semibold">Generate dues or add individual entries above.</p>
         </div>
       ) : (
-        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-green-500/20 shadow-2xl">
+        <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-lg overflow-hidden border-2 border-green-500/20 shadow-2xl">
           <table className="w-full">
             <thead className="bg-slate-900/50 border-b-2 border-green-500/20">
               <tr>
-                <th className="text-left px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Type</th>
-                <th className="text-left px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Member</th>
-                <th className="text-left px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Description</th>
-                <th className="text-right px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Amount</th>
-                <th className="text-center px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Year</th>
-                <th className="text-center px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Status</th>
-                <th className="text-center px-6 py-5 font-black text-green-400 uppercase tracking-wider text-sm">Actions</th>
+                <th className="text-left px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Type</th>
+                <th className="text-left px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Member</th>
+                <th className="text-left px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Description</th>
+                <th className="text-right px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Amount</th>
+                <th className="text-center px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Year</th>
+                <th className="text-center px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Status</th>
+                <th className="text-center px-6 py-5 font-semibold text-green-400 uppercase tracking-wider text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/50">
               {finances.map((f) => (
                 <tr key={f.id} className="hover:bg-slate-700/30 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`text-xs px-3 py-1.5 rounded-full font-black uppercase tracking-wider border ${typeColors[f.type] ?? typeColors.OTHER}`}>
+                    <span className={`text-xs px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider border ${typeColors[f.type] ?? typeColors.OTHER}`}>
                       {f.type}
                     </span>
                   </td>
                   <td className="px-6 py-4 font-bold text-white">{f.memberName}</td>
                   <td className="px-6 py-4 text-slate-500 font-medium">{f.description ?? "—"}</td>
-                  <td className="text-right px-6 py-4 font-black text-white text-lg">
+                  <td className="text-right px-6 py-4 font-semibold text-white text-lg">
                     {f.type === "PAYOUT" ? "-" : ""}${f.amount.toFixed(2)}
                   </td>
                   <td className="text-center px-6 py-4 font-bold text-white">{f.year}</td>
                   <td className="text-center px-6 py-4">
-                    <span className={`text-xs px-3 py-1.5 rounded-full font-black uppercase tracking-wider border ${statusColors[f.status] ?? ""}`}>
+                    <span className={`text-xs px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider border ${statusColors[f.status] ?? ""}`}>
                       {f.status}
                     </span>
                   </td>
@@ -411,14 +412,14 @@ export default function FinancesPage() {
                         className="px-3 py-1.5 bg-slate-700/50 border border-slate-600/30 rounded-lg hover:bg-slate-600/50 transition-all text-sm font-bold"
                         title={f.status === "PAID" ? "Mark unpaid" : "Mark paid"}
                       >
-                        {f.status === "PAID" ? "↩️" : "✅"}
+                        {f.status === "PAID" ? <Undo2 className="w-4 h-4" /> : <Check className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => deleteEntry(f.id)}
                         className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all text-sm font-bold text-red-400"
                         title="Delete"
                       >
-                        🗑️
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>

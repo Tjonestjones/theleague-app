@@ -96,17 +96,17 @@ function ImportESPNContent() {
             ← {leagueId ? "Back to League" : "Back to Platforms"}
           </Link>
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-              <span className="text-xs font-black text-red-400 tracking-wider">ESPN</span>
+            <div className="w-10 h-10 rounded-md bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+              <span className="text-xs font-semibold text-red-400 tracking-wider">ESPN</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight">Import ESPN</h1>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Import ESPN</h1>
           </div>
           <p className="text-slate-400 text-sm font-medium">
             Connect your ESPN Fantasy Football league.
           </p>
 
           {!leagueId && (
-            <div className="flex items-start gap-3 bg-yellow-500/8 border border-yellow-500/20 rounded-xl p-4 mt-5">
+            <div className="flex items-start gap-3 bg-yellow-500/8 border border-yellow-500/20 rounded-md p-4 mt-5">
               <svg className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -124,11 +124,11 @@ function ImportESPNContent() {
 
       {/* ── FORM ───────────────────────────────────────────────────────── */}
       <div className="px-6 md:px-12 py-10 max-w-2xl">
-        <div className="bg-slate-900 border border-white/8 rounded-2xl p-8 space-y-7">
+        <div className="bg-slate-900 border border-white/8 rounded-lg p-8 space-y-7">
 
           {/* League ID */}
           <div className="space-y-2">
-            <label className="block text-xs font-black uppercase tracking-widest text-slate-500">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">
               ESPN League ID <span className="text-red-500">*</span>
             </label>
             <input
@@ -137,7 +137,7 @@ function ImportESPNContent() {
               onChange={(e) => setFormData({ ...formData, league_id: e.target.value })}
               placeholder="e.g. 336541"
               disabled={isLoading}
-              className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors disabled:opacity-50"
+              className="h-11 w-full rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors disabled:opacity-50"
             />
             <p className="text-xs text-slate-600 font-medium">
               Found in your league URL:{" "}
@@ -148,14 +148,14 @@ function ImportESPNContent() {
 
           {/* Year */}
           <div className="space-y-2">
-            <label className="block text-xs font-black uppercase tracking-widest text-slate-500">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">
               Season Year <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.year}
               onChange={(e) => setFormData({ ...formData, year: e.target.value })}
               disabled={isLoading}
-              className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-red-500/40 focus:outline-none transition-colors disabled:opacity-50"
+              className="h-11 w-full rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-sm font-bold focus:border-red-500/40 focus:outline-none transition-colors disabled:opacity-50"
             >
               {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map((year) => (
                 <option key={year} value={year}>{year}</option>
@@ -164,7 +164,7 @@ function ImportESPNContent() {
           </div>
 
           {/* Private League Section */}
-          <details className="rounded-xl border border-white/8 bg-slate-800/30 overflow-hidden">
+          <details className="rounded-md border border-white/8 bg-slate-800/30 overflow-hidden">
             <summary className="cursor-pointer font-bold text-sm text-slate-400 hover:text-slate-300 px-5 py-4 transition-colors flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -181,34 +181,34 @@ function ImportESPNContent() {
               </p>
 
               <div className="space-y-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-500">espn_s2 Cookie</label>
+                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">espn_s2 Cookie</label>
                 <input
                   type="password"
                   value={formData.espn_s2}
                   onChange={(e) => setFormData({ ...formData, espn_s2: e.target.value })}
                   placeholder="Paste your espn_s2 cookie value"
-                  className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-xs font-mono placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors"
+                  className="h-11 w-full rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-xs font-mono placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors"
                   disabled={isLoading}
                   autoComplete="off"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-500">SWID Cookie</label>
+                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">SWID Cookie</label>
                 <input
                   type="password"
                   value={formData.swid}
                   onChange={(e) => setFormData({ ...formData, swid: e.target.value })}
                   placeholder="Paste your SWID cookie value"
-                  className="h-11 w-full rounded-xl bg-slate-800/50 border border-white/10 px-4 text-white text-xs font-mono placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors"
+                  className="h-11 w-full rounded-md bg-slate-800/50 border border-white/10 px-4 text-white text-xs font-mono placeholder-slate-600 focus:border-red-500/40 focus:outline-none transition-colors"
                   disabled={isLoading}
                   autoComplete="off"
                 />
               </div>
 
               {/* Cookie guide */}
-              <div className="bg-blue-500/8 border border-blue-500/15 rounded-xl p-4 space-y-2">
-                <p className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3">How to get your ESPN cookies</p>
+              <div className="bg-blue-500/8 border border-blue-500/15 rounded-md p-4 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-3">How to get your ESPN cookies</p>
                 <div className="space-y-1.5 text-xs text-slate-400 font-medium">
                   <p>1. Open <span className="text-white font-bold">fantasy.espn.com</span> and log in</p>
                   <p>2. Press <kbd className="px-1.5 py-0.5 bg-slate-700 border border-slate-600 rounded font-mono">F12</kbd> to open DevTools (<kbd className="px-1.5 py-0.5 bg-slate-700 border border-slate-600 rounded font-mono">⌘⌥I</kbd> on Mac)</p>
@@ -251,7 +251,7 @@ function ImportESPNContent() {
             <button
               onClick={handleValidate}
               disabled={isLoading || !formData.league_id}
-              className="flex-1 h-11 flex items-center justify-center gap-2 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-bold text-sm transition-all disabled:opacity-40"
+              className="flex-1 h-11 flex items-center justify-center gap-2 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-bold text-sm transition-all disabled:opacity-40"
             >
               {status === "validating" ? (
                 <>
@@ -265,7 +265,7 @@ function ImportESPNContent() {
               <button
                 onClick={handleImport}
                 disabled={isLoading || !leagueId}
-                className="flex-1 h-11 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-40"
+                className="flex-1 h-11 flex items-center justify-center gap-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/50 disabled:opacity-40"
               >
                 {status === "importing" ? (
                   <>
@@ -306,7 +306,7 @@ function StatusMessage({ status, message }: { status: string; message: string })
     );
 
   return (
-    <div className={`flex items-start gap-3 border rounded-xl p-4 ${styles}`}>
+    <div className={`flex items-start gap-3 border rounded-md p-4 ${styles}`}>
       {Icon}
       <p className="text-sm font-bold leading-relaxed">{message}</p>
     </div>
@@ -315,13 +315,13 @@ function StatusMessage({ status, message }: { status: string; message: string })
 
 function LeaguePreview({ items }: { items: { label: string; value: string }[] }) {
   return (
-    <div className="bg-emerald-500/8 border border-emerald-500/20 rounded-xl p-5">
-      <p className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-4">League Connected</p>
+    <div className="bg-emerald-500/8 border border-emerald-500/20 rounded-md p-5">
+      <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-4">League Connected</p>
       <div className="grid grid-cols-2 gap-3">
         {items.map((item) => (
-          <div key={item.label} className="bg-slate-800/50 rounded-xl p-3 border border-white/5">
-            <p className="text-xs font-black text-slate-600 uppercase tracking-wider mb-1">{item.label}</p>
-            <p className="text-sm font-black text-white">{item.value}</p>
+          <div key={item.label} className="bg-slate-800/50 rounded-md p-3 border border-white/5">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">{item.label}</p>
+            <p className="text-sm font-semibold text-white">{item.value}</p>
           </div>
         ))}
       </div>

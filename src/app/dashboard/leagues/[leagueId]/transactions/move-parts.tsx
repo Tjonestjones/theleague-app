@@ -12,7 +12,7 @@ const TYPE_STYLE: Record<TransactionType, string> = {
 
 export function TypeBadge({ type }: { type: TransactionType }) {
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider ${TYPE_STYLE[type]}`}>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${TYPE_STYLE[type]}`}>
       {TYPE_LABEL[type]}
     </span>
   );

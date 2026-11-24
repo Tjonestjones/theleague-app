@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard, Plus, Download } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊", color: "emerald" },
-  { href: "/dashboard/leagues/create", label: "Create League", icon: "➕", color: "yellow" },
-  { href: "/dashboard/leagues/import", label: "Import Data", icon: "📥", color: "blue" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, color: "emerald" },
+  { href: "/dashboard/leagues/create", label: "Create League", icon: Plus, color: "yellow" },
+  { href: "/dashboard/leagues/import", label: "Import Data", icon: Download, color: "blue" },
 ];
 
 export function MobileNav() {
@@ -20,7 +20,7 @@ export function MobileNav() {
       {/* Hamburger Button - PREMIUM */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-6 left-6 z-50 p-4 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-emerald-500/30 rounded-2xl hover:border-emerald-500/50 shadow-2xl hover:shadow-emerald-500/20 transition-all transform hover:scale-110"
+        className="fixed top-6 left-6 z-50 p-4 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-emerald-500/30 rounded-lg hover:border-emerald-500/50 shadow-2xl hover:shadow-emerald-500/20 transition-all transform hover:scale-110"
         aria-label="Toggle menu"
       >
         {isOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-white" />}
@@ -45,10 +45,9 @@ export function MobileNav() {
         <div className="pt-24 px-6">
           {/* Logo */}
           <div className="mb-12 pb-6 border-b border-emerald-500/20">
-            <div className="text-3xl font-black text-white mb-2">TheLeague</div>
+            <div className="text-3xl font-semibold text-white mb-2">TheLeague</div>
             <div className="flex items-center gap-2">
               <div className="h-1 w-16 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full"></div>
-              <span className="text-2xl">🏈</span>
             </div>
           </div>
 
@@ -68,14 +67,14 @@ export function MobileNav() {
                     href={item.href}
                     onClick={() => setIsOpen(false)}
                     className={`
-                      group flex items-center gap-4 px-5 py-4 rounded-2xl transition-all border-2 font-bold
+                      group flex items-center gap-4 px-5 py-4 rounded-lg transition-all border-2 font-bold
                       ${isActive 
                         ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400" 
                         : `text-white border-transparent ${colorClasses}`
                       }
                     `}
                   >
-                    <span className="text-3xl group-hover:scale-125 transition-transform">{item.icon}</span>
+                    <item.icon className="w-5 h-5 shrink-0" />
                     <span>{item.label}</span>
                   </Link>
                 </li>

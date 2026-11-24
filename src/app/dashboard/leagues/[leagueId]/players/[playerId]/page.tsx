@@ -39,7 +39,7 @@ export default async function PlayerJourneyPage({
 
   if (!league || !journey.player)
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-semibold">
         Player not found
       </div>
     );
@@ -74,18 +74,18 @@ export default async function PlayerJourneyPage({
             >
               ← Transactions
             </Link>
-            <span className="inline-flex items-center border border-emerald-500/25 bg-emerald-500/10 rounded-full px-3 py-1 text-xs font-black text-emerald-400 uppercase tracking-wider mb-3">
+            <span className="inline-flex items-center border border-emerald-500/25 bg-emerald-500/10 rounded-full px-3 py-1 text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3">
               {player.position}
             </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight">{player.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">{player.name}</h1>
             <p className="text-sm text-slate-500 font-medium mt-1">
               {moves.length} move{moves.length === 1 ? "" : "s"} in {league.name}
             </p>
             <div className="mt-6 grid grid-cols-4 sm:grid-cols-7 gap-2 max-w-3xl">
               {pills.map((p) => (
-                <div key={p.label} className="rounded-xl bg-slate-900 border border-white/8 px-2 py-2.5 text-center">
-                  <span className="block text-lg font-black text-white tabular-nums">{p.value}</span>
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-slate-500">{p.label}</span>
+                <div key={p.label} className="rounded-md bg-slate-900 border border-white/8 px-2 py-2.5 text-center">
+                  <span className="block text-lg font-semibold text-white tabular-nums">{p.value}</span>
+                  <span className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500">{p.label}</span>
                 </div>
               ))}
             </div>
@@ -97,18 +97,18 @@ export default async function PlayerJourneyPage({
         </div>
 
         <div className="px-6 md:px-12 pt-12">
-          <h2 className="text-lg font-black uppercase tracking-wider text-white">Transaction history</h2>
+          <h2 className="text-lg font-semibold uppercase tracking-wider text-white">Transaction history</h2>
         </div>
 
         <div className="px-6 md:px-12 pt-6 pb-10 space-y-10 max-w-4xl">
           {moves.length === 0 && (
-            <div className="border-2 border-dashed border-white/8 rounded-2xl p-12 text-center">
+            <div className="border-2 border-dashed border-white/8 rounded-lg p-12 text-center">
               <p className="text-slate-600 font-bold text-sm">This player hasn&apos;t been on a roster in this league.</p>
             </div>
           )}
           {[...bySeason.entries()].map(([year, ms]) => (
             <section key={year}>
-              <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">{year}</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">{year}</h2>
               <ol className="relative border-l border-white/10 ml-2 space-y-5">
                 {ms.map((m) => (
                   <li key={m.id} className="pl-6 relative">

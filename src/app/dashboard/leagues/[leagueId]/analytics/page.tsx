@@ -33,7 +33,7 @@ export default async function AnalyticsPage({
 
   if (!league) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-black">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-semibold">
         League not found
       </div>
     );
@@ -56,7 +56,7 @@ export default async function AnalyticsPage({
 
           <div className="flex items-end justify-between gap-6 flex-wrap">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight">Analytics</h1>
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Analytics</h1>
               <p className="text-slate-500 text-sm font-medium mt-1">
                 Lineup efficiency, max potential, and bench analysis
               </p>
@@ -64,13 +64,13 @@ export default async function AnalyticsPage({
             <div className="flex items-center gap-3">
               <Link
                 href={`/dashboard/leagues/${leagueId}/history`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/25 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/25 font-bold text-sm transition-all"
               >
                 History
               </Link>
               <Link
                 href={`/dashboard/leagues/${leagueId}/records`}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 hover:text-yellow-400 hover:border-yellow-500/25 font-bold text-sm transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-slate-800 border border-white/10 text-slate-300 hover:text-yellow-400 hover:border-yellow-500/25 font-bold text-sm transition-all"
               >
                 Records
               </Link>
@@ -82,7 +82,7 @@ export default async function AnalyticsPage({
       <div className="px-6 md:px-12 py-10 space-y-10">
 
         {/* ── CONCEPT EXPLAINER ───────────────────────────────────────── */}
-        <div className="bg-slate-900 border border-white/8 rounded-2xl p-6">
+        <div className="bg-slate-900 border border-white/8 rounded-lg p-6">
           <div className="flex items-start gap-4">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
               <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,7 +90,7 @@ export default async function AnalyticsPage({
               </svg>
             </div>
             <div>
-              <h3 className="font-black text-sm text-cyan-400 mb-2 uppercase tracking-wider">
+              <h3 className="font-semibold text-sm text-cyan-400 mb-2 uppercase tracking-wider">
                 What is Lineup Efficiency?
               </h3>
               <p className="text-slate-400 text-sm font-medium leading-relaxed">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Trophy } from "lucide-react";
 
 interface SeasonData {
   year: number;
@@ -68,7 +69,7 @@ export function SeasonTabs({ seasons, leagueId }: { seasons: SeasonData[]; leagu
               {activeSeason.teams.map((t, i) => (
                 <tr key={t.teamId} className={`hover:bg-gray-50 ${i === 0 ? "bg-yellow-50" : ""}`}>
                   <td className="px-4 py-3 font-medium">
-                    {i === 0 ? "🏆" : i + 1}
+                    {i === 0 ? <Trophy className="w-4 h-4 text-yellow-500" aria-label="Champion" /> : i + 1}
                   </td>
                   <td className="px-4 py-3 font-medium">{t.teamName}</td>
                   <td className="px-4 py-3">
