@@ -94,8 +94,8 @@ function SidebarBody({
       title: "Activity",
       items: [
         { label: "Transactions", href: `${base}/transactions` },
-        { label: "Trades", soon: true },
-        { label: "Waivers & drops", soon: true },
+        { label: "Trades", href: `${base}/trades` },
+        { label: "Waivers & drops", href: `${base}/waivers` },
       ],
     },
     {
@@ -122,8 +122,8 @@ function SidebarBody({
       title: "People",
       items: [
         { label: "Managers", href: `${base}/members` },
-        { label: "Rivalries", soon: true },
-        { label: "Players", soon: true },
+        { label: "Rivalries", href: `${base}/rivalries` },
+        { label: "Players", href: `${base}/players` },
       ],
     },
     {
