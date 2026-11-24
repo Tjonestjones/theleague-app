@@ -7,6 +7,7 @@
     "dev:next": "next dev",
     "espn-service": "python3 services/espn-importer/main.py",
     "load:espn-transactions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/load-espn-transactions.mts",
+    "sync:espn-projections": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/sync-espn-projections.mts",
     "sync:nfl-stats": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/sync-nfl-stats.mts",
     "build": "prisma generate && next build",
     "start": "next start",

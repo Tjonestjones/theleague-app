@@ -141,3 +141,53 @@ function sumRows(a: ReturnType<typeof toRow>, b: ReturnType<typeof toRow>) {
   }
   return out;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Weekly game logs (availability)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * One PlayerGameLog row per regular-season game each matched player appeared
+ * in, from nflverse weekly stats. nflverse only lists players who recorded a
+ * stat, so a game with zero touches/targets is not counted. Requires players
+ * to have a gsisId (run syncNflStats first).
+ */
+export async function syncNflGameLogs(
+  db: PrismaClient,
+  opts: { fromSeason: number; toSeason?: number; log?: (msg: string) => void },
+): Promise<{ seasons: number; rows: number }> {
+  const log = opts.log ?? (() => {});
+  const ours = await db.player.findMany({ where: { gsisId: { not: null } }, select: { id: true, gsisId: true } });
+  const byGsis = new Map(ours.map((p) => [p.gsisId!, p.id]));
+  if (!byGsis.size) {
+    log("No players have an nflverse id yet; run the season stats sync first");
+    return { seasons: 0, rows: 0 };
+  }
+  const to = opts.toSeason ?? new Date().getFullYear();
+  let seasons = 0;
+  let total = 0;
+  for (let season = opts.fromSeason; season <= to; season++) {
+    const weekly = await fetchCsv(`${RELEASES}/stats_player/stats_player_week_${season}.csv`);
+    if (!weekly) continue;
+    seasons++;
+    const seen = new Set<string>();
+    const data: { playerId: string; season: number; week: number; team: string | null }[] = [];
+    for (const r of weekly) {
+      if (r.season_type && r.season_type !== "REG") continue;
+      const playerId = byGsis.get(r.player_id);
+      const week = int(r.week);
+      if (!playerId || !week) continue;
+      const key = `${playerId}|${week}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      data.push({ playerId, season, week, team: r.team || r.recent_team || null });
+    }
+    await db.$transaction([
+      db.playerGameLog.deleteMany({ where: { season, playerId: { in: [...new Set(data.map((d) => d.playerId))] } } }),
+      db.playerGameLog.createMany({ data }),
+    ]);
+    total += data.length;
+    log(`  ${season}: ${data.length} player-games`);
+  }
+  return { seasons, rows: total };
+}

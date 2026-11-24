@@ -8,7 +8,7 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
-import { syncNflStats } from "../src/lib/nfl-stats-sync.ts";
+import { syncNflStats, syncNflGameLogs } from "../src/lib/nfl-stats-sync.ts";
 
 const [from, to] = process.argv.slice(2).map(Number);
 const db = new PrismaClient({ adapter: new PrismaPg(new pg.Pool({ connectionString: process.env.DATABASE_URL })) });
@@ -20,6 +20,17 @@ try {
     log: (m) => console.log(m),
   });
   console.log(`Done: ${res.rows} player-seasons across ${res.seasons} seasons for ${res.matchedPlayers} players`);
+
+  // Weekly game logs (availability) only for seasons we have leagues for
+  const first = await db.season.aggregate({ _min: { year: true } });
+  if (first._min.year) {
+    const logs = await syncNflGameLogs(db, {
+      fromSeason: Math.max(first._min.year, from || 0),
+      toSeason: to || undefined,
+      log: (m) => console.log(m),
+    });
+    console.log(`Done: ${logs.rows} player-games across ${logs.seasons} seasons`);
+  }
 } finally {
   await db.$disconnect();
 }
