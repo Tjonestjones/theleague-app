@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SeasonTabs } from "./season-tabs";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import type { Metadata } from "next";
+import { getEra } from "@/lib/era";
 
 export async function generateMetadata({
   params,
@@ -39,9 +40,10 @@ export default async function HistoryPage({
       </div>
     );
 
+  const era = await getEra(leagueId);
   const [allTimeStandings, seasonStandings] = await Promise.all([
-    getAllTimeStandings(leagueId),
-    getSeasonStandings(leagueId),
+    getAllTimeStandings(leagueId, era.scope),
+    getSeasonStandings(leagueId, era.scope),
   ]);
 
   const rankStyle = (i: number) =>
@@ -72,7 +74,7 @@ export default async function HistoryPage({
             <div>
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">League History</h1>
               <p className="text-slate-500 text-sm font-medium mt-1">
-                All-time standings and season-by-season breakdown
+                {era.isAll ? "All-time standings and season-by-season breakdown" : `Standings for ${era.label} (change the era in the sidebar)`}
               </p>
             </div>
             <div className="flex items-center gap-3">

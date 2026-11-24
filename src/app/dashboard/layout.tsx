@@ -3,6 +3,7 @@ import { UserButton } from "@clerk/nextjs";
 import { MobileNav } from "@/components/mobile-nav";
 import { BrandMark } from "@/components/brand-mark";
 import { LayoutDashboard, Plus, Download, type LucideIcon } from "lucide-react";
+import { HideOnLeagueRoutes } from "@/components/hide-on-league-routes";
 
 export default function DashboardLayout({
   children,
@@ -11,11 +12,12 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen flex bg-black">
-      {/* Mobile Navigation */}
-      <MobileNav />
+      <HideOnLeagueRoutes>
+        {/* Mobile Navigation */}
+        <MobileNav />
 
       {/* ── SIDEBAR ───────────────────────────────────────────────────── */}
-      <aside className="hidden md:flex w-64 border-r border-white/6 bg-slate-950 flex-col">
+      <aside className="hidden md:flex w-64 shrink-0 border-r border-white/6 bg-slate-950 flex-col">
         {/* Logo */}
         <div className="px-6 py-7 border-b border-white/6">
           <Link href="/dashboard" className="group block">
@@ -43,9 +45,13 @@ export default function DashboardLayout({
           </div>
         </div>
       </aside>
+      </HideOnLeagueRoutes>
 
       {/* ── MAIN ──────────────────────────────────────────────────────── */}
-      <main className="flex-1 pt-16 md:pt-0 bg-gradient-to-b from-slate-950 via-slate-900 to-black overflow-auto">
+      <main className="flex-1 min-w-0 bg-gradient-to-b from-slate-950 via-slate-900 to-black overflow-x-clip">
+        <HideOnLeagueRoutes>
+          <div className="md:hidden h-16" />
+        </HideOnLeagueRoutes>
         {children}
       </main>
     </div>

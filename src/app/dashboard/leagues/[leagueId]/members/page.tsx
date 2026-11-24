@@ -5,6 +5,7 @@ import { getAllTimeStandings } from "@/lib/records";
 import Link from "next/link";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import type { Metadata } from "next";
+import { getEra } from "@/lib/era";
 
 export async function generateMetadata({
   params,
@@ -38,7 +39,8 @@ export default async function MembersPage({
       </div>
     );
 
-  const standings = await getAllTimeStandings(leagueId);
+  const era = await getEra(leagueId);
+  const standings = await getAllTimeStandings(leagueId, era.scope);
 
   return (
     <SubscriptionGate leagueId={leagueId} leagueName={league.name}>

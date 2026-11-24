@@ -54,10 +54,18 @@ export interface SeasonStanding {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared data fetch
 // ─────────────────────────────────────────────────────────────────────────────
-async function getLeagueMatchups(leagueId: string) {
+/** Optional season filter (the era selector). Omit for all seasons. */
+export interface EraScope {
+  years?: number[];
+}
+
+const seasonWhere = (leagueId: string, scope: EraScope = {}) =>
+  scope.years ? { leagueId, year: { in: scope.years } } : { leagueId };
+
+async function getLeagueMatchups(leagueId: string, scope: EraScope = {}) {
   return prisma.matchup.findMany({
     where: {
-      week: { season: { leagueId } },
+      week: { season: seasonWhere(leagueId, scope) },
       status: "COMPLETED",
     },
     include: {
@@ -79,8 +87,8 @@ async function getLeagueMatchups(leagueId: string) {
 // ─────────────────────────────────────────────────────────────────────────────
 // ALL-TIME STANDINGS
 // ─────────────────────────────────────────────────────────────────────────────
-export async function getAllTimeStandings(leagueId: string): Promise<StandingsEntry[]> {
-  const matchups = await getLeagueMatchups(leagueId);
+export async function getAllTimeStandings(leagueId: string, scope: EraScope = {}): Promise<StandingsEntry[]> {
+  const matchups = await getLeagueMatchups(leagueId, scope);
   const stats: Map<string, StandingsEntry> = new Map();
 
   const ensure = (memberId: string, name: string) => {
@@ -107,7 +115,7 @@ export async function getAllTimeStandings(leagueId: string): Promise<StandingsEn
   }
 
   const seasons = await prisma.team.findMany({
-    where: { season: { leagueId } },
+    where: { season: seasonWhere(leagueId, scope) },
     select: { member: { select: { id: true } }, seasonId: true },
   });
   const seasonCounts: Map<string, Set<string>> = new Map();
@@ -128,9 +136,9 @@ export async function getAllTimeStandings(leagueId: string): Promise<StandingsEn
 // ─────────────────────────────────────────────────────────────────────────────
 // SEASON STANDINGS
 // ─────────────────────────────────────────────────────────────────────────────
-export async function getSeasonStandings(leagueId: string): Promise<SeasonStanding[]> {
+export async function getSeasonStandings(leagueId: string, scope: EraScope = {}): Promise<SeasonStanding[]> {
   const seasons = await prisma.season.findMany({
-    where: { leagueId },
+    where: seasonWhere(leagueId, scope),
     include: {
       teams: { include: { member: { select: { id: true, displayName: true } } } },
       weeks: {
@@ -181,8 +189,8 @@ export async function getSeasonStandings(leagueId: string): Promise<SeasonStandi
 // ─────────────────────────────────────────────────────────────────────────────
 // HEAD-TO-HEAD
 // ─────────────────────────────────────────────────────────────────────────────
-export async function getHeadToHead(leagueId: string, memberId: string): Promise<HeadToHead[]> {
-  const matchups = await getLeagueMatchups(leagueId);
+export async function getHeadToHead(leagueId: string, memberId: string, scope: EraScope = {}): Promise<HeadToHead[]> {
+  const matchups = await getLeagueMatchups(leagueId, scope);
   const h2h: Map<string, HeadToHead> = new Map();
 
   for (const m of matchups) {
@@ -212,8 +220,8 @@ export async function getHeadToHead(leagueId: string, memberId: string): Promise
 // ─────────────────────────────────────────────────────────────────────────────
 // RECORD BOOK (50+ records)
 // ─────────────────────────────────────────────────────────────────────────────
-export async function getRecordBook(leagueId: string): Promise<LeagueRecord[]> {
-  const matchups = await getLeagueMatchups(leagueId);
+export async function getRecordBook(leagueId: string, scope: EraScope = {}): Promise<LeagueRecord[]> {
+  const matchups = await getLeagueMatchups(leagueId, scope);
   const records: LeagueRecord[] = [];
   if (matchups.length === 0) return records;
 
@@ -470,7 +478,7 @@ export async function getRecordBook(leagueId: string): Promise<LeagueRecord[]> {
 
   // ── ALL-TIME records ─────────────────────────────────────────────────────
 
-  const standings = await getAllTimeStandings(leagueId);
+  const standings = await getAllTimeStandings(leagueId, scope);
 
   if (standings.length > 0) {
     const mostATWins    = [...standings].sort((a, b) => b.wins - a.wins)[0];
