@@ -1,9 +1,7 @@
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { getRecordBook } from "@/lib/records";
 import Link from "next/link";
-import { SubscriptionGate } from "@/components/subscription-gate";
+import { RECORD_CATEGORIES, categoryPageCount } from "@/lib/record-book/catalog";
 import type { Metadata } from "next";
 import { Target, Swords, CalendarDays, Flame, Trophy, TrendingUp, TrendingDown, Clover, BarChart3, type LucideIcon } from "lucide-react";
 
@@ -22,23 +20,7 @@ export default async function RecordBookPage({
 }: {
   params: Promise<{ leagueId: string }>;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
-
   const { leagueId } = await params;
-
-  const league = await prisma.league.findUnique({
-    where: { id: leagueId },
-    select: { name: true },
-  });
-
-  if (!league)
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-2xl font-semibold">
-        League not found
-      </div>
-    );
-
   const records = await getRecordBook(leagueId);
 
   // Group by category, preserving insertion order
@@ -70,36 +52,31 @@ export default async function RecordBookPage({
   };
 
   return (
-    <SubscriptionGate leagueId={leagueId} leagueName={league.name}>
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
-
-      {/* ── HEADER ───────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden border-b border-white/5">
-        <div className="absolute -top-24 left-0 w-80 h-64 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative px-6 md:px-12 pt-8 pb-8">
-          <Link
-            href={`/dashboard/leagues/${leagueId}`}
-            className="inline-flex items-center gap-1.5 text-slate-500 hover:text-yellow-400 font-bold text-sm transition-colors mb-6"
-          >
-            ← {league.name}
-          </Link>
-
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight flex items-center gap-3">
-                Record Book
-              </h1>
-              <p className="text-sm text-slate-500 font-medium mt-2">
-                <span className="text-white font-bold">{records.length}</span> records across{" "}
-                <span className="text-white font-bold">{categories.size}</span> categories
-              </p>
-            </div>
-          </div>
+    <div>
+      {/* ── CATEGORIES ───────────────────────────────────────────────────── */}
+      <section className="mb-14">
+        <h2 className="text-xl font-semibold uppercase tracking-widest text-yellow-400 mb-5">Browse by category</h2>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {RECORD_CATEGORIES.map((c) => (
+            <Link
+              key={c.id}
+              href={`/dashboard/leagues/${leagueId}/records/${c.id}`}
+              className="group rounded-md border border-white/10 bg-slate-900/60 p-5 hover:border-yellow-500/40 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="font-semibold text-white group-hover:text-yellow-300 transition-colors">{c.label}</p>
+                <span className="text-[11px] font-bold text-slate-500 border border-white/10 rounded-full px-2 py-0.5 tabular-nums">
+                  {categoryPageCount(c)}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">{c.description}</p>
+            </Link>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* ── CONTENT ──────────────────────────────────────────────────────── */}
-      <div className="px-6 md:px-12 py-10 space-y-16">
+      <h2 className="text-xl font-semibold uppercase tracking-widest text-slate-300 mb-8">Highlights</h2>
+      <div className="space-y-16">
         {records.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <BarChart3 className="w-10 h-10 text-slate-600 mb-5" />
@@ -173,7 +150,6 @@ export default async function RecordBookPage({
         )}
       </div>
     </div>
-    </SubscriptionGate>
   );
 }
 
