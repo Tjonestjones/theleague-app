@@ -1,58 +1,22 @@
-// import { prisma } from "@/lib/db";
-// import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Download, Trophy } from "lucide-react";
 
-// ─── MOCK DATA (remove when DB is connected) ──────────────────────────────────
-const MOCK_USER = { id: "mock-user", firstName: "Thomas" };
-
-const MOCK_LEAGUES = [
-  {
-    id: "league-1",
-    name: "Stab League",
-    description: "The original. Est. 2016.",
-    sport: "NFL",
-    createdAt: new Date("2016-01-01"),
-    _count: { members: 10, seasons: 8 },
-    members: [{ role: "COMMISSIONER" as const }],
-    seasons: [
-      { year: 2016 }, { year: 2017 }, { year: 2018 }, { year: 2019 },
-      { year: 2020 }, { year: 2021 }, { year: 2022 }, { year: 2023 },
-    ],
-  },
-  {
-    id: "league-2",
-    name: "Dynasty Kings",
-    description: null,
-    sport: "NFL",
-    createdAt: new Date("2019-01-01"),
-    _count: { members: 12, seasons: 5 },
-    members: [{ role: "MEMBER" as const }],
-    seasons: [
-      { year: 2019 }, { year: 2020 }, { year: 2021 }, { year: 2022 }, { year: 2023 },
-    ],
-  },
-  {
-    id: "league-3",
-    name: "Redraft 2024",
-    description: null,
-    sport: "NFL",
-    createdAt: new Date("2024-01-01"),
-    _count: { members: 8, seasons: 1 },
-    members: [{ role: "CO_COMMISSIONER" as const }],
-    seasons: [{ year: 2024 }],
-  },
-];
-// ─────────────────────────────────────────────────────────────────────────────
-
 export default async function DashboardPage() {
-  // const user = await getCurrentUser();
-  // if (!user) redirect("/sign-in");
-  const user = MOCK_USER;
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
 
-  // const leagues = await prisma.league.findMany({ ... });
-  const leagues = MOCK_LEAGUES;
+  const leagues = await prisma.league.findMany({
+    where: { members: { some: { userId: user.id } } },
+    include: {
+      _count: { select: { members: true, seasons: true } },
+      members: { where: { userId: user.id }, select: { role: true } },
+      seasons: { select: { year: true }, orderBy: { year: "asc" } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
   const totalSeasons = leagues.reduce((sum, l) => sum + l._count.seasons, 0);
   const ownedCount = leagues.filter(
@@ -170,7 +134,7 @@ export default async function DashboardPage() {
                               <span className="text-slate-400 font-bold">{yearRange}</span>
                             )}
                             <span>{league._count.seasons} season{league._count.seasons !== 1 ? "s" : ""}</span>
-                            <span>{league._count.members} members</span>
+                            <span>{league._count.members} member{league._count.members !== 1 ? "s" : ""}</span>
                             <span className="text-emerald-600 font-bold uppercase text-xs">{league.sport}</span>
                           </div>
                         </div>

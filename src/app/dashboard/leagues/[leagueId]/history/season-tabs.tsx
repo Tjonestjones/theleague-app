@@ -24,20 +24,29 @@ export function SeasonTabs({ seasons, leagueId }: { seasons: SeasonData[]; leagu
   const [activeYear, setActiveYear] = useState(seasons[0]?.year);
   const activeSeason = seasons.find((s) => s.year === activeYear);
 
+  const headers: Array<[string, string]> = [
+    ["#", "text-left w-10"], ["Team", "text-left"], ["Owner", "text-left"],
+    ["W", "text-center"], ["L", "text-center"], ["T", "text-center"],
+    ["PF", "text-right"], ["PA", "text-right"], ["Diff", "text-right"],
+  ];
+
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Season-by-Season</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-6">
+        Season-by-Season
+      </h2>
 
       {/* Year Tabs */}
-      <div className="flex gap-1 mb-4 flex-wrap">
+      <div className="flex gap-1.5 mb-4 flex-wrap">
         {seasons.map((s) => (
           <button
             key={s.year}
             onClick={() => setActiveYear(s.year)}
-            className={`px-4 py-2 text-sm rounded-md transition-colors ${
+            aria-pressed={activeYear === s.year}
+            className={`px-4 py-2 text-sm font-semibold rounded-md border transition-colors ${
               activeYear === s.year
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                ? "bg-emerald-600 border-emerald-500 text-white"
+                : "bg-slate-900 border-white/8 text-slate-400 hover:text-white hover:border-white/20"
             }`}
           >
             {s.year}
@@ -47,48 +56,56 @@ export function SeasonTabs({ seasons, leagueId }: { seasons: SeasonData[]; leagu
 
       {/* Season Table */}
       {activeSeason && (
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 text-sm text-gray-500">
-            {activeSeason.year} Season • {activeSeason.platform ?? "Manual"} • {activeSeason.teams.length} teams
+        <div className="bg-slate-900 border border-white/8 rounded-lg overflow-x-auto">
+          <div className="px-5 py-3 text-xs font-medium text-slate-500 border-b border-white/8">
+            {activeSeason.year} Season · {activeSeason.platform ?? "Manual"} · {activeSeason.teams.length} teams
           </div>
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-t">
+          <table className="w-full text-sm tabular-nums">
+            <thead className="border-b border-white/8">
               <tr>
-                <th className="text-left px-4 py-3 font-medium">#</th>
-                <th className="text-left px-4 py-3 font-medium">Team</th>
-                <th className="text-left px-4 py-3 font-medium">Owner</th>
-                <th className="text-center px-4 py-3 font-medium">W</th>
-                <th className="text-center px-4 py-3 font-medium">L</th>
-                <th className="text-center px-4 py-3 font-medium">T</th>
-                <th className="text-right px-4 py-3 font-medium">PF</th>
-                <th className="text-right px-4 py-3 font-medium">PA</th>
-                <th className="text-right px-4 py-3 font-medium">Diff</th>
+                {headers.map(([h, align]) => (
+                  <th
+                    key={h}
+                    className={`px-5 py-4 text-xs font-semibold uppercase tracking-widest text-slate-500 ${align}`}
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y">
-              {activeSeason.teams.map((t, i) => (
-                <tr key={t.teamId} className={`hover:bg-gray-50 ${i === 0 ? "bg-yellow-50" : ""}`}>
-                  <td className="px-4 py-3 font-medium">
-                    {i === 0 ? <Trophy className="w-4 h-4 text-yellow-500" aria-label="Champion" /> : i + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium">{t.teamName}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/dashboard/leagues/${leagueId}/members/${t.memberId}`} className="text-blue-600 hover:underline">
-                      {t.memberName}
-                    </Link>
-                  </td>
-                  <td className="text-center px-4 py-3 text-green-600 font-medium">{t.wins}</td>
-                  <td className="text-center px-4 py-3 text-red-600">{t.losses}</td>
-                  <td className="text-center px-4 py-3 text-gray-500">{t.ties}</td>
-                  <td className="text-right px-4 py-3">{t.pointsFor.toFixed(1)}</td>
-                  <td className="text-right px-4 py-3">{t.pointsAgainst.toFixed(1)}</td>
-                  <td className={`text-right px-4 py-3 font-medium ${
-                    t.pointsFor - t.pointsAgainst > 0 ? "text-green-600" : "text-red-600"
-                  }`}>
-                    {(t.pointsFor - t.pointsAgainst) > 0 ? "+" : ""}{(t.pointsFor - t.pointsAgainst).toFixed(1)}
-                  </td>
-                </tr>
-              ))}
+            <tbody className="divide-y divide-white/5">
+              {activeSeason.teams.map((t, i) => {
+                const diff = t.pointsFor - t.pointsAgainst;
+                return (
+                  <tr
+                    key={t.teamId}
+                    className={`transition-colors hover:bg-white/3 ${i === 0 ? "bg-yellow-500/5" : ""}`}
+                  >
+                    <td className="px-5 py-4 font-semibold text-slate-500">
+                      {i === 0 ? <Trophy className="w-4 h-4 text-yellow-400" aria-label="Champion" /> : i + 1}
+                    </td>
+                    <td className={`px-5 py-4 font-semibold ${i === 0 ? "text-yellow-300" : "text-white"}`}>
+                      {t.teamName}
+                    </td>
+                    <td className="px-5 py-4">
+                      <Link
+                        href={`/dashboard/leagues/${leagueId}/members/${t.memberId}`}
+                        className="text-slate-300 hover:text-emerald-400 transition-colors"
+                      >
+                        {t.memberName}
+                      </Link>
+                    </td>
+                    <td className="text-center px-5 py-4 font-semibold text-emerald-400">{t.wins}</td>
+                    <td className="text-center px-5 py-4 font-semibold text-red-400">{t.losses}</td>
+                    <td className="text-center px-5 py-4 text-slate-600">{t.ties}</td>
+                    <td className="text-right px-5 py-4 font-semibold text-white">{t.pointsFor.toFixed(1)}</td>
+                    <td className="text-right px-5 py-4 text-slate-400">{t.pointsAgainst.toFixed(1)}</td>
+                    <td className={`text-right px-5 py-4 font-semibold ${diff > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      {diff > 0 ? "+" : ""}{diff.toFixed(1)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
