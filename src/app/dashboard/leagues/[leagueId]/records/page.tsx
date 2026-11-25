@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getLeagueMembership, requireLeagueMember } from "@/lib/auth";
 import { getRecordBook } from "@/lib/records";
 import Link from "next/link";
 import { RECORD_CATEGORIES, categoryPageCount } from "@/lib/record-book/catalog";
@@ -11,6 +12,7 @@ export async function generateMetadata({
   params: Promise<{ leagueId: string }>;
 }): Promise<Metadata> {
   const { leagueId } = await params;
+  if (!(await getLeagueMembership(leagueId))) return { title: "TheLeague" };
   const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
   return { title: league ? `${league.name} · Record Book — TheLeague` : "Record Book — TheLeague" };
 }
@@ -21,6 +23,7 @@ export default async function RecordBookPage({
   params: Promise<{ leagueId: string }>;
 }) {
   const { leagueId } = await params;
+  await requireLeagueMember(leagueId);
   const records = await getRecordBook(leagueId);
 
   // Group by category, preserving insertion order

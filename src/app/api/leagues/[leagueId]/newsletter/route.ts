@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getCurrentUser, requireRole } from "@/lib/auth";
 
+// Team and manager names come from the fantasy platforms, where any league-mate
+// can set them, so escape everything that goes into the HTML version.
+function esc(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // POST — generate a weekly newsletter for the league
 export async function POST(
   req: NextRequest,
@@ -19,6 +30,15 @@ export async function POST(
 
     if (!seasonId || !weekNumber) {
       return NextResponse.json({ error: "seasonId and weekNumber required" }, { status: 400 });
+    }
+
+    // The season must belong to this league
+    const season = await prisma.season.findFirst({
+      where: { id: seasonId, leagueId },
+      select: { year: true },
+    });
+    if (!season) {
+      return NextResponse.json({ error: "Season not found" }, { status: 404 });
     }
 
     // Fetch league info
@@ -44,12 +64,6 @@ export async function POST(
     if (!week || week.matchups.length === 0) {
       return NextResponse.json({ error: "No completed matchups found for this week" }, { status: 404 });
     }
-
-    // Fetch season standings so far
-    const season = await prisma.season.findUnique({
-      where: { id: seasonId },
-      select: { year: true },
-    });
 
     // Build newsletter content
     const matchups = week.matchups;
@@ -92,7 +106,7 @@ export async function POST(
 
     // Generate markdown newsletter
     let newsletter = `# ${league?.name ?? "League"} — Week ${weekNumber} Recap\n`;
-    newsletter += `### ${season?.year ?? ""} Season\n\n`;
+    newsletter += `### ${season.year} Season\n\n`;
     newsletter += `---\n\n`;
 
     // Scoreboard
@@ -122,8 +136,8 @@ export async function POST(
 
     // Also generate HTML version
     let html = `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">`;
-    html += `<h1 style="color: #1a1a1a; border-bottom: 3px solid #2563eb; padding-bottom: 10px;">${league?.name ?? "League"} — Week ${weekNumber} Recap</h1>`;
-    html += `<p style="color: #666;">${season?.year ?? ""} Season</p>`;
+    html += `<h1 style="color: #1a1a1a; border-bottom: 3px solid #2563eb; padding-bottom: 10px;">${esc(league?.name ?? "League")} — Week ${esc(weekNumber)} Recap</h1>`;
+    html += `<p style="color: #666;">${esc(season.year)} Season</p>`;
 
     html += `<h2>Scoreboard</h2>`;
     html += `<table style="width: 100%; border-collapse: collapse;">`;
@@ -132,21 +146,21 @@ export async function POST(
       const as_ = m.awayScore ?? 0;
       const homeWin = hs > as_;
       html += `<tr style="border-bottom: 1px solid #eee;">`;
-      html += `<td style="padding: 8px; ${homeWin ? "font-weight: bold;" : ""}">${m.homeTeam.name}</td>`;
+      html += `<td style="padding: 8px; ${homeWin ? "font-weight: bold;" : ""}">${esc(m.homeTeam.name)}</td>`;
       html += `<td style="padding: 8px; text-align: right; ${homeWin ? "color: #22c55e; font-weight: bold;" : ""}">${hs.toFixed(1)}</td>`;
       html += `<td style="padding: 8px; text-align: center;">—</td>`;
       html += `<td style="padding: 8px; text-align: left; ${!homeWin ? "color: #22c55e; font-weight: bold;" : ""}">${as_.toFixed(1)}</td>`;
-      html += `<td style="padding: 8px; ${!homeWin ? "font-weight: bold;" : ""}">${m.awayTeam.name}</td>`;
+      html += `<td style="padding: 8px; ${!homeWin ? "font-weight: bold;" : ""}">${esc(m.awayTeam.name)}</td>`;
       html += `</tr>`;
     }
     html += `</table>`;
 
     html += `<h2>Highlights</h2>`;
     html += `<ul>`;
-    html += `<li><strong>High Score:</strong> ${highScore.name} — ${highScore.score.toFixed(1)} pts</li>`;
-    if (lowScore.score < Infinity) html += `<li><strong>Low Score:</strong> ${lowScore.name} — ${lowScore.score.toFixed(1)} pts</li>`;
-    html += `<li><strong>Biggest Win:</strong> ${biggestBlowout.winner} over ${biggestBlowout.loser} (${biggestBlowout.score})</li>`;
-    if (closestGame.margin < Infinity) html += `<li><strong>Closest:</strong> ${closestGame.winner} by ${closestGame.margin.toFixed(1)} (${closestGame.score})</li>`;
+    html += `<li><strong>High Score:</strong> ${esc(highScore.name)} — ${highScore.score.toFixed(1)} pts</li>`;
+    if (lowScore.score < Infinity) html += `<li><strong>Low Score:</strong> ${esc(lowScore.name)} — ${lowScore.score.toFixed(1)} pts</li>`;
+    html += `<li><strong>Biggest Win:</strong> ${esc(biggestBlowout.winner)} over ${esc(biggestBlowout.loser)} (${esc(biggestBlowout.score)})</li>`;
+    if (closestGame.margin < Infinity) html += `<li><strong>Closest:</strong> ${esc(closestGame.winner)} by ${closestGame.margin.toFixed(1)} (${esc(closestGame.score)})</li>`;
     html += `</ul>`;
 
     html += `<p style="color: #999; font-size: 12px; margin-top: 30px;">Generated by TheLeague</p>`;

@@ -1,5 +1,4 @@
-import { getCurrentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { requireLeagueMember, getLeagueMembership } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { AnalyticsCharts } from "./analytics-charts";
@@ -12,6 +11,7 @@ export async function generateMetadata({
   params: Promise<{ leagueId: string }>;
 }): Promise<Metadata> {
   const { leagueId } = await params;
+  if (!(await getLeagueMembership(leagueId))) return { title: "TheLeague" };
   const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
   return { title: league ? `${league.name} · Analytics — TheLeague` : "Analytics — TheLeague" };
 }
@@ -21,10 +21,8 @@ export default async function AnalyticsPage({
 }: {
   params: Promise<{ leagueId: string }>;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
-
   const { leagueId } = await params;
+  await requireLeagueMember(leagueId);
 
   const league = await prisma.league.findUnique({
     where: { id: leagueId },

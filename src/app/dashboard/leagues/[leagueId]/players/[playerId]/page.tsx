@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { requireLeagueMember, getLeagueMembership } from "@/lib/auth";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SubscriptionGate } from "@/components/subscription-gate";
@@ -15,6 +14,7 @@ export async function generateMetadata({
   params: Promise<{ leagueId: string; playerId: string }>;
 }): Promise<Metadata> {
   const { leagueId, playerId } = await params;
+  if (!(await getLeagueMembership(leagueId))) return { title: "TheLeague" };
   const [league, player] = await Promise.all([
     prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } }),
     prisma.player.findUnique({ where: { id: playerId }, select: { name: true } }),
@@ -28,10 +28,8 @@ export default async function PlayerJourneyPage({
 }: {
   params: Promise<{ leagueId: string; playerId: string }>;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
-
   const { leagueId, playerId } = await params;
+  await requireLeagueMember(leagueId);
   const [league, journey] = await Promise.all([
     prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } }),
     getPlayerJourney(leagueId, playerId),
