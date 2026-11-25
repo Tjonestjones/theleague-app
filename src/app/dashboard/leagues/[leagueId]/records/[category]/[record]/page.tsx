@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Info, Lock, Trophy } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { getLeagueMembership, requireLeagueMember } from "@/lib/auth";
 import { findRecord, UNTRACKED_NEEDS } from "@/lib/record-book/catalog";
 import { computeRecord } from "@/lib/record-book/engine";
 import { loadRecordBookData } from "@/lib/record-book/load";
@@ -12,6 +13,7 @@ type Search = Promise<{ view?: string }>;
 
 export async function generateMetadata({ params, searchParams }: { params: Params; searchParams: Search }): Promise<Metadata> {
   const { leagueId, category, record } = await params;
+  if (!(await getLeagueMembership(leagueId))) return { title: "TheLeague" };
   const { view } = await searchParams;
   const found = findRecord(category, record);
   const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
@@ -23,6 +25,7 @@ export async function generateMetadata({ params, searchParams }: { params: Param
 
 export default async function RecordPage({ params, searchParams }: { params: Params; searchParams: Search }) {
   const { leagueId, category, record } = await params;
+  await requireLeagueMember(leagueId);
   const { view } = await searchParams;
   const found = findRecord(category, record);
   if (!found) notFound();

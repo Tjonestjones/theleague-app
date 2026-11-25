@@ -1,5 +1,6 @@
 import { SubscriptionGate } from "@/components/subscription-gate";
 import { prisma } from "@/lib/db";
+import { requireLeagueMember } from "@/lib/auth";
 
 export default async function NewsletterLayout({
   children,
@@ -9,6 +10,7 @@ export default async function NewsletterLayout({
   params: Promise<{ leagueId: string }>;
 }) {
   const { leagueId } = await params;
+  await requireLeagueMember(leagueId);
   const league = await prisma.league.findUnique({
     where: { id: leagueId },
     select: { name: true },

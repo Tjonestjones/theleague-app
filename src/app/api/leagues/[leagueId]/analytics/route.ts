@@ -30,6 +30,10 @@ export async function GET(
     return NextResponse.json({ seasons: [], analytics: [] });
   }
 
+  // Only seasons from this league; never trust a seasonId from the query string
+  if (seasonId && !seasons.some((s) => s.id === seasonId)) {
+    return NextResponse.json({ error: "Season not found" }, { status: 404 });
+  }
   const targetSeasonId = seasonId || seasons[0].id;
   const analytics = await getSeasonAnalytics(leagueId, targetSeasonId);
 

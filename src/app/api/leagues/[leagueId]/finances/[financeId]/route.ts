@@ -14,7 +14,14 @@ export async function PATCH(
     const { leagueId, financeId } = await params;
     await requireRole(leagueId, user.id, ["COMMISSIONER", "CO_COMMISSIONER"]);
 
+    // The entry must belong to this league, not just any league the caller runs
+    const existing = await prisma.finance.findFirst({ where: { id: financeId, leagueId }, select: { id: true } });
+    if (!existing) return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+
     const body = await req.json();
+    if (body.memberId && !(await prisma.member.findFirst({ where: { id: body.memberId, leagueId }, select: { id: true } }))) {
+      return NextResponse.json({ error: "Member not found in this league" }, { status: 400 });
+    }
     const updateData: Record<string, unknown> = {};
 
     if (body.status !== undefined) {
@@ -54,7 +61,8 @@ export async function DELETE(
     const { leagueId, financeId } = await params;
     await requireRole(leagueId, user.id, ["COMMISSIONER", "CO_COMMISSIONER"]);
 
-    await prisma.finance.delete({ where: { id: financeId } });
+    const { count } = await prisma.finance.deleteMany({ where: { id: financeId, leagueId } });
+    if (count === 0) return NextResponse.json({ error: "Entry not found" }, { status: 404 });
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
+import { requireLeagueMember } from "@/lib/auth";
 import { SubscriptionGate } from "@/components/subscription-gate";
 import { RECORD_CATEGORIES, categoryPageCount } from "@/lib/record-book/catalog";
 import { RecordsNav } from "./records-nav";
@@ -14,10 +13,8 @@ export default async function RecordBookLayout({
   children: React.ReactNode;
   params: Promise<{ leagueId: string }>;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
-
   const { leagueId } = await params;
+  await requireLeagueMember(leagueId);
   const league = await prisma.league.findUnique({ where: { id: leagueId }, select: { name: true } });
 
   if (!league)

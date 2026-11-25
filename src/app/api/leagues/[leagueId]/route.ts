@@ -40,6 +40,16 @@ export async function GET(
     if (!isMember && league.visibility === "PRIVATE") {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
+    if (!isMember) {
+      // Public/unlisted leagues: never expose members' emails or user ids to outsiders
+      const members = league.members.map((m) => {
+        const { email, userId, ...rest } = m;
+        void email;
+        void userId;
+        return rest;
+      });
+      return NextResponse.json({ league: { ...league, members } });
+    }
 
     return NextResponse.json({ league });
   } catch (error) {

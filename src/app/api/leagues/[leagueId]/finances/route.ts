@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getCurrentUser, requireRole } from "@/lib/auth";
+import { getCurrentUser, isLeagueMember, requireRole } from "@/lib/auth";
 
 // GET — list all finance entries for a league
 export async function GET(
@@ -12,6 +12,9 @@ export async function GET(
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { leagueId } = await params;
+    if (!(await isLeagueMember(leagueId, user.id))) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+    }
 
     const yearParam = req.nextUrl.searchParams.get("year");
     const typeParam = req.nextUrl.searchParams.get("type");
@@ -89,6 +92,9 @@ export async function POST(
 
     if (!type || amount == null || !year) {
       return NextResponse.json({ error: "type, amount, and year are required" }, { status: 400 });
+    }
+    if (memberId && !(await prisma.member.findFirst({ where: { id: memberId, leagueId }, select: { id: true } }))) {
+      return NextResponse.json({ error: "Member not found in this league" }, { status: 400 });
     }
 
     const finance = await prisma.finance.create({
