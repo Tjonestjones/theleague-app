@@ -60,8 +60,6 @@ npm run dev
 - Next.js: `http://localhost:3000`
 - ESPN FastAPI service: `http://localhost:8001`
 
-> **Preview without a database:** The dashboard currently has mock data enabled for UI development. See the `MOCK_USER` / `MOCK_LEAGUES` block at the top of `src/app/dashboard/page.tsx` — comment it out and uncomment the Prisma calls once `DATABASE_URL` is set.
-
 ### Individual scripts
 
 ```bash

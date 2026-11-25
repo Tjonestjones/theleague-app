@@ -1,11 +1,4 @@
 import { ClerkProvider } from '@clerk/nextjs'
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -36,18 +29,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${inter.variable} ${geistMono.variable} antialiased`} >
-<header className="flex justify-end items-center p-4 gap-4">
-    <SignedOut>
-      <SignInButton />
-      <SignUpButton />
-    </SignedOut>
-    <SignedIn>
-      <UserButton />
-    </SignedIn>
-  </header>
-  {children}
-</body>
+          className={`${inter.variable} ${geistMono.variable} antialiased bg-black`}
+        >
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );
